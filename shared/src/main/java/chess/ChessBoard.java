@@ -9,7 +9,6 @@ package chess;
 public class ChessBoard {
     ChessPiece[][] squares = new ChessPiece[8][8];
     public ChessBoard() {
-        
     }
 
     /**
@@ -40,4 +39,9 @@ public class ChessBoard {
     public void resetBoard() {
         throw new RuntimeException("Not implemented");
     }
+    // this.squares[][] (create a brand new 2D array and add pieces then set self)
+    // white piece [0][i]
+    // black piece[7][i]
+    // white pawn [1][i]
+    // black pawn [6][i]
 }
