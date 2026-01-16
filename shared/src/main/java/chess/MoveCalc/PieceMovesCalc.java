@@ -3,21 +3,11 @@ import chess.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
- /*
- Interface PieceMoves {
 
-    public getPieceMoves ();
-    public default slide(int rowChange, int colChange){
+public interface PieceMovesCalc {
 
-    }
-  */
-
-interface PieceMoves {
-
-public Collection<ChessMove> getPieceMoves();
+Collection<ChessMove> getPieceMoves();
 
 default Collection<ChessMove> slide(ChessPosition myPosition, ChessPiece thisPiece, int[] direction, ChessBoard board) {
     boolean canSlide = true;
@@ -28,19 +18,19 @@ default Collection<ChessMove> slide(ChessPosition myPosition, ChessPiece thisPie
     while(canSlide) {
         canSlide = false;
         ChessPosition whereMove = new ChessPosition(row + direction[0], col + direction[1]);
-        if(whereMove.getRow() > 7 || whereMove.getRow() < 0 || whereMove.getColumn() > 7 || whereMove.getColumn() <0) { // out of grid
+        if(whereMove.getRow()-1 > 7 || whereMove.getRow() -1 < 0 || whereMove.getColumn() -1  > 7 || whereMove.getColumn()-1  < 0) { // out of grid
             break;
         }
         ChessPiece boardPiece = board.getPiece(whereMove);
         if(boardPiece == null) { // it's empty! add it and keep going
-            possibleMoves.add(new ChessMove(new ChessPosition(row,col), whereMove, null));
+            possibleMoves.add(new ChessMove(myPosition, whereMove, null));
             row += direction[0];
             col += direction[1]; // keep chugging forward
             canSlide = true;
         } else if(boardPiece.getTeamColor() == thisPiece.getTeamColor()) { // same team, stop iterating
             break;
         } else { // not on team, add to moves but then break!
-            possibleMoves.add(new ChessMove(new ChessPosition(row,col), whereMove, null));
+            possibleMoves.add(new ChessMove(myPosition, whereMove, null));
             break;
         }
     }
