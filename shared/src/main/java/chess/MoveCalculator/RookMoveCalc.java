@@ -22,7 +22,6 @@ public class RookMoveCalc implements PieceMovesCalc {
         this.position = position;
     }
 
-    @Override
     public Collection<ChessMove> getPieceMoves() {
         int [][] direction = {{1,0},{-1,0},{0,1},{0,-1}};
         Collection<ChessMove> move;
@@ -30,7 +29,6 @@ public class RookMoveCalc implements PieceMovesCalc {
             move = slide(position,piece,direction[i],board);
             possibleMovement.addAll(move);
         }
-
         return possibleMovement;
     }
 }

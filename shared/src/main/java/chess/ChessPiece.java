@@ -2,6 +2,8 @@ package chess;
 
 import chess.MoveCalculator.BishopMoveCalc;
 import chess.MoveCalculator.PieceMovesCalc;
+import chess.MoveCalculator.QueenMoveCalc;
+import chess.MoveCalculator.RookMoveCalc;
 
 import java.util.Collection;
 import java.util.List;
@@ -73,11 +75,23 @@ public class ChessPiece {
         PieceMovesCalc pieceMovesCalc;
         ChessPiece piece = board.getPiece(myPosition);
 
-        if (piece.getPieceType() == PieceType.BISHOP) {
-            pieceMovesCalc = new BishopMoveCalc(piece, board, myPosition);
-            return pieceMovesCalc.getPieceMoves();
+        switch (type) {
+            case BISHOP:
+                pieceMovesCalc = new BishopMoveCalc(piece,board,myPosition);
+                return pieceMovesCalc.getPieceMoves();
+            case QUEEN:
+                pieceMovesCalc = new QueenMoveCalc(piece, board, myPosition);
+                return pieceMovesCalc.getPieceMoves();
+            case ROOK:
+                pieceMovesCalc = new RookMoveCalc(piece,board,myPosition);
+                return pieceMovesCalc.getPieceMoves();
+            case KING:
+                return List.of();
+            case KNIGHT:
+                return List.of();
+            case PAWN:
+                return List.of();
         }
-
         return List.of();
     }
 }
