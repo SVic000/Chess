@@ -7,26 +7,26 @@ import chess.ChessPosition;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-public class BishopMoveCalc implements PieceMovesCalc {
+public class QueenMoveCalc implements PieceMovesCalc {
     private final ChessPiece piece;
     private final ChessBoard board;
     private final ChessPosition position;
     private final Collection<ChessMove> possibleMovement = new ArrayList<>();
 
-    public BishopMoveCalc (ChessPiece piece, ChessBoard board, ChessPosition position) {
+    public QueenMoveCalc(ChessPiece piece, ChessBoard board, ChessPosition position) {
         this.piece = piece;
         this.board = board;
         this.position = position;
     }
 
-    public Collection<ChessMove> getPieceMoves(){
-        int [][] direction =  {{1,-1},{1,1},{-1,1},{-1,-1}};
-        Collection<ChessMove> move;
-        for(int i = 0; i< 4; i++) {
-            move = slide(position, piece, direction[i], board);
-            possibleMovement.addAll(move);
-        }
+    @Override
+    public Collection<ChessMove> getPieceMoves() {
+        PieceMovesCalc bishopMove = new BishopMoveCalc(piece,board, position); // bishop
+        PieceMovesCalc rookMove = new RookMoveCalc(piece,board,position); // rook
+        possibleMovement.addAll(bishopMove.getPieceMoves());
+        possibleMovement.addAll(rookMove.getPieceMoves());
         return possibleMovement;
     }
 }
