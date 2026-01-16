@@ -1,4 +1,4 @@
-package chess.MoveCalc;
+package chess.MoveCalculator;
 import chess.*;
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ default Collection<ChessMove> slide(ChessPosition myPosition, ChessPiece thisPie
     boolean canSlide = true;
     int row = myPosition.getRow();
     int col = myPosition.getColumn();
-    Collection<ChessMove> possibleMoves = new ArrayList<ChessMove>();
+    Collection<ChessMove> possibleMoves = new ArrayList<>();
 
     while(canSlide) {
         canSlide = false;
