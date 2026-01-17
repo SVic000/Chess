@@ -13,6 +13,7 @@ public class BishopMoveCalc implements PieceMovesCalc {
     private final ChessBoard board;
     private final ChessPosition position;
     private final Collection<ChessMove> possibleMovement = new ArrayList<>();
+    private final int [][] direction =  {{1,-1},{1,1},{-1,1},{-1,-1}};
 
     public BishopMoveCalc (ChessPiece piece, ChessBoard board, ChessPosition position) {
         this.piece = piece;
@@ -21,7 +22,6 @@ public class BishopMoveCalc implements PieceMovesCalc {
     }
 
     public Collection<ChessMove> getPieceMoves(){
-        int [][] direction =  {{1,-1},{1,1},{-1,1},{-1,-1}};
         Collection<ChessMove> move;
         for(int i = 0; i< 4; i++) {
             move = slide(position, piece, direction[i], board);

@@ -53,6 +53,8 @@ public class ChessMove {
 
     @Override
     public boolean equals(Object o) {
+        // talk to ta on how strings and printing works
+        // So i can see what objs are inside this 2D array correctly :)
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
