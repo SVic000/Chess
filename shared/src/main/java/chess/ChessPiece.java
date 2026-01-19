@@ -2,9 +2,7 @@ package chess;
 
 import chess.MoveCalculator.*;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Represents a single chess piece
@@ -15,6 +13,8 @@ import java.util.Objects;
 public class ChessPiece {
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
+    private final Collection<PieceType> promotable = new ArrayList<>();
+
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
@@ -61,6 +61,14 @@ public class ChessPiece {
         return type;
     }
 
+    public PieceType[] promotions() {
+        PieceType[] promotion = new PieceType[]{PieceType.QUEEN, PieceType.BISHOP, PieceType.KNIGHT, PieceType.ROOK};
+        if(type == PieceType.PAWN) {
+            return promotion;
+        }
+        return new PieceType[]{}; // an empty list
+}
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -89,7 +97,8 @@ public class ChessPiece {
                 pieceMovesCalc = new KnightMoveCalc(piece,board,myPosition);
                 return pieceMovesCalc.getPieceMoves();
             case PAWN:
-                return List.of();
+                pieceMovesCalc = new PawnMoveCalc(piece,board,myPosition);
+                return pieceMovesCalc.getPieceMoves();
         }
         return List.of();
     }
