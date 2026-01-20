@@ -80,26 +80,31 @@ public class ChessPiece {
         PieceMovesCalc pieceMovesCalc;
         ChessPiece piece = board.getPiece(myPosition);
 
-        switch (type) {
-            case BISHOP:
-                pieceMovesCalc = new BishopMoveCalc(piece,board,myPosition);
-                return pieceMovesCalc.getPieceMoves();
-            case QUEEN:
+        return switch (type) {
+            case BISHOP -> {
+                pieceMovesCalc = new BishopMoveCalc(piece, board, myPosition);
+                yield pieceMovesCalc.getPieceMoves();
+            }
+            case QUEEN -> {
                 pieceMovesCalc = new QueenMoveCalc(piece, board, myPosition);
-                return pieceMovesCalc.getPieceMoves();
-            case ROOK:
-                pieceMovesCalc = new RookMoveCalc(piece,board,myPosition);
-                return pieceMovesCalc.getPieceMoves();
-            case KING:
-                pieceMovesCalc = new KingMoveCalc(piece,board,myPosition);
-                return pieceMovesCalc.getPieceMoves();
-            case KNIGHT:
-                pieceMovesCalc = new KnightMoveCalc(piece,board,myPosition);
-                return pieceMovesCalc.getPieceMoves();
-            case PAWN:
-                pieceMovesCalc = new PawnMoveCalc(piece,board,myPosition);
-                return pieceMovesCalc.getPieceMoves();
-        }
-        return List.of();
+                yield pieceMovesCalc.getPieceMoves();
+            }
+            case ROOK -> {
+                pieceMovesCalc = new RookMoveCalc(piece, board, myPosition);
+                yield pieceMovesCalc.getPieceMoves();
+            }
+            case KING -> {
+                pieceMovesCalc = new KingMoveCalc(piece, board, myPosition);
+                yield pieceMovesCalc.getPieceMoves();
+            }
+            case KNIGHT -> {
+                pieceMovesCalc = new KnightMoveCalc(piece, board, myPosition);
+                yield pieceMovesCalc.getPieceMoves();
+            }
+            case PAWN -> {
+                pieceMovesCalc = new PawnMoveCalc(piece, board, myPosition);
+                yield pieceMovesCalc.getPieceMoves();
+            }
+        };
     }
 }

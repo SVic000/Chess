@@ -15,7 +15,7 @@ public class KnightMoveCalc implements PieceMovesCalc{
     private final ChessBoard board;
     private final ChessPosition position;
     private final int[][] direction = {{1,2},{1,-2},{-1,2},{-1,-2},{2,1},{2,-1},{-2,1},{-2,-1}};
-    private Collection<ChessMove> possibleMovment = new ArrayList<>();
+    private final Collection<ChessMove> possibleMovement = new ArrayList<>();
 
     public KnightMoveCalc(ChessPiece piece, ChessBoard board, ChessPosition position) {
         this.piece = piece;
@@ -34,9 +34,9 @@ public class KnightMoveCalc implements PieceMovesCalc{
             ChessPiece boardPiece = board.getPiece(whereMove.getEndPosition());
             if(boardPiece == null || boardPiece.getTeamColor() != piece.getTeamColor()){
                 // null or enemy, add to list
-                possibleMovment.add(whereMove);
+                possibleMovement.add(whereMove);
             }
         }
-        return possibleMovment;
+        return possibleMovement;
     }
 }

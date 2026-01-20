@@ -25,7 +25,7 @@ default Collection<ChessMove> slide(ChessPosition myPosition, ChessPiece thisPie
         if(boardPiece == null) { // it's empty! add it and keep going
             possibleMoves.add(new ChessMove(myPosition, whereMove, null));
             row += direction[0];
-            col += direction[1]; // keep chugging forward
+            col += direction[1];
             canSlide = true;
         } else if(boardPiece.getTeamColor() == thisPiece.getTeamColor()) { // same team, stop iterating
             break;

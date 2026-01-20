@@ -5,10 +5,8 @@ import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class RookMoveCalc implements PieceMovesCalc {
     private final ChessPiece piece;

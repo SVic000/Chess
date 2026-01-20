@@ -7,7 +7,6 @@ import chess.ChessPosition;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class KingMoveCalc implements PieceMovesCalc{
     private final ChessPiece piece;
@@ -15,8 +14,7 @@ public class KingMoveCalc implements PieceMovesCalc{
     private final ChessPosition position;
     private final int[][] direction = {{1,1},{1,0},{1,-1},{0,1},{0,-1},{-1,0},{-1,-1},{-1,1}};
     private final Collection<ChessMove> possibleMovement = new ArrayList<>();
-   // directions this one can move
-    // 1,1 : 1,0 : 1,-1 : 0,1 : 0,-1 : -1,1 : -1,0 : -1,-1
+
     public KingMoveCalc(ChessPiece piece, ChessBoard board, ChessPosition position) {
         this.piece = piece;
         this.board = board;

@@ -57,9 +57,6 @@ public class PawnMoveCalc implements PieceMovesCalc {
         ChessMove whereMove;
 
         if (color == ChessGame.TeamColor.WHITE) { // go up
-            // if where you're going is 8, promote (context of pos)
-            // check directions [0,1], if != null for [1,1],[-1,1]
-            // if position.row = 2, add [0,2] as possible move
             if (position.getRow() == 2) { // haven't moved
                 int[][] corners = {{4, position.getColumn()}, {3, position.getColumn()}, {3, position.getColumn() - 1}, {3, position.getColumn() + 1}};
                 for (int[] ints : corners) {
@@ -89,10 +86,6 @@ public class PawnMoveCalc implements PieceMovesCalc {
             }
         }
          else {
-            // go down
-            // if where you're going is 0, promote
-            // check directions [0,-1], if != null for [1,-1],[-1,-1] add
-            // if position.row = 6, add [0,-2] as possible move
             if (position.getRow() == 7) { // haven't moved
                 int[][] corners = {{5, position.getColumn()}, {6, position.getColumn()}, {6, position.getColumn() - 1}, {6, position.getColumn() + 1}};
                 for (int[] ints : corners) {
