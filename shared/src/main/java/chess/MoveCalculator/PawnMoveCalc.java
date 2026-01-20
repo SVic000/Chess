@@ -22,9 +22,22 @@ public class PawnMoveCalc implements PieceMovesCalc {
         this.color = piece.getTeamColor();
     }
 
+    private boolean checkFront(ChessBoard board, int[] corner) {
+        ChessPiece boardFrontPiece;
+        if(color == ChessGame.TeamColor.WHITE) {
+            boardFrontPiece = board.getPiece(new ChessPosition(position.getRow() + 1, position.getColumn()));
+        } else {
+            boardFrontPiece = board.getPiece(new ChessPosition(position.getRow() - 1, position.getColumn()));
+        }
+        return boardFrontPiece != null;
+    }
+
     private boolean checkCorner(ChessBoard board, int[] corner) {
         if(corner[1] < 1 || corner[1] > 8) {
             return false; // out of the board, skip this one
+        }
+        if(checkFront(board,corner) && corner[1] == position.getColumn()) { // checking if you can even move forward
+            return false;
         }
         ChessPiece boardPiece = board.getPiece(new ChessPosition(corner[0], corner[1]));
         try {
