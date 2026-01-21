@@ -6,25 +6,29 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static chess.ChessPiece.PieceType.*;
-
 public class PawnMoveCalc implements PieceMovesCalc {
     private final ChessPiece piece;
     private final ChessBoard board;
     private final ChessPosition position;
     private final ChessGame.TeamColor color;
     private final Collection<ChessMove> possibleMoves = new ArrayList<>();
+    private final int promotionLocation;
+    private final int startingLocation;
+
+    // method that sets promotion location white = 7, black = 2
 
     public PawnMoveCalc(ChessPiece piece, ChessBoard board, ChessPosition position) {
         this.piece = piece;
         this.board = board;
         this.position = position;
         this.color = piece.getTeamColor();
+        this.promotionLocation = ChessGame.TeamColor.WHITE.equals(color) ? 2 : 7;
+        this.startingLocation =
     }
 
     private boolean checkFront(ChessBoard board, int[] corner) {
         ChessPiece boardFrontPiece;
-        if(color == ChessGame.TeamColor.WHITE) {
+        if(ChessGame.TeamColor.WHITE.equals(color)) {
             boardFrontPiece = board.getPiece(new ChessPosition(position.getRow() + 1, position.getColumn()));
         } else {
             boardFrontPiece = board.getPiece(new ChessPosition(position.getRow() - 1, position.getColumn()));
@@ -32,6 +36,7 @@ public class PawnMoveCalc implements PieceMovesCalc {
         return boardFrontPiece != null;
     }
 
+    /** checking possible moves true if you can move there, false if not */
     private boolean checkCorner(ChessBoard board, int[] corner) {
         if(corner[1] < 1 || corner[1] > 8) {
             return false; // out of the board, skip this one
@@ -52,8 +57,7 @@ public class PawnMoveCalc implements PieceMovesCalc {
 
     @Override
     public Collection<ChessMove> getPieceMoves() {
-        int whereTooCol = position.getColumn();
-        ChessPiece.PieceType[] promotable = piece.promotions();
+        List<ChessPiece.PieceType> promotion = piece.promotionsList();
         ChessMove whereMove;
 
         if (color == ChessGame.TeamColor.WHITE) { // go up
@@ -65,11 +69,11 @@ public class PawnMoveCalc implements PieceMovesCalc {
                         possibleMoves.add(whereMove);
                     }
                 }
-            } else if (position.getRow() == 7) { // ready to promote // any moves, add promote to it
+            } else if (position.getRow() == promotionLocation) { // ready to promote // any moves, add promote to it
                 int[][] corners = {{8,position.getColumn()},{8,position.getColumn()+1},{8,position.getColumn()-1}};
                 for (int[] ints : corners) {
                     if(checkCorner(board,ints)) {
-                        for(ChessPiece.PieceType type : promotable) {
+                        for(ChessPiece.PieceType type : promotion) {
                             whereMove = new ChessMove(position, new ChessPosition(ints[0],ints[1]), type);
                             possibleMoves.add(whereMove);
                         }
@@ -85,7 +89,7 @@ public class PawnMoveCalc implements PieceMovesCalc {
                     }
             }
         }
-         else {
+         else { // black moves
             if (position.getRow() == 7) { // haven't moved
                 int[][] corners = {{5, position.getColumn()}, {6, position.getColumn()}, {6, position.getColumn() - 1}, {6, position.getColumn() + 1}};
                 for (int[] ints : corners) {
@@ -94,11 +98,11 @@ public class PawnMoveCalc implements PieceMovesCalc {
                         possibleMoves.add(whereMove);
                     }
                 }
-            } else if (position.getRow() == 2) { // ready to promote // any moves, add promote to it
+            } else if (position.getRow() == promotionLocation) { // ready to promote // any moves, add promote to it
                 int[][] corners = {{1,position.getColumn()},{1,position.getColumn()+1},{1,position.getColumn()-1}};
                 for (int[] ints : corners) {
                     if(checkCorner(board,ints)) {
-                        for(ChessPiece.PieceType type : promotable) {
+                        for(ChessPiece.PieceType type : promotion) {
                             whereMove = new ChessMove(position, new ChessPosition(ints[0],ints[1]), type);
                             possibleMoves.add(whereMove);
                         }

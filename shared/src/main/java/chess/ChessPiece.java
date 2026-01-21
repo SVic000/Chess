@@ -14,6 +14,7 @@ public class ChessPiece {
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
     private final Collection<PieceType> promotable = new ArrayList<>();
+    private final static List<PieceType> promotion = List.of(PieceType.QUEEN, PieceType.ROOK,PieceType.BISHOP,PieceType.KNIGHT);
 
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
@@ -62,12 +63,18 @@ public class ChessPiece {
     }
 
     public PieceType[] promotions() {
-        PieceType[] promotion = new PieceType[]{PieceType.QUEEN, PieceType.BISHOP, PieceType.KNIGHT, PieceType.ROOK};
         if(type == PieceType.PAWN) {
             return promotion;
         }
         return new PieceType[]{}; // an empty list
-}
+    }
+
+    public List<PieceType> promotionsList() {
+        if(PieceType.PAWN.equals(type)) {
+            return promotion;
+        }
+        return List.of();
+    }
 
     /**
      * Calculates all the positions a chess piece can move to

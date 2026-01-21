@@ -12,7 +12,6 @@ public class RookMoveCalc implements PieceMovesCalc {
     private final ChessPiece piece;
     private final ChessPosition position;
     private final ChessBoard board;
-    private final Collection<ChessMove> possibleMovement = new ArrayList<>();
     private final int [][] direction = {{1,0},{-1,0},{0,1},{0,-1}};
 
     public RookMoveCalc(ChessPiece piece, ChessBoard board, ChessPosition position) {
@@ -22,10 +21,9 @@ public class RookMoveCalc implements PieceMovesCalc {
     }
 
     public Collection<ChessMove> getPieceMoves() {
-        Collection<ChessMove> move;
-        for(int i  = 0; i < 4; i++) {
-            move = slide(position,piece,direction[i],board);
-            possibleMovement.addAll(move);
+        Collection<ChessMove> possibleMovement = new ArrayList<>();
+        for (int[] ints : direction) {
+            possibleMovement.addAll(slide(position, piece, ints, board));
         }
         return possibleMovement;
     }

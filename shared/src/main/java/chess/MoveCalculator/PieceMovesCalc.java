@@ -10,13 +10,11 @@ public interface PieceMovesCalc {
 Collection<ChessMove> getPieceMoves();
 
 default Collection<ChessMove> slide(ChessPosition myPosition, ChessPiece thisPiece, int[] direction, ChessBoard board) {
-    boolean canSlide = true;
     int row = myPosition.getRow();
     int col = myPosition.getColumn();
     Collection<ChessMove> possibleMoves = new ArrayList<>();
 
-    while(canSlide) {
-        canSlide = false;
+    while(true) {
         ChessPosition whereMove = new ChessPosition(row + direction[0], col + direction[1]);
         if(whereMove.getRow()-1 > 7 || whereMove.getRow() -1 < 0 || whereMove.getColumn() -1  > 7 || whereMove.getColumn()-1  < 0) { // out of grid
             break;
@@ -26,7 +24,6 @@ default Collection<ChessMove> slide(ChessPosition myPosition, ChessPiece thisPie
             possibleMoves.add(new ChessMove(myPosition, whereMove, null));
             row += direction[0];
             col += direction[1];
-            canSlide = true;
         } else if(boardPiece.getTeamColor() == thisPiece.getTeamColor()) { // same team, stop iterating
             break;
         } else { // not on team, add to moves but then break!
