@@ -10,9 +10,9 @@ public class PawnMoveCalc implements PieceMovesCalc {
     private final ChessPiece piece;
     private final ChessBoard board;
     private final ChessPosition position;
-    private final ChessGame.TeamColor color;
     private final Collection<ChessMove> possibleMoves = new ArrayList<>();
     private final int promotionLocation;
+    private final int progress;
     private final int startingLocation;
 
     // method that sets promotion location white = 7, black = 2
@@ -21,103 +21,72 @@ public class PawnMoveCalc implements PieceMovesCalc {
         this.piece = piece;
         this.board = board;
         this.position = position;
-        this.color = piece.getTeamColor();
-        this.promotionLocation = ChessGame.TeamColor.WHITE.equals(color) ? 2 : 7;
-        this.startingLocation =
+        this.promotionLocation = ChessGame.TeamColor.WHITE.equals(piece.getTeamColor()) ? 7 : 2;
+        this.startingLocation = ChessGame.TeamColor.WHITE.equals(piece.getTeamColor()) ? 2 : 7;
+        progress = piece.getTeamColor().equals(ChessGame.TeamColor.WHITE) ? 1 : -1;
     }
 
-    private boolean checkFront(ChessBoard board, int[] corner) {
-        ChessPiece boardFrontPiece;
-        if(ChessGame.TeamColor.WHITE.equals(color)) {
-            boardFrontPiece = board.getPiece(new ChessPosition(position.getRow() + 1, position.getColumn()));
-        } else {
-            boardFrontPiece = board.getPiece(new ChessPosition(position.getRow() - 1, position.getColumn()));
-        }
-        return boardFrontPiece != null;
+    public boolean checkFront() {
+        ChessPiece boardPiece = board.getPiece(new ChessPosition(position.getRow()+progress, position.getColumn()));
+        return boardPiece == null;
     }
 
     /** checking possible moves true if you can move there, false if not */
-    private boolean checkCorner(ChessBoard board, int[] corner) {
-        if(corner[1] < 1 || corner[1] > 8) {
-            return false; // out of the board, skip this one
-        }
-        if(checkFront(board,corner) && corner[1] == position.getColumn()) { // checking if you can even move forward
+    private boolean checkCorner(ChessPosition checkPosition) {
+        if(board.outOfBounds(checkPosition)) {
             return false;
         }
-        ChessPiece boardPiece = board.getPiece(new ChessPosition(corner[0], corner[1]));
+        ChessPiece boardPiece = board.getPiece(checkPosition);
+        if(checkFront() && checkPosition.getColumn() == position.getColumn()) { // checking if you can even move forward
+            return boardPiece == null;
+        }
         try {
             return switch (boardPiece.getTeamColor()) {
-                case WHITE -> color != ChessGame.TeamColor.WHITE && corner[1] != position.getColumn();
-                case BLACK -> color != ChessGame.TeamColor.BLACK && corner[1] != position.getColumn();
+                case WHITE -> piece.getTeamColor() != ChessGame.TeamColor.WHITE && checkPosition.getColumn() != position.getColumn();
+                case BLACK -> piece.getTeamColor() != ChessGame.TeamColor.BLACK && checkPosition.getColumn() != position.getColumn();
             };
         } catch(Exception e) {
-            return corner[1] == position.getColumn();
+            return false;
         }
     }
 
+    public Collection<ChessPosition> getDirections() {
+        Collection<ChessPosition> directions = new ArrayList<>();
+        if(position.getRow() == startingLocation) { // add the initial jump
+            directions.add(new ChessPosition(position.getRow() + (2 * progress), position.getColumn()));
+        }
+        directions.add(new ChessPosition(position.getRow() + progress, position.getColumn()));
+        directions.add(new ChessPosition(position.getRow() + progress, position.getColumn() + 1));
+        directions.add(new ChessPosition(position.getRow() + progress, position.getColumn() - 1));
+        return directions;
+    }
+
+
     @Override
     public Collection<ChessMove> getPieceMoves() {
-        List<ChessPiece.PieceType> promotion = piece.promotionsList();
         ChessMove whereMove;
+        List<ChessPiece.PieceType> promotablePieces = ChessPiece.promotionsList();
+        Collection<ChessMove> possibleMoves = new ArrayList<>();
+        Collection<ChessPosition> directions = getDirections();
 
-        if (color == ChessGame.TeamColor.WHITE) { // go up
-            if (position.getRow() == 2) { // haven't moved
-                int[][] corners = {{4, position.getColumn()}, {3, position.getColumn()}, {3, position.getColumn() - 1}, {3, position.getColumn() + 1}};
-                for (int[] ints : corners) {
-                    if (checkCorner(board, ints)) {
-                        whereMove = new ChessMove(position, new ChessPosition(ints[0], ints[1]), null);
-                        possibleMoves.add(whereMove);
-                    }
-                }
-            } else if (position.getRow() == promotionLocation) { // ready to promote // any moves, add promote to it
-                int[][] corners = {{8,position.getColumn()},{8,position.getColumn()+1},{8,position.getColumn()-1}};
-                for (int[] ints : corners) {
-                    if(checkCorner(board,ints)) {
-                        for(ChessPiece.PieceType type : promotion) {
-                            whereMove = new ChessMove(position, new ChessPosition(ints[0],ints[1]), type);
-                            possibleMoves.add(whereMove);
-                        }
-                    }
-                }
-            }  else { // somewhere in the middle
-                    int[][] corners = {{position.getRow()+1, position.getColumn()}, {position.getRow()+1, position.getColumn()+1}, {position.getRow()+1, position.getColumn()-1}};
-                    for (int[] ints : corners) {
-                        if (checkCorner(board, ints)) {
-                            whereMove = new ChessMove(position, new ChessPosition(ints[0], ints[1]), null);
-                            possibleMoves.add(whereMove);
-                        }
-                    }
-            }
-        }
-         else { // black moves
-            if (position.getRow() == 7) { // haven't moved
-                int[][] corners = {{5, position.getColumn()}, {6, position.getColumn()}, {6, position.getColumn() - 1}, {6, position.getColumn() + 1}};
-                for (int[] ints : corners) {
-                    if (checkCorner(board, ints)) {
-                        whereMove = new ChessMove(position, new ChessPosition(ints[0], ints[1]), null);
-                        possibleMoves.add(whereMove);
-                    }
-                }
-            } else if (position.getRow() == promotionLocation) { // ready to promote // any moves, add promote to it
-                int[][] corners = {{1,position.getColumn()},{1,position.getColumn()+1},{1,position.getColumn()-1}};
-                for (int[] ints : corners) {
-                    if(checkCorner(board,ints)) {
-                        for(ChessPiece.PieceType type : promotion) {
-                            whereMove = new ChessMove(position, new ChessPosition(ints[0],ints[1]), type);
-                            possibleMoves.add(whereMove);
-                        }
-                    }
-                }
-            }  else { // somewhere in the middle
-                int[][] corners = {{position.getRow()-1, position.getColumn()}, {position.getRow()-1, position.getColumn()+1}, {position.getRow()-1, position.getColumn()-1}};
-                for (int[] ints : corners) {
-                    if (checkCorner(board, ints)) {
-                        whereMove = new ChessMove(position, new ChessPosition(ints[0], ints[1]), null);
+        if(position.getRow() == promotionLocation) {
+            for (ChessPosition corner : directions) {
+                if (checkCorner(corner)) {
+                    for(ChessPiece.PieceType type : promotablePieces) {
+                        whereMove = new ChessMove(position, corner, type);
                         possibleMoves.add(whereMove);
                     }
                 }
             }
+        } else {
+            for (ChessPosition corner : directions) {
+                if (checkCorner(corner)) {
+                    whereMove = new ChessMove(position, corner, null);
+                    possibleMoves.add(whereMove);
+                }
+            }
         }
+
         return possibleMoves;
     }
 }

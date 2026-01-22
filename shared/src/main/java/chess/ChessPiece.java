@@ -62,18 +62,8 @@ public class ChessPiece {
         return type;
     }
 
-    public PieceType[] promotions() {
-        if(type == PieceType.PAWN) {
-            return promotion;
-        }
-        return new PieceType[]{}; // an empty list
-    }
-
-    public List<PieceType> promotionsList() {
-        if(PieceType.PAWN.equals(type)) {
-            return promotion;
-        }
-        return List.of();
+    public static List<PieceType> promotionsList() {
+        return promotion;
     }
 
     /**

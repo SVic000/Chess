@@ -25,6 +25,10 @@ public class ChessBoard {
         squares[position.getRow()-1][position.getColumn()-1] = piece;
     }
 
+    public boolean outOfBounds(ChessPosition position) {
+        return position.getRow() < 1 || position.getColumn() < 1 || position.getColumn() > squares.length || position.getRow() > squares.length;
+    }
+
     /**
      * Gets a chess piece on the chessboard
      *

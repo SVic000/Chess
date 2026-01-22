@@ -16,18 +16,18 @@ default Collection<ChessMove> slide(ChessPosition myPosition, ChessPiece thisPie
 
     while(true) {
         ChessPosition whereMove = new ChessPosition(row + direction[0], col + direction[1]);
-        if(whereMove.getRow()-1 > 7 || whereMove.getRow() -1 < 0 || whereMove.getColumn() -1  > 7 || whereMove.getColumn()-1  < 0) { // out of grid
+        if(board.outOfBounds(whereMove)) { // out of grid
             break;
         }
         ChessPiece boardPiece = board.getPiece(whereMove);
-        if(boardPiece == null) { // it's empty! add it and keep going
+        if(boardPiece == null) {
             possibleMoves.add(new ChessMove(myPosition, whereMove, null));
             row += direction[0];
             col += direction[1];
-        } else if(boardPiece.getTeamColor() == thisPiece.getTeamColor()) { // same team, stop iterating
-            break;
-        } else { // not on team, add to moves but then break!
-            possibleMoves.add(new ChessMove(myPosition, whereMove, null));
+        } else {
+            if (!boardPiece.getTeamColor().equals(thisPiece.getTeamColor())) {
+                possibleMoves.add(new ChessMove(myPosition, whereMove, null));
+            }
             break;
         }
     }
