@@ -10,7 +10,6 @@ public class PawnMoveCalc implements PieceMovesCalc {
     private final ChessPiece piece;
     private final ChessBoard board;
     private final ChessPosition position;
-    private final Collection<ChessMove> possibleMoves = new ArrayList<>();
     private final int promotionLocation;
     private final int progress;
     private final int startingLocation;

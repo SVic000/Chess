@@ -13,7 +13,6 @@ import java.util.*;
 public class ChessPiece {
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
-    private final Collection<PieceType> promotable = new ArrayList<>();
     private final static List<PieceType> promotion = List.of(PieceType.QUEEN, PieceType.ROOK,PieceType.BISHOP,PieceType.KNIGHT);
 
 
