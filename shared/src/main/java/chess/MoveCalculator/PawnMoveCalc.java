@@ -14,8 +14,6 @@ public class PawnMoveCalc implements PieceMovesCalc {
     private final int progress;
     private final int startingLocation;
 
-    // method that sets promotion location white = 7, black = 2
-
     public PawnMoveCalc(ChessPiece piece, ChessBoard board, ChessPosition position) {
         this.piece = piece;
         this.board = board;
@@ -85,7 +83,6 @@ public class PawnMoveCalc implements PieceMovesCalc {
                 }
             }
         }
-
         return possibleMoves;
     }
 }
