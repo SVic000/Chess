@@ -23,28 +23,27 @@ public class PawnMoveCalc implements PieceMovesCalc {
         progress = piece.getTeamColor().equals(ChessGame.TeamColor.WHITE) ? 1 : -1;
     }
 
-    public boolean checkFront() {
+    public boolean isFrontBlocked() {
         ChessPiece boardPiece = board.getPiece(new ChessPosition(position.getRow()+progress, position.getColumn()));
         return boardPiece == null;
     }
 
     /** checking possible moves true if you can move there, false if not */
-    private boolean checkCorner(ChessPosition checkPosition) {
-        if(board.outOfBounds(checkPosition)) {
+    private boolean isMovePossible(ChessPosition checkPosition) {
+        if (board.outOfBounds(checkPosition)) {
             return false;
         }
         ChessPiece boardPiece = board.getPiece(checkPosition);
-        if(checkFront() && checkPosition.getColumn() == position.getColumn()) { // checking if you can even move forward
+        if (isFrontBlocked() && checkPosition.getColumn() == position.getColumn()) { // checking if you can even move forward
             return boardPiece == null;
         }
-        try {
-            return switch (boardPiece.getTeamColor()) {
-                case WHITE -> piece.getTeamColor() != ChessGame.TeamColor.WHITE && checkPosition.getColumn() != position.getColumn();
-                case BLACK -> piece.getTeamColor() != ChessGame.TeamColor.BLACK && checkPosition.getColumn() != position.getColumn();
-            };
-        } catch(Exception e) {
-            return false;
-        }
+        if(boardPiece == null) return false;
+        return switch (boardPiece.getTeamColor()) {
+            case WHITE ->
+                    piece.getTeamColor() != ChessGame.TeamColor.WHITE && checkPosition.getColumn() != position.getColumn();
+            case BLACK ->
+                    piece.getTeamColor() != ChessGame.TeamColor.BLACK && checkPosition.getColumn() != position.getColumn();
+        };
     }
 
     public Collection<ChessPosition> getDirections() {
@@ -67,18 +66,18 @@ public class PawnMoveCalc implements PieceMovesCalc {
         Collection<ChessPosition> directions = getDirections();
 
         if(position.getRow() == promotionLocation) {
-            for (ChessPosition corner : directions) {
-                if (checkCorner(corner)) {
+            for (ChessPosition direction : directions) {
+                if (isMovePossible(direction)) {
                     for(ChessPiece.PieceType type : promotablePieces) {
-                        whereMove = new ChessMove(position, corner, type);
+                        whereMove = new ChessMove(position, direction, type);
                         possibleMoves.add(whereMove);
                     }
                 }
             }
         } else {
-            for (ChessPosition corner : directions) {
-                if (checkCorner(corner)) {
-                    whereMove = new ChessMove(position, corner, null);
+            for (ChessPosition direction : directions) {
+                if (isMovePossible(direction)) {
+                    whereMove = new ChessMove(position, direction, null);
                     possibleMoves.add(whereMove);
                 }
             }
