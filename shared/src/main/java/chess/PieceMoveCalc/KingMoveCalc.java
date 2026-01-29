@@ -8,7 +8,7 @@ import chess.ChessPosition;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class KingMoveCalc implements PieceMoveCalc {
+public class KingMoveCalc implements pieceMoveCalc {
     private final ChessPiece piece;
     private final ChessPosition position;
     private final ChessBoard board;
@@ -21,20 +21,7 @@ public class KingMoveCalc implements PieceMoveCalc {
 
     @Override
     public Collection<ChessMove> getPieceMoves() {
-        int[][] directions = {{1,-1},{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1}};
-        ChessPosition wherePosition;
-        ChessPiece boardPiece;
-        Collection<ChessMove> possibleMoves = new ArrayList<>();
-
-        for(int[] direction : directions) {
-            wherePosition = new ChessPosition(position.getRow() + direction[0], position.getColumn() + direction[1]);
-            if(!board.isOutOfBounds(wherePosition)) {
-                boardPiece = board.getPiece(wherePosition);
-                if(boardPiece == null || !boardPiece.getTeamColor().equals(piece.getTeamColor())) {
-                    possibleMoves.add(new ChessMove(position,wherePosition,null));
-                }
-            }
-        }
-        return possibleMoves;
+        int[][] directions = {{1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}};
+        return simpleMoveCalc(piece, position, board, directions);
     }
 }

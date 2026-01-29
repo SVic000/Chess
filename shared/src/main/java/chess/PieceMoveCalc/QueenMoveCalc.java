@@ -8,7 +8,7 @@ import chess.ChessPosition;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class QueenMoveCalc implements PieceMoveCalc {
+public class QueenMoveCalc implements pieceMoveCalc {
     private final ChessPiece piece;
     private final ChessBoard board;
     private final ChessPosition position;
@@ -22,8 +22,8 @@ public class QueenMoveCalc implements PieceMoveCalc {
 
     @Override
     public Collection<ChessMove> getPieceMoves() {
-        PieceMoveCalc bishopMove = new BishopMoveCalc(piece, position, board); // bishop
-        PieceMoveCalc rookMove = new RookMoveCalc(piece, position, board); // rook
+        pieceMoveCalc bishopMove = new BishopMoveCalc(piece, position, board); // bishop
+        pieceMoveCalc rookMove = new RookMoveCalc(piece, position, board); // rook
         possibleMovement.addAll(bishopMove.getPieceMoves());
         possibleMovement.addAll(rookMove.getPieceMoves());
         return possibleMovement;
