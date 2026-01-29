@@ -5,7 +5,7 @@ import chess.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class PawnMoveCalc implements pieceMoveCalc {
+public class PawnMoveCalc implements PieceMoveCalc {
     private final ChessPiece piece;
     private final ChessPosition position;
     private final ChessBoard board;

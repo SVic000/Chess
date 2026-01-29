@@ -46,7 +46,7 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        ChessPiece.PieceType[] order = ChessPiece.getSetUp();
+        ChessPiece.PieceType[] order = ChessPiece.getSetup();
         grid = new ChessPiece[8][8];
         for(int i = 0; i < grid.length; i++) {
             grid[1][i] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);

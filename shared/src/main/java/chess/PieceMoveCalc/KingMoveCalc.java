@@ -7,7 +7,7 @@ import chess.ChessPosition;
 
 import java.util.Collection;
 
-public class KingMoveCalc implements pieceMoveCalc {
+public class KingMoveCalc implements PieceMoveCalc {
     private final ChessPiece piece;
     private final ChessPosition position;
     private final ChessBoard board;

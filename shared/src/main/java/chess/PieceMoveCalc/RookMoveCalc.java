@@ -8,7 +8,7 @@ import chess.ChessPosition;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class RookMoveCalc implements pieceMoveCalc {
+public class RookMoveCalc implements PieceMoveCalc {
     private final ChessPiece piece;
     private final ChessPosition position;
     private final ChessBoard board;

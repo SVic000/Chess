@@ -13,13 +13,14 @@ import java.util.*;
 public class ChessPiece {
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
-    private final static PieceType[] Promotions = {PieceType.ROOK,PieceType.QUEEN,PieceType.BISHOP,PieceType.KNIGHT};
-    private final static PieceType[] SetUp = {
+    private final static PieceType[] promotions = {PieceType.ROOK,PieceType.QUEEN,PieceType.BISHOP,PieceType.KNIGHT};
+    private final static PieceType[] setup = {
             PieceType.ROOK,PieceType.KNIGHT,
             PieceType.BISHOP,PieceType.QUEEN,
             PieceType.KING,PieceType.BISHOP,
             PieceType.KNIGHT,PieceType.ROOK
         };
+
 
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
@@ -28,11 +29,11 @@ public class ChessPiece {
     }
 
     public static PieceType[] getPromotions() {
-        return Promotions;
+        return promotions;
     }
 
-    public static PieceType[] getSetUp() {
-        return SetUp;
+    public static PieceType[] getSetup() {
+        return setup;
     }
 
     @Override
@@ -83,7 +84,7 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        pieceMoveCalc pieceMoveCalc;
+        PieceMoveCalc pieceMoveCalc;
         switch(type) {
             case BISHOP -> {
                 pieceMoveCalc = new BishopMoveCalc(this,myPosition,board);

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 
-public interface pieceMoveCalc {
+public interface PieceMoveCalc {
 
     Collection<ChessMove> getPieceMoves();
 
