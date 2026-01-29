@@ -10,7 +10,7 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    ChessPiece[][] squares = new ChessPiece[8][8];
+    ChessPiece[][] grid = new ChessPiece[8][8];
 
     public ChessBoard() {
     }
@@ -22,12 +22,13 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        squares[position.getRow()-1][position.getColumn()-1] = piece;
+        grid[position.getRow()-1][position.getColumn()-1] = piece;
     }
 
-    public boolean outOfBounds(ChessPosition position) {
-        return position.getRow() < 1 || position.getColumn() < 1 || position.getColumn() > squares.length || position.getRow() > squares.length;
+    public boolean isOutOfBounds(ChessPosition position){
+        return position.getRow() < 1 || position.getColumn() < 1 || position.getRow() > grid.length || position.getColumn() > grid.length;
     }
+
 
     /**
      * Gets a chess piece on the chessboard
@@ -37,7 +38,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return squares[position.getRow()-1][position.getColumn()-1];
+        return grid[position.getRow()-1][position.getColumn()-1];
     }
 
     /**
@@ -45,14 +46,13 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-    ChessPiece.PieceType[] order = {ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.KING, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.ROOK};
-        squares = new ChessPiece[8][8];
-
-        for (int i = 1; i < 9; i++) {
-            addPiece(new ChessPosition(1, i), new ChessPiece(ChessGame.TeamColor.WHITE, order[i-1]));
-            addPiece(new ChessPosition(2, i), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
-            addPiece(new ChessPosition(7, i), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
-            addPiece(new ChessPosition(8, i), new ChessPiece(ChessGame.TeamColor.BLACK, order[i-1]));
+        ChessPiece.PieceType[] order = ChessPiece.getSetUp();
+        grid = new ChessPiece[8][8];
+        for(int i = 0; i < grid.length; i++) {
+            grid[1][i] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+            grid[6][i] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+            grid[0][i] = new ChessPiece(ChessGame.TeamColor.WHITE,order[i]);
+            grid[7][i] = new ChessPiece(ChessGame.TeamColor.BLACK,order[i]);
         }
     }
 
@@ -62,18 +62,18 @@ public class ChessBoard {
             return false;
         }
         ChessBoard that = (ChessBoard) o;
-        return Objects.deepEquals(squares, that.squares);
+        return Objects.deepEquals(grid, that.grid);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.deepHashCode(squares);
+        return Arrays.deepHashCode(grid);
     }
 
     @Override
     public String toString() {
         return "ChessBoard{" +
-                "squares=" + Arrays.toString(squares) +
+                "grid=" + Arrays.toString(grid) +
                 '}';
     }
 }

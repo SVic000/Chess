@@ -1,6 +1,6 @@
 package chess;
 
-import chess.MoveCalculator.*;
+import chess.PieceMoveCalc.*;
 
 import java.util.*;
 
@@ -13,12 +13,21 @@ import java.util.*;
 public class ChessPiece {
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
-    private final static List<PieceType> promotion = List.of(PieceType.QUEEN, PieceType.ROOK,PieceType.BISHOP,PieceType.KNIGHT);
+    private final static PieceType[]  promotions = {PieceType.ROOK,PieceType.QUEEN,PieceType.BISHOP,PieceType.KNIGHT};
+    private final static PieceType[] setUp = {PieceType.ROOK,PieceType.KNIGHT,PieceType.BISHOP,PieceType.QUEEN,PieceType.KING,PieceType.BISHOP,PieceType.KNIGHT,PieceType.ROOK};
 
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
+    }
+
+    public static PieceType[] getPromotions() {
+        return promotions;
+    }
+
+    public static PieceType[] getSetUp() {
+        return setUp;
     }
 
     @Override
@@ -61,10 +70,6 @@ public class ChessPiece {
         return type;
     }
 
-    public static List<PieceType> promotionsList() {
-        return promotion;
-    }
-
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -73,34 +78,29 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        PieceMovesCalc pieceMovesCalc;
-        ChessPiece piece = board.getPiece(myPosition);
-
-        return switch (type) {
+        PieceMoveCalc pieceMoveCalc;
+        switch(type) {
             case BISHOP -> {
-                pieceMovesCalc = new BishopMoveCalc(piece, board, myPosition);
-                yield pieceMovesCalc.getPieceMoves();
+                pieceMoveCalc = new BishopMoveCalc(this,myPosition,board);
+                return pieceMoveCalc.getPieceMoves();
             }
-            case QUEEN -> {
-                pieceMovesCalc = new QueenMoveCalc(piece, board, myPosition);
-                yield pieceMovesCalc.getPieceMoves();
+            case PAWN-> {
+                pieceMoveCalc = new PawnMoveCalc(this,myPosition,board);
+                return pieceMoveCalc.getPieceMoves();
+            } case KNIGHT -> {
+                pieceMoveCalc = new KnightMoveCalc(this,myPosition,board);
+                return pieceMoveCalc.getPieceMoves();
+            } case KING -> {
+                pieceMoveCalc = new KingMoveCalc(this,myPosition,board);
+                return pieceMoveCalc.getPieceMoves();
+            } case ROOK -> {
+                pieceMoveCalc = new RookMoveCalc(this,myPosition,board);
+                return pieceMoveCalc.getPieceMoves();
+            } case QUEEN -> {
+                pieceMoveCalc = new QueenMoveCalc(this,myPosition,board);
+                return pieceMoveCalc.getPieceMoves();
             }
-            case ROOK -> {
-                pieceMovesCalc = new RookMoveCalc(piece, board, myPosition);
-                yield pieceMovesCalc.getPieceMoves();
-            }
-            case KING -> {
-                pieceMovesCalc = new KingMoveCalc(piece, board, myPosition);
-                yield pieceMovesCalc.getPieceMoves();
-            }
-            case KNIGHT -> {
-                pieceMovesCalc = new KnightMoveCalc(piece, board, myPosition);
-                yield pieceMovesCalc.getPieceMoves();
-            }
-            case PAWN -> {
-                pieceMovesCalc = new PawnMoveCalc(piece, board, myPosition);
-                yield pieceMovesCalc.getPieceMoves();
-            }
-        };
+        }
+        return java.util.List.of();
     }
 }
