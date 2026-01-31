@@ -73,7 +73,17 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new InvalidMoveException("Not implemented");
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPosition endPosition = move.getEndPosition();
+        ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
+
+        if (promotionPiece != null) {
+            ChessPiece boardPiece = board.getPiece(startPosition);
+            board.grid[endPosition.getRow() - 1][endPosition.getColumn() - 1] = new ChessPiece(boardPiece.getTeamColor(), promotionPiece);
+        } else {
+            board.grid[endPosition.getRow() - 1][endPosition.getColumn() - 1] = board.grid[startPosition.getRow() - 1][startPosition.getColumn() - 1];
+        }
+        board.grid[startPosition.getRow() - 1][startPosition.getColumn() - 1] = null;
     }
 
     /**
@@ -82,7 +92,7 @@ public class ChessGame {
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
-    public Collection<ChessPosition> enemyTeamLocations(TeamColor teamColor, boolean friendly) {
+    public Collection<ChessPosition> findAnyTeamLocations(TeamColor teamColor, boolean friendly) {
         // find all pieces of the same type and return their location on the board
         // with location I can get piece type and go from there
         ChessPiece boardPiece;
@@ -119,7 +129,7 @@ public class ChessGame {
     public boolean isInCheck(TeamColor teamColor) {
         // check all opponent possible moves, if one can capture king, return true
         boolean isInCheck = false;
-        Collection<ChessPosition> enemyLocations = enemyTeamLocations(teamColor, false);
+        Collection<ChessPosition> enemyLocations = findAnyTeamLocations(teamColor, false);
         ChessPiece boardPiece;
         ChessPosition kingPosition = findKing(teamColor);
 
@@ -146,8 +156,30 @@ public class ChessGame {
             // for possible moves in all teammate's
             // clone the board make the move, and check if you're still in check. if you are, keep going
             // if you aren't break because you can make at least 1 move
+            Collection<ChessPosition> teamLocation = findAnyTeamLocations(teamColor, true);
+            ChessBoard originalBoard = (ChessBoard) board.clone();
+            ChessPiece boardPiece;
+            boolean isInCheckMate = true;
+
+            for(ChessPosition teamPos : teamLocation) {
+                boardPiece = originalBoard.getPiece(teamPos);
+                for(ChessMove move : boardPiece.pieceMoves(originalBoard,teamPos)) {
+                    try {
+                        makeMove(move);
+                        if(!isInCheck(teamColor)){
+                            isInCheckMate = false;
+                            break; }
+                        else {
+                            board = (ChessBoard) originalBoard.clone(); }
+                    } catch (InvalidMoveException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+            board = originalBoard;
+            return isInCheckMate;
         }
-        throw new RuntimeException("Not implemented");
+        return false;
     }
 
     /**
