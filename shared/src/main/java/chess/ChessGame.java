@@ -93,8 +93,6 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public Collection<ChessPosition> findAnyTeamLocations(TeamColor teamColor, boolean friendly) {
-        // find all pieces of the same type and return their location on the board
-        // with location I can get piece type and go from there
         ChessPiece boardPiece;
         Collection<ChessPosition> pieceLocations = new ArrayList<>();
 
@@ -127,7 +125,6 @@ public class ChessGame {
 
 
     public boolean isInCheck(TeamColor teamColor) {
-        // check all opponent possible moves, if one can capture king, return true
         boolean isInCheck = false;
         Collection<ChessPosition> enemyLocations = findAnyTeamLocations(teamColor, false);
         ChessPiece boardPiece;
@@ -153,9 +150,6 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         if (isInCheck(teamColor)) {
-            // for possible moves in all teammate's
-            // clone the board make the move, and check if you're still in check. if you are, keep going
-            // if you aren't break because you can make at least 1 move
             Collection<ChessPosition> teamLocation = findAnyTeamLocations(teamColor, true);
             ChessBoard originalBoard = (ChessBoard) board.clone();
             ChessPiece boardPiece;
@@ -190,7 +184,36 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        // not in check
+        // if every move puts you in check return true! else return false
+        if(!isInCheck(teamColor)) {
+            Collection<ChessPosition> teamLocations = findAnyTeamLocations(teamColor,true);
+            ChessBoard originalBoard = (ChessBoard) board.clone();
+            ChessPiece boardPiece;
+            boolean isInStaleMate = false;
+
+            for(ChessPosition teamPos : teamLocations)  {
+                boardPiece = originalBoard.getPiece(teamPos);
+                for(ChessMove move : boardPiece.pieceMoves(originalBoard,teamPos)) {
+                    try {
+                        makeMove(move);
+                        if(!isInCheck(teamColor)) {
+                            break;
+                        }
+                        board = (ChessBoard) originalBoard.clone();
+                    } catch (InvalidMoveException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                if(!isInCheck(teamColor)) {
+                    break;
+                }
+                isInStaleMate = true;
+            }
+            board = originalBoard;
+            return isInStaleMate;
+        }
+        return false;
     }
 
     /**
