@@ -66,6 +66,23 @@ public class ChessBoard {
     }
 
     @Override
+    protected Object clone() throws CloneNotSupportedException {
+        try { // making sure I copy everything inside too!
+            ChessBoard copy = (ChessBoard) super.clone();
+
+            ChessPiece[][] newLines = new ChessPiece[grid.length][];
+            for(int i = 0; i < grid.length; i++) {
+                newLines[i] = grid[i].clone();
+            }
+
+            copy.grid = newLines;
+            return copy;
+        } catch(CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
+    }
+
+    @Override
     public int hashCode() {
         return Arrays.deepHashCode(grid);
     }

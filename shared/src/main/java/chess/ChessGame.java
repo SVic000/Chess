@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -10,11 +11,11 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
-    ChessBoard board;
-    TeamColor currentTurn;
+    private ChessBoard board = new ChessBoard();
+    private TeamColor currentTurn = TeamColor.WHITE;
 
     public ChessGame() {
-        this.board = new ChessBoard();
+        board.resetBoard();
     }
 
     /**
@@ -30,6 +31,20 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) { currentTurn = team; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return Objects.equals(board, chessGame.board) && currentTurn == chessGame.currentTurn;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(board, currentTurn);
+    }
 
     /**
      * Enum identifying the 2 possible teams in a chess game
@@ -47,6 +62,7 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+       // will use "isincheck/isincheckmate/isinstalemate
         throw new RuntimeException("Not implemented");
     }
 
@@ -66,43 +82,46 @@ public class ChessGame {
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
-    public Collection<ChessPosition> enemyTeamLocations(TeamColor teamColor) {
+    public Collection<ChessPosition> enemyTeamLocations(TeamColor teamColor, boolean friendly) {
         // find all pieces of the same type and return their location on the board
         // with location I can get piece type and go from there
         ChessPiece boardPiece;
-        Collection<ChessPosition> enemyLocations = new ArrayList<>();
+        Collection<ChessPosition> pieceLocations = new ArrayList<>();
+
         for(int row = 0; row < board.grid.length; row++) {
             for(int col = 0; col < board.grid.length; col++) {
                 boardPiece = board.grid[row][col];
-                if(boardPiece != null && boardPiece.getTeamColor().equals(teamColor)) {
-                    enemyLocations.add(new ChessPosition(row,col));
+                if(boardPiece != null && !boardPiece.getTeamColor().equals(teamColor) && !friendly) {
+                    pieceLocations.add(new ChessPosition(row+1,col+1));
+                } else if (boardPiece != null && boardPiece.getTeamColor().equals(teamColor) && friendly) {
+                    pieceLocations.add(new ChessPosition(row+1,col+1));
                 }
             }
         }
-        return enemyLocations;
+        return pieceLocations;
     }
 
-    public ChessPosition findKing() {
+    public ChessPosition findKing(TeamColor teamColor) {
         ChessPiece boardPiece;
         ChessPosition kingPosition = null;
         for(int row = 0; row < board.grid.length; row++) {
             for(int col = 0; col < board.grid.length; col++) {
-                boardPiece = board.grid[row][col];
-                if(boardPiece != null && boardPiece.getTeamColor().equals(currentTurn) && boardPiece.getPieceType().equals(ChessPiece.PieceType.KING)) {
-                    kingPosition = new ChessPosition(row,col);
+                boardPiece = board.getPiece(new ChessPosition(row+1,col+1));
+                if(boardPiece != null && boardPiece.getTeamColor().equals(teamColor) && boardPiece.getPieceType().equals(ChessPiece.PieceType.KING)) {
+                    kingPosition = new ChessPosition(row+1,col+1);
                 }
             }
         }
-        return kingPosition; // bad code talk to TA
+        return kingPosition;
     }
 
 
     public boolean isInCheck(TeamColor teamColor) {
         // check all opponent possible moves, if one can capture king, return true
         boolean isInCheck = false;
-        Collection<ChessPosition> enemyLocations = enemyTeamLocations(currentTurn);
+        Collection<ChessPosition> enemyLocations = enemyTeamLocations(teamColor, false);
         ChessPiece boardPiece;
-        ChessPosition kingPosition = findKing();
+        ChessPosition kingPosition = findKing(teamColor);
 
         for(ChessPosition enemyPos : enemyLocations) {
             boardPiece = board.getPiece(enemyPos);
@@ -123,6 +142,11 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
+        if (isInCheck(teamColor)) {
+            // for possible moves in all teammate's
+            // clone the board make the move, and check if you're still in check. if you are, keep going
+            // if you aren't break because you can make at least 1 move
+        }
         throw new RuntimeException("Not implemented");
     }
 
@@ -143,7 +167,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        board.resetBoard();
+        this.board = board;
     }
 
     /**
