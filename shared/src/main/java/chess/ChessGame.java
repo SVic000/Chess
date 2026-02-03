@@ -198,17 +198,15 @@ public class ChessGame {
                     try {
                         makeMove(move);
                         if(!isInCheck(teamColor)) {
+                            isInStaleMate = false;
                             break;
                         }
                         board = (ChessBoard) originalBoard.clone();
+                        isInStaleMate = true;
                     } catch (InvalidMoveException e) {
                         throw new RuntimeException(e);
                     }
                 }
-                if(!isInCheck(teamColor)) {
-                    break;
-                }
-                isInStaleMate = true;
             }
             board = originalBoard;
             return isInStaleMate;
