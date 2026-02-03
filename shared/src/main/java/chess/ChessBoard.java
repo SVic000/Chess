@@ -25,6 +25,10 @@ public class ChessBoard implements Cloneable{
         grid[position.getRow()-1][position.getColumn()-1] = piece;
     }
 
+    public void removePiece(ChessPosition position) {
+        grid[position.getRow()-1][position.getColumn()-1] = null;
+    }
+
     public boolean isOutOfBounds(ChessPosition position){
         return position.getRow() < 1 || position.getColumn() < 1 || position.getRow() > grid.length || position.getColumn() > grid.length;
     }
