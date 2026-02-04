@@ -165,6 +165,9 @@ public class ChessGame {
                     break;
                 }
             }
+            if(isInCheck) {
+                break;
+            }
         }
         return isInCheck;
     }
@@ -176,6 +179,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
+        // currently having turn issues
         if (isInCheck(teamColor)) {
             Collection<ChessPosition> teamLocation = findAnyTeamLocations(teamColor, true);
             ChessBoard originalBoard = (ChessBoard) board.clone();
@@ -187,15 +191,20 @@ public class ChessGame {
                     try {
                         makeMove(move);
                         if(!isInCheck(teamColor)){
-                            isInCheckMate = false;
-                            break; }
+                            isInCheckMate = false;}
                         else {
                             board = (ChessBoard) originalBoard.clone();
                             currentTurn = originalColor;
                         }
+                        if(!isInCheckMate) {
+                            break;
+                        }
                     } catch (InvalidMoveException e) {
                         throw new RuntimeException(e);
                     }
+                }
+                if(!isInCheckMate) {
+                    break;
                 }
             }
             board = originalBoard;
@@ -213,8 +222,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        // not in check
-        // if every move puts you in check return true! else return false
+        // running into change turn issue here as well!
         if(!isInCheck(teamColor)) {
             Collection<ChessPosition> teamLocations = findAnyTeamLocations(teamColor,true);
             ChessBoard originalBoard = (ChessBoard) board.clone();
@@ -222,19 +230,23 @@ public class ChessGame {
             chess.ChessGame.TeamColor originalColor = currentTurn;
 
             for(ChessPosition teamPos : teamLocations)  {
-                for(ChessMove move : validMoves(teamPos)) {
-                    try {
-                        makeMove(move);
-                        if(!isInCheck(teamColor)) {
-                            isInStaleMate = false;
-                            break;
+                if(!validMoves(teamPos).isEmpty()) {
+                    for(ChessMove move : validMoves(teamPos)) {
+                        try {
+                            makeMove(move);
+                            if(!isInCheck(teamColor)) {
+                                isInStaleMate = false;
+                                break;
+                            }
+                            board = (ChessBoard) originalBoard.clone();
+                            currentTurn = originalColor;
+                            isInStaleMate = true;
+                        } catch (InvalidMoveException e) {
+                            throw new RuntimeException(e);
                         }
-                        board = (ChessBoard) originalBoard.clone();
-                        currentTurn = originalColor;
-                        isInStaleMate = true;
-                    } catch (InvalidMoveException e) {
-                        throw new RuntimeException(e);
                     }
+                } else {
+                    isInStaleMate = true;
                 }
             }
             board = originalBoard;
