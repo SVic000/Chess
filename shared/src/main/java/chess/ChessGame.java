@@ -199,7 +199,6 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        // running into change turn issue here as well!
         if (!isInCheck(teamColor)) {
             Collection<ChessPosition> teamLocation = findAnyTeamLocations(teamColor, true);
             for (ChessPosition teamPos : teamLocation) {
