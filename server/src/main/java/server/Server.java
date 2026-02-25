@@ -3,13 +3,17 @@ package server;
 import HandlerOBJs.RegisterRequest;
 import Service.UserService;
 import com.google.gson.Gson;
+import dataaccess.AuthDAO;
+import dataaccess.TempStorage.MemoryAuthDAO;
+import dataaccess.TempStorage.MemoryUserDAO;
+import dataaccess.UserDAO;
 import io.javalin.*;
 import io.javalin.http.Context;
-import model.UserData;
-import org.eclipse.jetty.security.authentication.AuthorizationService;
 
 public class Server {
-    private final UserService userService = new UserService();
+    private final UserDAO userStorage = new MemoryUserDAO();
+    private final AuthDAO authStorage = new MemoryAuthDAO();
+    private final UserService userService = new UserService(authStorage,userStorage);
     private final Javalin javalin;
 
     public Server() {
