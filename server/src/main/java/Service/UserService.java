@@ -4,8 +4,6 @@ import HandlerOBJs.RegisterRequest;
 import HandlerOBJs.RegisterResult;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
-import dataaccess.TempStorage.MemoryAuthDAO;
-import dataaccess.TempStorage.MemoryUserDAO;
 import dataaccess.UserDAO;
 import io.javalin.http.BadRequestResponse;
 import model.AuthData;
@@ -29,7 +27,7 @@ public class UserService {
         try {
             userDAO.createUser(user);
             AuthData authData = authDAO.createAuth(user.username());
-            result = new RegisterResult(user.username(),authData.token(), "");
+            result = new RegisterResult(user.username(), authData.token(), "");
         } catch (DataAccessException e) {
             result = new RegisterResult(user.username(), null, e.getMessage());
         }

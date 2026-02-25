@@ -1,9 +1,11 @@
 package server;
 
 import HandlerOBJs.RegisterRequest;
+import HandlerOBJs.RegisterResult;
 import Service.UserService;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.TempStorage.MemoryAuthDAO;
 import dataaccess.TempStorage.MemoryUserDAO;
 import dataaccess.UserDAO;
@@ -13,7 +15,7 @@ import io.javalin.http.Context;
 public class Server {
     private final UserDAO userStorage = new MemoryUserDAO();
     private final AuthDAO authStorage = new MemoryAuthDAO();
-    private final UserService userService = new UserService(authStorage,userStorage);
+    private final UserService userService = new UserService(userStorage,authStorage);
     private final Javalin javalin;
 
     public Server() {
@@ -24,9 +26,14 @@ public class Server {
 
     }
     private void registerUser(Context ctx) {
-        RegisterRequest userData = new Gson().fromJson(ctx.body(), RegisterRequest.class);
-        userData = UserService.register(userData);
-        ctx.result(new Gson().toJson(userData));
+        RegisterRequest userDataReq = new Gson().fromJson(ctx.body(), RegisterRequest.class);
+        RegisterResult userDataRes;
+        try {
+           userDataRes = userService.register(userDataReq);
+        } catch (DataAccessException e) {
+            userDataRes = new RegisterResult(userDataReq.username(),"",e.getMessage());
+        }
+        ctx.result(new Gson().toJson(userDataRes));
     }
 
     public int run(int desiredPort) {

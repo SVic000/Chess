@@ -1,6 +1,5 @@
 package dataaccess.TempStorage;
 
-import HandlerOBJs.RegisterResult;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import model.AuthData;
