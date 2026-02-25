@@ -6,5 +6,5 @@ public interface GameDAO {
     // get game
     // list games
     // update Game
-    // remove game (games over)
+    // remove/delete game (games over)
 }

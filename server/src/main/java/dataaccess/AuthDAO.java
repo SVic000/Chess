@@ -1,10 +1,12 @@
 package dataaccess;
 
+import model.AuthData;
+
+import javax.xml.crypto.Data;
+
 public interface AuthDAO {
-// clear
-// create auth
-// get auth
-// delete auth
-
-
+    void clear();
+    void createAuth(String username) throws DataAccessException;
+    AuthData getAuth(String token);
+    void deleteAuth(AuthData authData) throws DataAccessException;
 }
