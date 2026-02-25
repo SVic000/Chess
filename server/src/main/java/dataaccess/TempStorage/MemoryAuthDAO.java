@@ -1,5 +1,6 @@
 package dataaccess.TempStorage;
 
+import HandlerOBJs.RegisterResult;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import model.AuthData;
@@ -21,7 +22,7 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     @Override
-    public void createAuth(String username) throws DataAccessException{
+    public RegisterResult createAuth(String username) throws DataAccessException{
         for(AuthData auth : authStorage.values()) {
             if(auth.username().equals(username)) {
                 throw new DataAccessException("User already has a token tied to their username");
@@ -30,6 +31,7 @@ public class MemoryAuthDAO implements AuthDAO {
         String token = generateToken();
         AuthData value = new AuthData(token, username);
         authStorage.put(token,value);
+        return null;
     }
 
     @Override
