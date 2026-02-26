@@ -5,7 +5,7 @@ import HandlerOBJs.RegisterResult;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
-import io.javalin.http.BadRequestResponse;
+import io.javalin.http.HttpResponseException;
 import model.AuthData;
 import model.UserData;
 
@@ -21,7 +21,7 @@ public class UserService {
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
         RegisterResult result;
         if(registerRequest.username() == null || registerRequest.email() == null || registerRequest.password() == null) {
-            throw new BadRequestResponse("Bad Request");
+            throw new DataAccessException("Error: bad request", 400);
         }
         UserData user = new UserData(registerRequest.username(),registerRequest.password(), registerRequest.email());
         try {
@@ -29,7 +29,7 @@ public class UserService {
             AuthData authData = authDAO.createAuth(user.username());
             result = new RegisterResult(user.username(), authData.token(), "");
         } catch (DataAccessException e) {
-            result = new RegisterResult(user.username(), null, e.getMessage());
+            throw new DataAccessException(e.getMessage(),e.statusCode);
         }
         return result;
     }

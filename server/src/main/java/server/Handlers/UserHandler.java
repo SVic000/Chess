@@ -4,14 +4,13 @@ import com.google.gson.Gson;
 import io.javalin.http.Context;
 import model.UserData;
 
-public class UserHandler(Context ctx){
+public class UserHandler {
     /*
         Pet pet = new Gson().fromJson(ctx.body(), Pet.class);
         pet = service.addPet(pet);
         webSocketHandler.makeNoise(pet.name(), pet.sound());
         ctx.result(new Gson().toJson(pet));
      */
-    UserData userData = new Gson().fromJson(ctx.body(), UserData.class);
+    //UserData userData = new Gson().fromJson(ctx.body(), UserData.class);
 
     }
-}

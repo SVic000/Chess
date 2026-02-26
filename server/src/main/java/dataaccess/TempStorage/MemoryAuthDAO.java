@@ -2,6 +2,7 @@ package dataaccess.TempStorage;
 
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
+import io.javalin.http.HttpResponseException;
 import model.AuthData;
 
 import java.util.HashMap;
@@ -24,7 +25,7 @@ public class MemoryAuthDAO implements AuthDAO {
     public AuthData createAuth(String username) throws DataAccessException{
         for(AuthData auth : authStorage.values()) {
             if(auth.username().equals(username)) {
-                throw new DataAccessException("User already has a token tied to their username");
+                throw new DataAccessException("Error: bad request", 400);
             }
         }
         String token = generateToken();
@@ -45,8 +46,8 @@ public class MemoryAuthDAO implements AuthDAO {
                 authStorage.remove(authData.token());
                 return;
             }
-            throw new DataAccessException("Token Tied to user Isn't the same");
+            throw new DataAccessException("Error: token tied to user doesn't match", 400);
         }
-        throw new DataAccessException("Token not found in Memory");
+        throw new DataAccessException("Error: unauthorized", 401);
     }
 }

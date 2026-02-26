@@ -11,6 +11,7 @@ import dataaccess.TempStorage.MemoryUserDAO;
 import dataaccess.UserDAO;
 import io.javalin.*;
 import io.javalin.http.Context;
+import io.javalin.http.HttpResponseException;
 
 public class Server {
     private final UserDAO userStorage = new MemoryUserDAO();
@@ -24,16 +25,18 @@ public class Server {
 
         // Register your endpoints and exception handlers here.
 
+
     }
     private void registerUser(Context ctx) {
         RegisterRequest userDataReq = new Gson().fromJson(ctx.body(), RegisterRequest.class);
         RegisterResult userDataRes;
         try {
-           userDataRes = userService.register(userDataReq);
+            userDataRes = userService.register(userDataReq);
+            ctx.result(new Gson().toJson(userDataRes));
         } catch (DataAccessException e) {
-            userDataRes = new RegisterResult(userDataReq.username(),"",e.getMessage());
+            ctx.status(e.statusCode);
+            ctx.result(new Gson().toJson(e.getMessage()));
         }
-        ctx.result(new Gson().toJson(userDataRes));
     }
 
     public int run(int desiredPort) {

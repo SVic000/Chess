@@ -2,6 +2,7 @@ package dataaccess.TempStorage;
 
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
+import io.javalin.http.HttpResponseException;
 import model.UserData;
 
 import java.util.HashMap;
@@ -21,7 +22,7 @@ public class MemoryUserDAO implements UserDAO {
             userStorage.put(user.username(),user);
             return;
         }
-        throw new DataAccessException("User not found");
+        throw new DataAccessException("Error: bad request", 400);
     }
 
     @Override
@@ -30,7 +31,7 @@ public class MemoryUserDAO implements UserDAO {
             userStorage.put(user.username(),user);
             return;
         }
-        throw new DataAccessException("User Already Exists");
+        throw new DataAccessException("Error: already taken", 403);
     }
 
     @Override
@@ -40,9 +41,9 @@ public class MemoryUserDAO implements UserDAO {
                userStorage.remove(user.username());
                return;
            }
-           throw new DataAccessException("User info doesn't match given username");
+           throw new DataAccessException("Error: bad request",400);
        }
-       throw new DataAccessException("User was not found");
+       throw new DataAccessException("Error: bad request", 400);
     }
 
     @Override
@@ -50,6 +51,6 @@ public class MemoryUserDAO implements UserDAO {
         if(userStorage.containsKey(userName)) {
             return userStorage.get(userName);
         }
-        throw new DataAccessException("User wasn't found");
+        throw new DataAccessException("Error: bad request", 400);
     }
 }
