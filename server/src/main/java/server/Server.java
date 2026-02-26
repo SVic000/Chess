@@ -1,5 +1,6 @@
 package server;
 
+import HandlerOBJs.LoginRequest;
 import HandlerOBJs.RegisterRequest;
 import HandlerOBJs.RegisterResult;
 import Service.UserService;
@@ -11,7 +12,7 @@ import dataaccess.TempStorage.MemoryUserDAO;
 import dataaccess.UserDAO;
 import io.javalin.*;
 import io.javalin.http.Context;
-import io.javalin.http.HttpResponseException;
+import server.Handlers.RegisterHandler;
 
 public class Server {
     private final UserDAO userStorage = new MemoryUserDAO();
@@ -21,8 +22,8 @@ public class Server {
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
-                .post("/user", this::registerUser);
-
+                .post("/user", new RegisterHandler(userService));
+                //.post("/session", new LoginHandler(userService));
         // Register your endpoints and exception handlers here.
 
 
@@ -38,6 +39,10 @@ public class Server {
             ctx.result(new Gson().toJson(e.getMessage()));
         }
     }
+    private void loginUser(Context ctx) {
+        LoginRequest userDataReq = new Gson().fromJson(ctx.body(), LoginRequest.class);
+    }
+
 
     public int run(int desiredPort) {
         javalin.start(desiredPort);
