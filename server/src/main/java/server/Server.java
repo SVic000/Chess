@@ -28,21 +28,6 @@ public class Server {
 
 
     }
-    private void registerUser(Context ctx) {
-        RegisterRequest userDataReq = new Gson().fromJson(ctx.body(), RegisterRequest.class);
-        RegisterResult userDataRes;
-        try {
-            userDataRes = userService.register(userDataReq);
-            ctx.result(new Gson().toJson(userDataRes));
-        } catch (DataAccessException e) {
-            ctx.status(e.statusCode);
-            ctx.result(new Gson().toJson(e.getMessage()));
-        }
-    }
-    private void loginUser(Context ctx) {
-        LoginRequest userDataReq = new Gson().fromJson(ctx.body(), LoginRequest.class);
-    }
-
 
     public int run(int desiredPort) {
         javalin.start(desiredPort);
