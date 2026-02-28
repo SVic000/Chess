@@ -2,13 +2,22 @@ package server;
 
 import Service.ClearService;
 import Service.UserService;
+import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import dataaccess.TempStorage.MemoryAuthDAO;
 import dataaccess.TempStorage.MemoryUserDAO;
 import dataaccess.UserDAO;
 import io.javalin.*;
+import io.javalin.http.BadRequestResponse;
+import io.javalin.http.Context;
+import io.javalin.http.ForbiddenResponse;
+import io.javalin.http.HttpResponseException;
+import jdk.jshell.spi.ExecutionControl;
 import server.Handlers.ClearHandler;
 import server.Handlers.RegisterHandler;
+
+import java.util.Map;
+import java.util.Objects;
 
 public class Server {
     private final Javalin javalin;
@@ -21,10 +30,23 @@ public class Server {
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .post("/user", new RegisterHandler(userService))
-                .delete("/db", new ClearHandler(clearService));
+                .delete("/db", new ClearHandler(clearService))
+                .exception(HttpResponseException.class, this::exceptionHandler)
+                .exception(Exception.class, this::exceptionHandler);
                 //.post("/session", new LoginHandler(userService));
 
 
+    }
+
+    private void exceptionHandler(Exception e, Context ctx) {
+        int status;
+        if (Objects.requireNonNull(e) instanceof HttpResponseException b) {
+            status = b.getStatus();
+        } else {
+            status = 500;
+        }
+        ctx.status(status);
+        ctx.result(new Gson().toJson(Map.of("message", e.getMessage(), "status", status)));
     }
 
     public int run(int desiredPort) {

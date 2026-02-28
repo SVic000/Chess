@@ -2,6 +2,8 @@ package dataaccess.TempStorage;
 
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
+import io.javalin.http.BadRequestResponse;
+import io.javalin.http.ForbiddenResponse;
 import io.javalin.http.HttpResponseException;
 import model.UserData;
 
@@ -22,7 +24,7 @@ public class MemoryUserDAO implements UserDAO {
             userStorage.put(user.username(),user);
             return;
         }
-        throw new DataAccessException("Error: bad request", 400);
+        throw new BadRequestResponse("Error: bad request");
     }
 
     @Override
@@ -31,7 +33,7 @@ public class MemoryUserDAO implements UserDAO {
             userStorage.put(user.username(),user);
             return;
         }
-        throw new DataAccessException("Error: already taken", 403);
+        throw new ForbiddenResponse("Error: already taken");
     }
 
     @Override
@@ -41,9 +43,9 @@ public class MemoryUserDAO implements UserDAO {
                userStorage.remove(user.username());
                return;
            }
-           throw new DataAccessException("Error: bad request",400);
+           throw new BadRequestResponse("Error: bad request");
        }
-       throw new DataAccessException("Error: bad request", 400);
+       throw new BadRequestResponse("Error: bad request");
     }
 
     @Override
@@ -51,6 +53,6 @@ public class MemoryUserDAO implements UserDAO {
         if(userStorage.containsKey(userName)) {
             return userStorage.get(userName);
         }
-        throw new DataAccessException("Error: bad request", 400);
+        throw new BadRequestResponse("Error: bad request");
     }
 }

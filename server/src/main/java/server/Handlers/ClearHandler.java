@@ -18,12 +18,8 @@ public class ClearHandler implements Handler {
     @Override
     public void handle(@NotNull Context ctx) throws Exception {
         ClearResult response;
-        try {
-            clearService.clear();
-
-        } catch (DataAccessException e) {
-            ctx.status(e.statusCode);
-            ctx.result(new Gson().toJson(e.getMessage()));
-        }
+        clearService.clear();
+        response = new ClearResult("");
+        ctx.result(new Gson().toJson(response));
     }
 }

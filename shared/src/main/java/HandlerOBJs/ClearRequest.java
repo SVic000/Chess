@@ -1,4 +1,4 @@
 package HandlerOBJs;
 
-public class ClearRequest {
+public record ClearRequest(String message) {
 }

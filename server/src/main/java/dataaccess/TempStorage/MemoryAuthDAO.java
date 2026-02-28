@@ -2,7 +2,9 @@ package dataaccess.TempStorage;
 
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
+import io.javalin.http.BadRequestResponse;
 import io.javalin.http.HttpResponseException;
+import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
 
 import java.util.HashMap;
@@ -22,10 +24,10 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     @Override
-    public AuthData createAuth(String username) throws DataAccessException{
+    public AuthData createAuth(String username){
         for(AuthData auth : authStorage.values()) {
             if(auth.username().equals(username)) {
-                throw new DataAccessException("Error: bad request", 400);
+                throw new BadRequestResponse("Error: bad request");
             }
         }
         String token = generateToken();
@@ -40,14 +42,14 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     @Override
-    public void deleteAuth(AuthData authData) throws DataAccessException {
+    public void deleteAuth(AuthData authData) {
         if(authStorage.containsKey(authData.token())) {
             if(authStorage.get(authData.token()).equals(authData)) {
                 authStorage.remove(authData.token());
                 return;
             }
-            throw new DataAccessException("Error: token tied to user doesn't match", 400);
+            throw new BadRequestResponse("Error: token tied to user doesn't match");
         }
-        throw new DataAccessException("Error: unauthorized", 401);
+        throw new UnauthorizedResponse("Error: unauthorized");
     }
 }
