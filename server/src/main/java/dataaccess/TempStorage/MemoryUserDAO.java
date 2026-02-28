@@ -2,9 +2,7 @@ package dataaccess.TempStorage;
 
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
-import io.javalin.http.BadRequestResponse;
-import io.javalin.http.ForbiddenResponse;
-import io.javalin.http.HttpResponseException;
+import io.javalin.http.*;
 import model.UserData;
 
 import java.util.HashMap;
@@ -53,6 +51,6 @@ public class MemoryUserDAO implements UserDAO {
         if(userStorage.containsKey(userName)) {
             return userStorage.get(userName);
         }
-        throw new BadRequestResponse("Error: bad request");
+        throw new UnauthorizedResponse("Error: User not found");
     }
 }

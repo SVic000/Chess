@@ -8,12 +8,10 @@ import dataaccess.TempStorage.MemoryAuthDAO;
 import dataaccess.TempStorage.MemoryUserDAO;
 import dataaccess.UserDAO;
 import io.javalin.*;
-import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
-import io.javalin.http.ForbiddenResponse;
 import io.javalin.http.HttpResponseException;
-import jdk.jshell.spi.ExecutionControl;
 import server.Handlers.ClearHandler;
+import server.Handlers.LoginHandler;
 import server.Handlers.RegisterHandler;
 
 import java.util.Map;
@@ -31,11 +29,9 @@ public class Server {
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .post("/user", new RegisterHandler(userService))
                 .delete("/db", new ClearHandler(clearService))
+                .post("/session", new LoginHandler(userService))
                 .exception(HttpResponseException.class, this::exceptionHandler)
                 .exception(Exception.class, this::exceptionHandler);
-                //.post("/session", new LoginHandler(userService));
-
-
     }
 
     private void exceptionHandler(Exception e, Context ctx) {

@@ -25,11 +25,6 @@ public class MemoryAuthDAO implements AuthDAO {
 
     @Override
     public AuthData createAuth(String username){
-        for(AuthData auth : authStorage.values()) {
-            if(auth.username().equals(username)) {
-                throw new BadRequestResponse("Error: bad request");
-            }
-        }
         String token = generateToken();
         AuthData value = new AuthData(token, username);
         authStorage.put(token,value);

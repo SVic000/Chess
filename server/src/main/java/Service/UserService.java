@@ -1,5 +1,7 @@
 package Service;
 
+import HandlerOBJs.LoginRequest;
+import HandlerOBJs.LoginResult;
 import HandlerOBJs.RegisterRequest;
 import HandlerOBJs.RegisterResult;
 import dataaccess.AuthDAO;
@@ -7,6 +9,7 @@ import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.ForbiddenResponse;
+import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
 import model.UserData;
 
@@ -31,11 +34,26 @@ public class UserService {
             result = new RegisterResult(user.username(), authData.token(), "");
         } catch (DataAccessException e) {
             throw new DataAccessException(e.getMessage());
-        } catch (ForbiddenResponse e) {
-            throw new ForbiddenResponse(e.getMessage());
         }
         return result;
     }
-    //public LoginResult login(LoginRequest loginRequest) {}
+    public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
+        LoginResult result;
+        if(loginRequest.username() == null || loginRequest.password() == null) {
+            throw new BadRequestResponse("Error: bad request");
+        }
+        try {
+            UserData user = userDAO.getUser(loginRequest.username());
+            if(user.password().equals(loginRequest.password())) {
+                AuthData authData = authDAO.createAuth(user.username());
+                result = new LoginResult(user.username(),authData.token(),"");
+            } else {
+                throw new UnauthorizedResponse("Error: Incorrect password");
+            }
+        } catch (DataAccessException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+        return result;
+    }
     //public void logout(LogoutRequest logoutRequest) {}
 }
