@@ -1,16 +1,16 @@
 package dataaccess;
 
+import HandlerOBJs.CreateGameRequest;
 import model.GameData;
 
+import java.util.Collection;
+
 public interface GameDAO {
-// clear
-    // create game
-    // get game
-    // list games
-    // update Game
-    // remove/delete game (games over)
+    GameData createGame(String gameName);
+    GameData getGame(int gameID);
+    Collection<GameData> listGames();
+    void updateGame(int gameID, GameData gameUpdate);
+    void deleteGame(int gameId);
+    void joinGame(int gameID, String username, String color);
     void clear();
-    //GameData getGame(int gameID);
-    //GameData createGame(CreateGameRequest gameReq);
-    //void joinGame();
 }
