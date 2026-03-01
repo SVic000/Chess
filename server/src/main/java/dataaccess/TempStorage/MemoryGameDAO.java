@@ -54,7 +54,7 @@ public class MemoryGameDAO implements GameDAO {
         if(gameStorage.containsKey(gameID)) {
             GameData current = gameStorage.get(gameID);
             GameData updated;
-            if(requestedColor.equals("whiteUsername")) {
+            if(requestedColor.equals("WHITE")) {
                 updated = new GameData(gameID, username, current.blackUsername(), current.gameName(), current.game());
             } else {
                 updated = new GameData(gameID, current.whiteUsername(), username, current.gameName(), current.game());

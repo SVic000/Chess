@@ -8,7 +8,6 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import io.javalin.http.BadRequestResponse;
-import io.javalin.http.ForbiddenResponse;
 import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
 import model.UserData;

@@ -19,8 +19,7 @@ public class RegisterHandler implements Handler {
     @Override
     public void handle(@NotNull Context ctx) throws Exception {
         RegisterRequest userDataReq = new Gson().fromJson(ctx.body(), RegisterRequest.class);
-        RegisterResult userDataRes;
-        userDataRes = userService.register(userDataReq);
+        RegisterResult userDataRes = userService.register(userDataReq);
         ctx.result(new Gson().toJson(userDataRes));
     }
 }
