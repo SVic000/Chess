@@ -17,33 +17,12 @@ public class MemoryUserDAO implements UserDAO {
     }
 
     @Override
-    public void updateUser(UserData user) throws DataAccessException{
-        if(userStorage.containsKey(user.username())) {
-            userStorage.put(user.username(),user);
-            return;
-        }
-        throw new BadRequestResponse("Error: bad request");
-    }
-
-    @Override
     public void createUser(UserData user) throws DataAccessException{
         if(!userStorage.containsKey(user.username())) {
             userStorage.put(user.username(),user);
             return;
         }
         throw new ForbiddenResponse("Error: already taken");
-    }
-
-    @Override
-    public void deleteUser(UserData user) throws DataAccessException{
-       if(userStorage.containsKey(user.username())) {
-           if(userStorage.get(user.username()).equals(user)) {
-               userStorage.remove(user.username());
-               return;
-           }
-           throw new BadRequestResponse("Error: bad request");
-       }
-       throw new BadRequestResponse("Error: bad request");
     }
 
     @Override

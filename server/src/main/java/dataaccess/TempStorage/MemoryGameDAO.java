@@ -7,18 +7,17 @@ import model.GameData;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MemoryGameDAO implements GameDAO {
     Map<Integer, GameData> gameStorage = new HashMap<>();
-    static int GameID = 1;
+    static int gameID = 1;
 
     @Override
     public GameData createGame(String gameName) {
-        GameData gameData = new GameData(GameID, null,null,gameName,new ChessGame());
-        gameStorage.put(GameID, gameData);
-        GameID += 1;
+        GameData gameData = new GameData(gameID, null,null,gameName,new ChessGame());
+        gameStorage.put(gameID, gameData);
+        gameID += 1;
         return gameData;
     }
 
@@ -34,15 +33,6 @@ public class MemoryGameDAO implements GameDAO {
     @Override
     public Collection<GameData> listGames() {
         return gameStorage.values();
-    }
-
-    @Override
-    public void updateGame(int gameID, GameData gameUpdate) {
-        GameData current = gameStorage.get(gameID);
-        if(current == null) {
-            throw new BadRequestResponse("Error: Game ID not found");
-        }
-        gameStorage.put(gameID, gameUpdate);
     }
 
     @Override
