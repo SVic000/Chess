@@ -1,7 +1,7 @@
-package server.Handlers;
+package server.handlers;
 
-import HandlerOBJs.ClearResult;
-import HandlerOBJs.LogoutRequest;
+import server.handlers.objects.ClearResult;
+import server.handlers.objects.LogoutRequest;
 import Service.UserService;
 import com.google.gson.Gson;
 import io.javalin.http.Context;

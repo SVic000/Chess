@@ -1,4 +1,4 @@
-package HandlerOBJs;
+package server.handlers.objects;
 
 import model.GameData;
 

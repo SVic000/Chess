@@ -1,7 +1,7 @@
-package server.Handlers;
+package server.handlers;
 
-import HandlerOBJs.JoinGameRequest;
-import HandlerOBJs.JoinGameResult;
+import server.handlers.objects.JoinGameRequest;
+import server.handlers.objects.JoinGameResult;
 import Service.GameService;
 import com.google.gson.Gson;
 import io.javalin.http.Context;

@@ -1,6 +1,6 @@
-package server.Handlers;
+package server.handlers;
 
-import HandlerOBJs.ClearResult;
+import server.handlers.objects.ClearResult;
 import Service.ClearService;
 import com.google.gson.Gson;
 import io.javalin.http.Context;

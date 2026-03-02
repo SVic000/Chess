@@ -15,7 +15,7 @@ import io.javalin.http.Context;
 import io.javalin.http.HttpResponseException;
 import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
-import server.Handlers.*;
+import server.handlers.*;
 
 import java.util.Map;
 import java.util.Objects;

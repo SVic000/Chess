@@ -1,7 +1,7 @@
-package server.Handlers;
+package server.handlers;
 
-import HandlerOBJs.LoginRequest;
-import HandlerOBJs.LoginResult;
+import server.handlers.objects.LoginRequest;
+import server.handlers.objects.LoginResult;
 import Service.UserService;
 import com.google.gson.Gson;
 import io.javalin.http.Context;

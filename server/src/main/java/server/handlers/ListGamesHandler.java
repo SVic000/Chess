@@ -1,4 +1,4 @@
-package server.Handlers;
+package server.handlers;
 
 import Service.GameService;
 import com.google.gson.Gson;

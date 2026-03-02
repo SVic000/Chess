@@ -1,6 +1,6 @@
-package HandlerOBJs;
+package server.handlers.objects;
 
-public record LoginResult(
+public record RegisterResult(
         String username,
         String authToken,
         String message

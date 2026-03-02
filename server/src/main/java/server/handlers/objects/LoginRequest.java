@@ -1,4 +1,4 @@
-package HandlerOBJs;
+package server.handlers.objects;
 
 public record LoginRequest(
         String username,
