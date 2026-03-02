@@ -2,7 +2,8 @@ package chess;
 
 import chess.PieceMoveCalc.*;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -11,16 +12,15 @@ import java.util.*;
  * signature of the existing methods.
  */
 public class ChessPiece {
+    private final static PieceType[] promotions = {PieceType.ROOK, PieceType.QUEEN, PieceType.BISHOP, PieceType.KNIGHT};
+    private final static PieceType[] setup = {
+            PieceType.ROOK, PieceType.KNIGHT,
+            PieceType.BISHOP, PieceType.QUEEN,
+            PieceType.KING, PieceType.BISHOP,
+            PieceType.KNIGHT, PieceType.ROOK
+    };
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
-    private final static PieceType[] promotions = {PieceType.ROOK,PieceType.QUEEN,PieceType.BISHOP,PieceType.KNIGHT};
-    private final static PieceType[] setup = {
-            PieceType.ROOK,PieceType.KNIGHT,
-            PieceType.BISHOP,PieceType.QUEEN,
-            PieceType.KING,PieceType.BISHOP,
-            PieceType.KNIGHT,PieceType.ROOK
-        };
-
 
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
@@ -59,18 +59,6 @@ public class ChessPiece {
     }
 
     /**
-     * The various different chess piece options
-     */
-    public enum PieceType {
-        KING,
-        QUEEN,
-        BISHOP,
-        KNIGHT,
-        ROOK,
-        PAWN
-    }
-
-    /**
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
@@ -93,28 +81,44 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         PieceMoveCalc pieceMoveCalc;
-        switch(type) {
+        switch (type) {
             case BISHOP -> {
-                pieceMoveCalc = new BishopMoveCalc(this,myPosition,board);
+                pieceMoveCalc = new BishopMoveCalc(this, myPosition, board);
                 return pieceMoveCalc.getPieceMoves();
             }
-            case PAWN-> {
-                pieceMoveCalc = new PawnMoveCalc(this,myPosition,board);
+            case PAWN -> {
+                pieceMoveCalc = new PawnMoveCalc(this, myPosition, board);
                 return pieceMoveCalc.getPieceMoves();
-            } case KNIGHT -> {
-                pieceMoveCalc = new KnightMoveCalc(this,myPosition,board);
+            }
+            case KNIGHT -> {
+                pieceMoveCalc = new KnightMoveCalc(this, myPosition, board);
                 return pieceMoveCalc.getPieceMoves();
-            } case KING -> {
-                pieceMoveCalc = new KingMoveCalc(this,myPosition,board);
+            }
+            case KING -> {
+                pieceMoveCalc = new KingMoveCalc(this, myPosition, board);
                 return pieceMoveCalc.getPieceMoves();
-            } case ROOK -> {
-                pieceMoveCalc = new RookMoveCalc(this,myPosition,board);
+            }
+            case ROOK -> {
+                pieceMoveCalc = new RookMoveCalc(this, myPosition, board);
                 return pieceMoveCalc.getPieceMoves();
-            } case QUEEN -> {
-                pieceMoveCalc = new QueenMoveCalc(this,myPosition,board);
+            }
+            case QUEEN -> {
+                pieceMoveCalc = new QueenMoveCalc(this, myPosition, board);
                 return pieceMoveCalc.getPieceMoves();
             }
         }
         return java.util.List.of();
+    }
+
+    /**
+     * The various different chess piece options
+     */
+    public enum PieceType {
+        KING,
+        QUEEN,
+        BISHOP,
+        KNIGHT,
+        ROOK,
+        PAWN
     }
 }

@@ -23,10 +23,10 @@ public class UserService {
 
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
         RegisterResult result;
-        if(registerRequest.username() == null || registerRequest.email() == null || registerRequest.password() == null) {
+        if (registerRequest.username() == null || registerRequest.email() == null || registerRequest.password() == null) {
             throw new BadRequestResponse("Error: bad request");
         }
-        UserData user = new UserData(registerRequest.username(),registerRequest.password(), registerRequest.email());
+        UserData user = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
         try {
             userDAO.createUser(user);
             AuthData authData = authDAO.createAuth(user.username());
@@ -36,16 +36,17 @@ public class UserService {
         }
         return result;
     }
+
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
         LoginResult result;
-        if(loginRequest.username() == null || loginRequest.password() == null) {
+        if (loginRequest.username() == null || loginRequest.password() == null) {
             throw new BadRequestResponse("Error: bad request");
         }
         try {
             UserData user = userDAO.getUser(loginRequest.username());
-            if(user.password().equals(loginRequest.password())) {
+            if (user.password().equals(loginRequest.password())) {
                 AuthData authData = authDAO.createAuth(user.username());
-                result = new LoginResult(user.username(),authData.token(),"");
+                result = new LoginResult(user.username(), authData.token(), "");
             } else {
                 throw new UnauthorizedResponse("Error: Incorrect password");
             }
@@ -54,9 +55,10 @@ public class UserService {
         }
         return result;
     }
+
     public void logout(LogoutRequest logoutRequest) throws DataAccessException {
         AuthData authData = authDAO.getAuth(logoutRequest.authToken());
-        if(authData == null) {
+        if (authData == null) {
             throw new UnauthorizedResponse("Error: Unauthorized");
         }
         authDAO.deleteAuth(authData);

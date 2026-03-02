@@ -2,7 +2,8 @@ package dataaccess.TempStorage;
 
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
-import io.javalin.http.*;
+import io.javalin.http.ForbiddenResponse;
+import io.javalin.http.UnauthorizedResponse;
 import model.UserData;
 
 import java.util.HashMap;
@@ -17,17 +18,17 @@ public class MemoryUserDAO implements UserDAO {
     }
 
     @Override
-    public void createUser(UserData user) throws DataAccessException{
-        if(!userStorage.containsKey(user.username())) {
-            userStorage.put(user.username(),user);
+    public void createUser(UserData user) throws DataAccessException {
+        if (!userStorage.containsKey(user.username())) {
+            userStorage.put(user.username(), user);
             return;
         }
         throw new ForbiddenResponse("Error: already taken");
     }
 
     @Override
-    public UserData getUser(String userName) throws DataAccessException{
-        if(userStorage.containsKey(userName)) {
+    public UserData getUser(String userName) throws DataAccessException {
+        if (userStorage.containsKey(userName)) {
             return userStorage.get(userName);
         }
         throw new UnauthorizedResponse("Error: User not found");

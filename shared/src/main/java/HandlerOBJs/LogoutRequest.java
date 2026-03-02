@@ -1,4 +1,4 @@
 package HandlerOBJs;
 
-public record LogoutRequest (String authToken){
+public record LogoutRequest(String authToken) {
 }

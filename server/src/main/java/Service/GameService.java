@@ -5,12 +5,8 @@ import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.ForbiddenResponse;
-import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
 import model.GameData;
-
-import java.util.Collection;
-import java.util.List;
 
 public class GameService {
     private final AuthDAO authDAO;
@@ -23,7 +19,7 @@ public class GameService {
 
     public CreateGameResult createGame(CreateGameRequest request) {
         // Authorization handled in Server
-        if(request.gameName() == null) {
+        if (request.gameName() == null) {
             throw new BadRequestResponse("Error: bad request");
         }
         GameData game = gameDAO.createGame(request.gameName());
@@ -36,7 +32,7 @@ public class GameService {
         // Auth Verification handled in server
         AuthData authData = authDAO.getAuth(auth);
         GameData gameData = gameDAO.getGame(request.gameID());
-        if(!isRequestedColorValid(request)) {
+        if (!isRequestedColorValid(request)) {
             throw new BadRequestResponse("Error: bad request");
         }
         if (request.playerColor().equals("WHITE")) {
@@ -54,9 +50,9 @@ public class GameService {
     }
 
     private boolean isRequestedColorValid(JoinGameRequest request) {
-            if(request.playerColor() == null || request.playerColor().isEmpty()) {
-                return false;
-            }
+        if (request.playerColor() == null || request.playerColor().isEmpty()) {
+            return false;
+        }
         return !(!request.playerColor().equals("WHITE") & !request.playerColor().equals("BLACK"));
     }
 

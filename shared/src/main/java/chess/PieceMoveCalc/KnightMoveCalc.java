@@ -20,7 +20,7 @@ public class KnightMoveCalc implements PieceMoveCalc {
 
     @Override
     public Collection<ChessMove> getPieceMoves() {
-        int[][] directions = {{2,1},{2,-1},{1,2},{-1,2},{1,-2},{-1,-2},{-2,1},{-2,-1}};
-        return simpleMoveCalc(piece,position,board,directions);
+        int[][] directions = {{2, 1}, {2, -1}, {1, 2}, {-1, 2}, {1, -2}, {-1, -2}, {-2, 1}, {-2, -1}};
+        return simpleMoveCalc(piece, position, board, directions);
     }
 }

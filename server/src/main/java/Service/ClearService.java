@@ -10,7 +10,7 @@ public class ClearService {
     GameDAO gameDAO;
     AuthDAO authDAO;
 
-    public ClearService(UserDAO userDAO, AuthDAO authDAO,GameDAO gameDAO) {
+    public ClearService(UserDAO userDAO, AuthDAO authDAO, GameDAO gameDAO) {
         this.userDAO = userDAO;
         this.gameDAO = gameDAO;
         this.authDAO = authDAO;

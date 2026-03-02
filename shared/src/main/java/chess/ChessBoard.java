@@ -9,7 +9,7 @@ import java.util.Objects;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessBoard implements Cloneable{
+public class ChessBoard implements Cloneable {
     ChessPiece[][] grid = new ChessPiece[8][8];
 
     public ChessBoard() {
@@ -22,14 +22,14 @@ public class ChessBoard implements Cloneable{
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        grid[position.getRow()-1][position.getColumn()-1] = piece;
+        grid[position.getRow() - 1][position.getColumn() - 1] = piece;
     }
 
     public void removePiece(ChessPosition position) {
-        grid[position.getRow()-1][position.getColumn()-1] = null;
+        grid[position.getRow() - 1][position.getColumn() - 1] = null;
     }
 
-    public boolean isOutOfBounds(ChessPosition position){
+    public boolean isOutOfBounds(ChessPosition position) {
         return position.getRow() < 1 || position.getColumn() < 1 || position.getRow() > grid.length || position.getColumn() > grid.length;
     }
 
@@ -42,7 +42,7 @@ public class ChessBoard implements Cloneable{
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return grid[position.getRow()-1][position.getColumn()-1];
+        return grid[position.getRow() - 1][position.getColumn() - 1];
     }
 
     /**
@@ -52,11 +52,11 @@ public class ChessBoard implements Cloneable{
     public void resetBoard() {
         ChessPiece.PieceType[] order = ChessPiece.getSetup();
         grid = new ChessPiece[8][8];
-        for(int i = 0; i < grid.length; i++) {
+        for (int i = 0; i < grid.length; i++) {
             grid[1][i] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
             grid[6][i] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
-            grid[0][i] = new ChessPiece(ChessGame.TeamColor.WHITE,order[i]);
-            grid[7][i] = new ChessPiece(ChessGame.TeamColor.BLACK,order[i]);
+            grid[0][i] = new ChessPiece(ChessGame.TeamColor.WHITE, order[i]);
+            grid[7][i] = new ChessPiece(ChessGame.TeamColor.BLACK, order[i]);
         }
     }
 
@@ -75,13 +75,13 @@ public class ChessBoard implements Cloneable{
             ChessBoard copy = (ChessBoard) super.clone();
 
             ChessPiece[][] newLines = new ChessPiece[grid.length][];
-            for(int i = 0; i < grid.length; i++) {
+            for (int i = 0; i < grid.length; i++) {
                 newLines[i] = grid[i].clone();
             }
 
             copy.grid = newLines;
             return copy;
-        } catch(CloneNotSupportedException e) {
+        } catch (CloneNotSupportedException e) {
             throw new AssertionError(e);
         }
     }

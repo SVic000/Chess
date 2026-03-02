@@ -5,19 +5,16 @@ import Service.GameService;
 import Service.UserService;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.TempStorage.MemoryAuthDAO;
 import dataaccess.TempStorage.MemoryGameDAO;
 import dataaccess.TempStorage.MemoryUserDAO;
 import dataaccess.UserDAO;
-import io.javalin.*;
+import io.javalin.Javalin;
 import io.javalin.http.Context;
-import io.javalin.http.ForbiddenResponse;
 import io.javalin.http.HttpResponseException;
 import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
-import model.UserData;
 import server.Handlers.*;
 
 import java.util.Map;
@@ -31,15 +28,15 @@ public class Server {
         GameDAO gameStorage = new MemoryGameDAO();
         AuthDAO authStorage = new MemoryAuthDAO();
         UserService userService = new UserService(userStorage, authStorage);
-        ClearService clearService = new ClearService(userStorage, authStorage,gameStorage);
-        GameService gameService = new GameService(authStorage,gameStorage);
+        ClearService clearService = new ClearService(userStorage, authStorage, gameStorage);
+        GameService gameService = new GameService(authStorage, gameStorage);
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .beforeMatched(ctx -> {
-                    if(ctx.matchedPath().equals("/game")) { // any game requires auth
-                        validateAuthorization(ctx.header("Authorization"),authStorage);
-                    } else if(ctx.matchedPath().equals("/session")) {
-                        if(ctx.handlerType().name().equals("DELETE")) { // log out
+                    if (ctx.matchedPath().equals("/game")) { // any game requires auth
+                        validateAuthorization(ctx.header("Authorization"), authStorage);
+                    } else if (ctx.matchedPath().equals("/session")) {
+                        if (ctx.handlerType().name().equals("DELETE")) { // log out
                             validateAuthorization(ctx.header("Authorization"), authStorage);
                         }
                     }
@@ -66,10 +63,10 @@ public class Server {
         ctx.result(new Gson().toJson(Map.of("message", e.getMessage(), "status", status)));
     }
 
-    private void validateAuthorization(String auth, AuthDAO authStorage){
-        if(auth != null) {
+    private void validateAuthorization(String auth, AuthDAO authStorage) {
+        if (auth != null) {
             AuthData authData = authStorage.getAuth(auth); // will throw an error if it can't find it in the storage
-            if(authData == null) {
+            if (authData == null) {
                 throw new UnauthorizedResponse("Error: Unauthorized");
             }
         } else {

@@ -1,9 +1,7 @@
 package dataaccess.TempStorage;
 
 import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
 import io.javalin.http.BadRequestResponse;
-import io.javalin.http.HttpResponseException;
 import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
 
@@ -24,10 +22,10 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     @Override
-    public AuthData createAuth(String username){
+    public AuthData createAuth(String username) {
         String token = generateToken();
         AuthData value = new AuthData(token, username);
-        authStorage.put(token,value);
+        authStorage.put(token, value);
         return value;
     }
 
@@ -38,8 +36,8 @@ public class MemoryAuthDAO implements AuthDAO {
 
     @Override
     public void deleteAuth(AuthData authData) {
-        if(authStorage.containsKey(authData.token())) {
-            if(authStorage.get(authData.token()).equals(authData)) {
+        if (authStorage.containsKey(authData.token())) {
+            if (authStorage.get(authData.token()).equals(authData)) {
                 authStorage.remove(authData.token());
                 return;
             }

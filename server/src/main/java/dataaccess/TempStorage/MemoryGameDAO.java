@@ -10,12 +10,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MemoryGameDAO implements GameDAO {
-    Map<Integer, GameData> gameStorage = new HashMap<>();
     static int gameID = 1;
+    Map<Integer, GameData> gameStorage = new HashMap<>();
 
     @Override
     public GameData createGame(String gameName) {
-        GameData gameData = new GameData(gameID, null,null,gameName,new ChessGame());
+        GameData gameData = new GameData(gameID, null, null, gameName, new ChessGame());
         gameStorage.put(gameID, gameData);
         gameID += 1;
         return gameData;
@@ -23,7 +23,7 @@ public class MemoryGameDAO implements GameDAO {
 
     @Override
     public GameData getGame(int gameID) {
-        if(gameStorage.containsKey(gameID)) {
+        if (gameStorage.containsKey(gameID)) {
             return gameStorage.get(gameID);
         } else {
             throw new BadRequestResponse("Error: Game not found");
@@ -42,15 +42,15 @@ public class MemoryGameDAO implements GameDAO {
 
     @Override
     public void joinGame(int gameID, String username, String requestedColor) {
-        if(gameStorage.containsKey(gameID)) {
+        if (gameStorage.containsKey(gameID)) {
             GameData current = gameStorage.get(gameID);
             GameData updated;
-            if(requestedColor.equals("WHITE")) {
+            if (requestedColor.equals("WHITE")) {
                 updated = new GameData(gameID, username, current.blackUsername(), current.gameName(), current.game());
             } else {
                 updated = new GameData(gameID, current.whiteUsername(), username, current.gameName(), current.game());
             }
-            gameStorage.put(gameID,updated );
+            gameStorage.put(gameID, updated);
         } else {
             throw new BadRequestResponse("Error: bad request");
         }

@@ -24,20 +24,20 @@ public class PawnMoveCalc implements PieceMoveCalc {
     }
 
     public boolean isFrontBlocked() {
-        ChessPiece boardPiece = board.getPiece(new ChessPosition(position.getRow()+progressOnBoard, position.getColumn()));
+        ChessPiece boardPiece = board.getPiece(new ChessPosition(position.getRow() + progressOnBoard, position.getColumn()));
         return boardPiece != null;
     }
 
     public boolean isMovePossible(ChessPosition direction) {
         ChessPiece boardPiece;
-        if(board.isOutOfBounds(direction)) {
+        if (board.isOutOfBounds(direction)) {
             return false;
         }
         boardPiece = board.getPiece(direction);
-        if(direction.getColumn() == position.getColumn()) {
+        if (direction.getColumn() == position.getColumn()) {
             return boardPiece == null && !isFrontBlocked();
         } else {
-            if(boardPiece != null) {
+            if (boardPiece != null) {
                 return !boardPiece.getTeamColor().equals(piece.getTeamColor());
             }
         }
@@ -46,12 +46,12 @@ public class PawnMoveCalc implements PieceMoveCalc {
 
     public Collection<ChessPosition> getDirections() {
         Collection<ChessPosition> directions = new ArrayList<>();
-        if(startingPosition == position.getRow()) {
+        if (startingPosition == position.getRow()) {
             directions.add(new ChessPosition(position.getRow() + (progressOnBoard * 2), position.getColumn()));
         }
         directions.add(new ChessPosition(position.getRow() + progressOnBoard, position.getColumn()));
-        directions.add(new ChessPosition(position.getRow() + progressOnBoard, position.getColumn()-1));
-        directions.add(new ChessPosition(position.getRow() + progressOnBoard, position.getColumn()+1));
+        directions.add(new ChessPosition(position.getRow() + progressOnBoard, position.getColumn() - 1));
+        directions.add(new ChessPosition(position.getRow() + progressOnBoard, position.getColumn() + 1));
 
         return directions;
     }
@@ -62,18 +62,18 @@ public class PawnMoveCalc implements PieceMoveCalc {
         Collection<ChessMove> possibleMoves = new ArrayList<>();
         ChessPiece.PieceType[] promotionPieces = ChessPiece.getPromotions();
 
-        if(position.getRow() == promotionLocation) {
-            for(ChessPosition direction : directions) {
-                if(isMovePossible(direction)) {
-                    for(ChessPiece.PieceType type : promotionPieces) {
-                        possibleMoves.add(new ChessMove(position,direction,type));
+        if (position.getRow() == promotionLocation) {
+            for (ChessPosition direction : directions) {
+                if (isMovePossible(direction)) {
+                    for (ChessPiece.PieceType type : promotionPieces) {
+                        possibleMoves.add(new ChessMove(position, direction, type));
                     }
                 }
             }
         } else {
-            for(ChessPosition direction : directions) {
-                if(isMovePossible(direction)) {
-                    possibleMoves.add(new ChessMove(position,direction,null));
+            for (ChessPosition direction : directions) {
+                if (isMovePossible(direction)) {
+                    possibleMoves.add(new ChessMove(position, direction, null));
                 }
             }
         }
