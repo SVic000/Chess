@@ -42,11 +42,6 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public void deleteGame(int gameId) {
-        gameStorage.remove(gameId);
-    }
-
-    @Override
     public void joinGame(int gameID, String username, String requestedColor) {
         if (gameStorage.containsKey(gameID)) {
             GameData current = gameStorage.get(gameID);

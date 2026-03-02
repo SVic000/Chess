@@ -136,7 +136,10 @@ public class ChessGame {
         for (int row = 0; row < board.grid.length; row++) {
             for (int col = 0; col < board.grid.length; col++) {
                 boardPiece = board.getPiece(new ChessPosition(row + 1, col + 1));
-                if (boardPiece != null && boardPiece.getTeamColor().equals(teamColor) && boardPiece.getPieceType().equals(ChessPiece.PieceType.KING)) {
+                if (
+                        boardPiece != null && boardPiece.getTeamColor().equals(teamColor)
+                                && boardPiece.getPieceType().equals(ChessPiece.PieceType.KING)
+                    ) {
                     kingPosition = new ChessPosition(row + 1, col + 1);
                 }
             }
@@ -173,15 +176,8 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         if (isInCheck(teamColor)) {
-            Collection<ChessPosition> teamLocation = findAnyTeamLocations(teamColor, true);
-            for (ChessPosition teamPos : teamLocation) {
-                if (!validMoves(teamPos).isEmpty()) {
-                    return false;
-                }
-            }
-            return true;
+            return canTeamMakeValidMove(teamColor);
         }
-        // if not in check can't be in checkmate
         return false;
     }
 
@@ -194,16 +190,19 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         if (!isInCheck(teamColor)) {
-            Collection<ChessPosition> teamLocation = findAnyTeamLocations(teamColor, true);
-            for (ChessPosition teamPos : teamLocation) {
-                if (!validMoves(teamPos).isEmpty()) {
-                    return false;
-                }
-            }
-            return true;
+            return canTeamMakeValidMove(teamColor);
         }
-        // if you are in check you can't be in stalemate
         return false;
+    }
+
+    public boolean canTeamMakeValidMove(TeamColor teamColor) {
+        Collection<ChessPosition> teamLocation = findAnyTeamLocations(teamColor, true);
+        for (ChessPosition teamPos : teamLocation) {
+            if (!validMoves(teamPos).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
