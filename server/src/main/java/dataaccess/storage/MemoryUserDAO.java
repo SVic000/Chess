@@ -6,16 +6,23 @@ import io.javalin.http.ForbiddenResponse;
 import io.javalin.http.UnauthorizedResponse;
 import model.UserData;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MemoryUserDAO implements UserDAO {
-    Map<String, UserData> userStorage = new HashMap<>();
+    private final Map<String, UserData> userStorage = new HashMap<>();
 
     @Override
     public void clear() {
-        userStorage = new HashMap<>();
+        userStorage.clear();
     }
+
+    @Override
+    public Collection<UserData> getUserStorage() {
+        return userStorage.values();
+    }
+
 
     @Override
     public void createUser(UserData user) throws DataAccessException {

@@ -5,12 +5,10 @@ import io.javalin.http.BadRequestResponse;
 import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class MemoryAuthDAO implements AuthDAO {
-    Map<String, AuthData> authStorage = new HashMap<>();
+    private final Map<String, AuthData> authStorage = new HashMap<>();
 
     public static String generateToken() {
         return UUID.randomUUID().toString();
@@ -18,7 +16,7 @@ public class MemoryAuthDAO implements AuthDAO {
 
     @Override
     public void clear() {
-        authStorage = new HashMap<>();
+        authStorage.clear();
     }
 
     @Override
@@ -27,6 +25,11 @@ public class MemoryAuthDAO implements AuthDAO {
         AuthData value = new AuthData(token, username);
         authStorage.put(token, value);
         return value;
+    }
+
+    @Override
+    public Collection<AuthData> getAuthStorage() {
+        return authStorage.values();
     }
 
     @Override

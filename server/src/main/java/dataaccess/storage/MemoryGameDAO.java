@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class MemoryGameDAO implements GameDAO {
     static int gameID = 1;
-    Map<Integer, GameData> gameStorage = new HashMap<>();
+    private final Map<Integer, GameData> gameStorage = new HashMap<>();
 
     @Override
     public GameData createGame(String gameName) {
@@ -20,6 +20,12 @@ public class MemoryGameDAO implements GameDAO {
         gameID += 1;
         return gameData;
     }
+
+    @Override
+    public Collection<GameData> getGameStorage() {
+        return gameStorage.values();
+    }
+
 
     @Override
     public GameData getGame(int gameID) {
@@ -58,6 +64,6 @@ public class MemoryGameDAO implements GameDAO {
 
     @Override
     public void clear() {
-        gameStorage = new HashMap<>();
+        gameStorage.clear();
     }
 }

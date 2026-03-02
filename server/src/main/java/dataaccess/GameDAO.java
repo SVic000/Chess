@@ -11,6 +11,8 @@ public interface GameDAO {
 
     Collection<GameData> listGames();
 
+    Collection<GameData> getGameStorage();
+
     void deleteGame(int gameId);
 
     void joinGame(int gameID, String username, String color);
