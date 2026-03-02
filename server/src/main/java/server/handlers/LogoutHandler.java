@@ -2,7 +2,7 @@ package server.handlers;
 
 import server.handlers.objects.ClearResult;
 import server.handlers.objects.LogoutRequest;
-import Service.UserService;
+import service.UserService;
 import com.google.gson.Gson;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;

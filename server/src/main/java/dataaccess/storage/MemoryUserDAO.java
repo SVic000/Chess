@@ -1,4 +1,4 @@
-package dataaccess.TempStorage;
+package dataaccess.storage;
 
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;

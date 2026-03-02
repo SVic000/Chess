@@ -1,4 +1,4 @@
-package passoff.chess.Phase1;
+package passoff.chess.phase1;
 
 import chess.ChessGame;
 import chess.ChessMove;

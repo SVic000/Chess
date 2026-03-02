@@ -1,14 +1,14 @@
 package server;
 
-import Service.ClearService;
-import Service.GameService;
-import Service.UserService;
+import service.ClearService;
+import service.GameService;
+import service.UserService;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
-import dataaccess.TempStorage.MemoryAuthDAO;
-import dataaccess.TempStorage.MemoryGameDAO;
-import dataaccess.TempStorage.MemoryUserDAO;
+import dataaccess.storage.MemoryAuthDAO;
+import dataaccess.storage.MemoryGameDAO;
+import dataaccess.storage.MemoryUserDAO;
 import dataaccess.UserDAO;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
