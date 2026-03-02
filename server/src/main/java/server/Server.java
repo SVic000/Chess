@@ -13,8 +13,6 @@ import dataaccess.UserDAO;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpResponseException;
-import io.javalin.http.UnauthorizedResponse;
-import model.AuthData;
 import server.handlers.*;
 
 import java.util.Map;
@@ -32,15 +30,6 @@ public class Server {
         GameService gameService = new GameService(authStorage, gameStorage);
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
-                .beforeMatched(ctx -> {
-                    if (ctx.matchedPath().equals("/game")) { // any game requires auth
-                        validateAuthorization(ctx.header("Authorization"), authStorage);
-                    } else if (ctx.matchedPath().equals("/session")) {
-                        if (ctx.handlerType().name().equals("DELETE")) { // log out
-                            validateAuthorization(ctx.header("Authorization"), authStorage);
-                        }
-                    }
-                })
                 .post("/user", new RegisterHandler(userService))
                 .delete("/db", new ClearHandler(clearService))
                 .post("/session", new LoginHandler(userService))
@@ -61,17 +50,6 @@ public class Server {
         }
         ctx.status(status);
         ctx.result(new Gson().toJson(Map.of("message", e.getMessage(), "status", status)));
-    }
-
-    private void validateAuthorization(String auth, AuthDAO authStorage) {
-        if (auth != null) {
-            AuthData authData = authStorage.getAuth(auth); // will throw an error if it can't find it in the storage
-            if (authData == null) {
-                throw new UnauthorizedResponse("Error: Unauthorized");
-            }
-        } else {
-            throw new UnauthorizedResponse("Error: Unauthorized");
-        }
     }
 
     public int run(int desiredPort) {

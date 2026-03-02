@@ -4,6 +4,7 @@ import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.ForbiddenResponse;
+import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
 import model.GameData;
 import server.handlers.objects.*;
@@ -17,9 +18,10 @@ public class GameService {
         this.gameDAO = gameDAO;
     }
 
-    public CreateGameResult createGame(CreateGameRequest request) {
-        // Authorization handled in Server
-        if (request.gameName() == null) {
+    public CreateGameResult createGame(CreateGameRequest request, String authToken) {
+        validateAuthorization(authToken);
+
+        if (request.gameName() == null || request.gameName().isEmpty()) {
             throw new BadRequestResponse("Error: bad request");
         }
         GameData game = gameDAO.createGame(request.gameName());
@@ -27,10 +29,10 @@ public class GameService {
     }
 
 
-    public JoinGameResult joinGame(JoinGameRequest request, String auth) {
-        // given game ID and color
-        // Auth Verification handled in server
-        AuthData authData = authDAO.getAuth(auth);
+    public JoinGameResult joinGame(JoinGameRequest request, String authToken) {
+        validateAuthorization(authToken);
+
+        AuthData authData = authDAO.getAuth(authToken);
         GameData gameData = gameDAO.getGame(request.gameID());
         if (!isRequestedColorValid(request)) {
             throw new BadRequestResponse("Error: bad request");
@@ -57,7 +59,19 @@ public class GameService {
     }
 
 
-    public ListGameResult listGames() {
+    public ListGameResult listGames(String auth) {
+        validateAuthorization(auth);
         return new ListGameResult(gameDAO.listGames().stream().toList());
+    }
+
+    private void validateAuthorization(String auth) {
+        if (auth != null) {
+            AuthData authData = authDAO.getAuth(auth);
+            if (authData == null) {
+                throw new UnauthorizedResponse("Error: Unauthorized");
+            }
+        } else {
+            throw new UnauthorizedResponse("Error: Unauthorized");
+        }
     }
 }

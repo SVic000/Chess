@@ -54,10 +54,22 @@ public class UserService {
     }
 
     public void logout(LogoutRequest logoutRequest) throws DataAccessException {
+        validateAuthorization(logoutRequest.authToken());
+
         AuthData authData = authDAO.getAuth(logoutRequest.authToken());
         if (authData == null) {
             throw new UnauthorizedResponse("Error: Unauthorized");
         }
         authDAO.deleteAuth(authData);
+    }
+    private void validateAuthorization(String auth) {
+        if (auth != null) {
+            AuthData authData = authDAO.getAuth(auth);
+            if (authData == null) {
+                throw new UnauthorizedResponse("Error: Unauthorized");
+            }
+        } else {
+            throw new UnauthorizedResponse("Error: Unauthorized");
+        }
     }
 }

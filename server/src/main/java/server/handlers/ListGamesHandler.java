@@ -15,6 +15,6 @@ public class ListGamesHandler implements Handler {
 
     @Override
     public void handle(@NotNull Context ctx) throws Exception {
-        ctx.result(new Gson().toJson(gameService.listGames()));
+        ctx.result(new Gson().toJson(gameService.listGames(ctx.header("Authorization"))));
     }
 }

@@ -18,7 +18,7 @@ public class CreateGameHandler implements Handler {
     @Override
     public void handle(@NotNull Context ctx) throws Exception {
         CreateGameRequest request = new Gson().fromJson(ctx.body(), CreateGameRequest.class);
-        CreateGameResult response = gameService.createGame(request);
+        CreateGameResult response = gameService.createGame(request,ctx.header("Authorization"));
         ctx.result(new Gson().toJson(response));
     }
 }
