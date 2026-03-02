@@ -1,9 +1,6 @@
 package Service;
 
-import HandlerOBJs.CreateGameRequest;
-import HandlerOBJs.CreateGameResult;
-import HandlerOBJs.JoinGameRequest;
-import HandlerOBJs.JoinGameResult;
+import HandlerOBJs.*;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import io.javalin.http.BadRequestResponse;
@@ -11,6 +8,9 @@ import io.javalin.http.ForbiddenResponse;
 import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
 import model.GameData;
+
+import java.util.Collection;
+import java.util.List;
 
 public class GameService {
     private final AuthDAO authDAO;
@@ -39,13 +39,13 @@ public class GameService {
         if(!isRequestedColorValid(request)) {
             throw new BadRequestResponse("Error: bad request");
         }
-        if (gameData.whiteUsername().equals(request.playerColor())) {
-            if (gameData.whiteUsername().isEmpty()) {
+        if (request.playerColor().equals("WHITE")) {
+            if (gameData.whiteUsername() == null) {
                 gameDAO.joinGame(request.gameID(), authData.username(), request.playerColor());
                 return new JoinGameResult("");
             }
         } else {
-            if (gameData.blackUsername().isEmpty()) {
+            if (gameData.blackUsername() == null) {
                 gameDAO.joinGame(request.gameID(), authData.username(), request.playerColor());
                 return new JoinGameResult("");
             }
@@ -61,14 +61,7 @@ public class GameService {
     }
 
 
-    /*
-
-    public ListGameResponse listGames(ListGameRequest request) {
-        // Verification handled in server
-        // compile the entire list of games into a response
-        // return the response with empty message
-        // (only error is an unauthorized error)
+    public ListGameResult listGames() {
+        return new ListGameResult(gameDAO.listGames().stream().toList());
     }
-
-    */
 }

@@ -7,6 +7,7 @@ import model.GameData;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MemoryGameDAO implements GameDAO {
@@ -15,7 +16,7 @@ public class MemoryGameDAO implements GameDAO {
 
     @Override
     public GameData createGame(String gameName) {
-        GameData gameData = new GameData(GameID, "","",gameName,new ChessGame());
+        GameData gameData = new GameData(GameID, null,null,gameName,new ChessGame());
         gameStorage.put(GameID, gameData);
         GameID += 1;
         return gameData;

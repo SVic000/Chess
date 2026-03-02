@@ -47,8 +47,10 @@ public class Server {
                 .post("/user", new RegisterHandler(userService))
                 .delete("/db", new ClearHandler(clearService))
                 .post("/session", new LoginHandler(userService))
+                .delete("/session", new LogoutHandler(userService))
                 .post("/game", new CreateGameHandler(gameService))
                 .put("/game", new JoinGameHandler(gameService))
+                .get("/game", new ListGamesHandler(gameService))
                 .exception(HttpResponseException.class, this::exceptionHandler)
                 .exception(Exception.class, this::exceptionHandler);
     }

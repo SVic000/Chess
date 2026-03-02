@@ -1,9 +1,6 @@
 package Service;
 
-import HandlerOBJs.LoginRequest;
-import HandlerOBJs.LoginResult;
-import HandlerOBJs.RegisterRequest;
-import HandlerOBJs.RegisterResult;
+import HandlerOBJs.*;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
@@ -11,8 +8,11 @@ import io.javalin.http.BadRequestResponse;
 import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
 import model.UserData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UserService {
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserDAO userDAO;
     private final AuthDAO authDAO;
 
@@ -54,5 +54,11 @@ public class UserService {
         }
         return result;
     }
-    //public void logout(LogoutRequest logoutRequest) {}
+    public void logout(LogoutRequest logoutRequest) throws DataAccessException {
+        AuthData authData = authDAO.getAuth(logoutRequest.authToken());
+        if(authData == null) {
+            throw new UnauthorizedResponse("Error: Unauthorized");
+        }
+        authDAO.deleteAuth(authData);
+    }
 }
