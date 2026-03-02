@@ -7,12 +7,9 @@ import io.javalin.http.BadRequestResponse;
 import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
 import model.UserData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import server.handlers.objects.*;
 
 public class UserService {
-    private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserDAO userDAO;
     private final AuthDAO authDAO;
 

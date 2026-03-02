@@ -12,8 +12,8 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessPiece {
-    private final static PieceType[] promotions = {PieceType.ROOK, PieceType.QUEEN, PieceType.BISHOP, PieceType.KNIGHT};
-    private final static PieceType[] setup = {
+    private final static PieceType[] PROMOTIONS = {PieceType.ROOK, PieceType.QUEEN, PieceType.BISHOP, PieceType.KNIGHT};
+    private final static PieceType[] SETUP = {
             PieceType.ROOK, PieceType.KNIGHT,
             PieceType.BISHOP, PieceType.QUEEN,
             PieceType.KING, PieceType.BISHOP,
@@ -29,11 +29,11 @@ public class ChessPiece {
     }
 
     public static PieceType[] getPromotions() {
-        return promotions;
+        return PROMOTIONS;
     }
 
     public static PieceType[] getSetup() {
-        return setup;
+        return SETUP;
     }
 
     @Override

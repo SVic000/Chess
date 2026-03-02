@@ -7,31 +7,29 @@ import dataaccess.GameDAO;
 import dataaccess.storage.MemoryAuthDAO;
 import dataaccess.storage.MemoryGameDAO;
 import dataaccess.storage.MemoryUserDAO;
-import model.GameData;
 import model.UserData;
-import model.AuthData;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ClearServiceTest {
-    static final UserDAO userStorage = new MemoryUserDAO();
-    static final GameDAO gameStorage = new MemoryGameDAO();
-    static final AuthDAO authStorage = new MemoryAuthDAO();
+    static final UserDAO USER_STORAGE = new MemoryUserDAO();
+    static final GameDAO GAME_STORAGE = new MemoryGameDAO();
+    static final AuthDAO AUTH_STORAGE = new MemoryAuthDAO();
 
-    static final ClearService service = new ClearService(userStorage,authStorage,gameStorage);
+    static final ClearService SERVICE = new ClearService(USER_STORAGE, AUTH_STORAGE, GAME_STORAGE);
 
     @Test
     void clear() throws DataAccessException {
-        userStorage.createUser(new UserData("username","password","email"));
-        authStorage.createAuth("username");
-        gameStorage.createGame("gameName");
+        USER_STORAGE.createUser(new UserData("username","password","email"));
+        AUTH_STORAGE.createAuth("username");
+        GAME_STORAGE.createGame("gameName");
 
-        service.clear();
+        SERVICE.clear();
 
-        assertEquals(0, authStorage.getAuthStorage().size());
-        assertEquals(0, userStorage.getUserStorage().size());
-        assertEquals(0, gameStorage.getGameStorage().size());
+        assertEquals(0, AUTH_STORAGE.getAuthStorage().size());
+        assertEquals(0, USER_STORAGE.getUserStorage().size());
+        assertEquals(0, GAME_STORAGE.getGameStorage().size());
     }
 
 }
