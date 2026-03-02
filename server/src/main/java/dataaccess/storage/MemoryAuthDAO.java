@@ -5,7 +5,10 @@ import io.javalin.http.BadRequestResponse;
 import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class MemoryAuthDAO implements AuthDAO {
     private final Map<String, AuthData> authStorage = new HashMap<>();

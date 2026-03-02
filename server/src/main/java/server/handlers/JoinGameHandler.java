@@ -1,12 +1,12 @@
 package server.handlers;
 
-import server.handlers.objects.JoinGameRequest;
-import server.handlers.objects.JoinGameResult;
-import service.GameService;
 import com.google.gson.Gson;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import org.jetbrains.annotations.NotNull;
+import server.handlers.objects.JoinGameRequest;
+import server.handlers.objects.JoinGameResult;
+import service.GameService;
 
 public class JoinGameHandler implements Handler {
     GameService gameService;

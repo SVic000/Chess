@@ -1,12 +1,12 @@
 package server.handlers;
 
-import server.handlers.objects.RegisterRequest;
-import server.handlers.objects.RegisterResult;
-import service.UserService;
 import com.google.gson.Gson;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import org.jetbrains.annotations.NotNull;
+import server.handlers.objects.RegisterRequest;
+import server.handlers.objects.RegisterResult;
+import service.UserService;
 
 public class RegisterHandler implements Handler {
     private final UserService userService;

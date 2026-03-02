@@ -1,19 +1,19 @@
 package server;
 
-import service.ClearService;
-import service.GameService;
-import service.UserService;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
+import dataaccess.UserDAO;
 import dataaccess.storage.MemoryAuthDAO;
 import dataaccess.storage.MemoryGameDAO;
 import dataaccess.storage.MemoryUserDAO;
-import dataaccess.UserDAO;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpResponseException;
 import server.handlers.*;
+import service.ClearService;
+import service.GameService;
+import service.UserService;
 
 import java.util.Map;
 import java.util.Objects;

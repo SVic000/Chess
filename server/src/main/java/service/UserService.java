@@ -62,6 +62,7 @@ public class UserService {
         }
         authDAO.deleteAuth(authData);
     }
+
     private void validateAuthorization(String auth) {
         if (auth != null) {
             AuthData authData = authDAO.getAuth(auth);

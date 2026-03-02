@@ -1,12 +1,12 @@
 package server.handlers;
 
-import server.handlers.objects.CreateGameRequest;
-import server.handlers.objects.CreateGameResult;
-import service.GameService;
 import com.google.gson.Gson;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import org.jetbrains.annotations.NotNull;
+import server.handlers.objects.CreateGameRequest;
+import server.handlers.objects.CreateGameResult;
+import service.GameService;
 
 public class CreateGameHandler implements Handler {
     private final GameService gameService;
@@ -18,7 +18,7 @@ public class CreateGameHandler implements Handler {
     @Override
     public void handle(@NotNull Context ctx) throws Exception {
         CreateGameRequest request = new Gson().fromJson(ctx.body(), CreateGameRequest.class);
-        CreateGameResult response = gameService.createGame(request,ctx.header("Authorization"));
+        CreateGameResult response = gameService.createGame(request, ctx.header("Authorization"));
         ctx.result(new Gson().toJson(response));
     }
 }

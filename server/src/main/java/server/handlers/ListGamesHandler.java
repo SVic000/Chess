@@ -1,10 +1,10 @@
 package server.handlers;
 
-import service.GameService;
 import com.google.gson.Gson;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import org.jetbrains.annotations.NotNull;
+import service.GameService;
 
 public class ListGamesHandler implements Handler {
     GameService gameService;
