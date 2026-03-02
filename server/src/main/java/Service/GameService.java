@@ -2,9 +2,13 @@ package Service;
 
 import HandlerOBJs.CreateGameRequest;
 import HandlerOBJs.CreateGameResult;
+import HandlerOBJs.JoinGameRequest;
+import HandlerOBJs.JoinGameResult;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import io.javalin.http.BadRequestResponse;
+import io.javalin.http.ForbiddenResponse;
+import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
 import model.GameData;
 
@@ -26,17 +30,40 @@ public class GameService {
         return new CreateGameResult(game.gameID(), "");
     }
 
-    /*
-    public JoinGameResponse joinGame(JoinGameRequest request) {
-        // given auth and color
-         // Auth Verification handled in server
-        // check to see if requested color is taken (WHITE/BLACK)
-        // let player join if previous checks work
-        // send back response with empty message
+
+    public JoinGameResult joinGame(JoinGameRequest request, String auth) {
+        // given game ID and color
+        // Auth Verification handled in server
+        AuthData authData = authDAO.getAuth(auth);
+        GameData gameData = gameDAO.getGame(request.gameID());
+        if(!isRequestedColorValid(request)) {
+            throw new BadRequestResponse("Error: bad request");
+        }
+        if (gameData.whiteUsername().equals(request.playerColor())) {
+            if (gameData.whiteUsername().isEmpty()) {
+                gameDAO.joinGame(request.gameID(), authData.username(), request.playerColor());
+                return new JoinGameResult("");
+            }
+        } else {
+            if (gameData.blackUsername().isEmpty()) {
+                gameDAO.joinGame(request.gameID(), authData.username(), request.playerColor());
+                return new JoinGameResult("");
+            }
+        }
+        throw new ForbiddenResponse("Error: already taken");
     }
 
+    private boolean isRequestedColorValid(JoinGameRequest request) {
+            if(request.playerColor() == null || request.playerColor().isEmpty()) {
+                return false;
+            }
+        return !(!request.playerColor().equals("WHITE") & !request.playerColor().equals("BLACK"));
+    }
+
+
+    /*
+
     public ListGameResponse listGames(ListGameRequest request) {
-        // only given auth
         // Verification handled in server
         // compile the entire list of games into a response
         // return the response with empty message

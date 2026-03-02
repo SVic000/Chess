@@ -60,8 +60,9 @@ public class MemoryGameDAO implements GameDAO {
                 updated = new GameData(gameID, current.whiteUsername(), username, current.gameName(), current.game());
             }
             gameStorage.put(gameID,updated );
+        } else {
+            throw new BadRequestResponse("Error: bad request");
         }
-        throw new BadRequestResponse("Error: game doesn't exist");
     }
 
     @Override

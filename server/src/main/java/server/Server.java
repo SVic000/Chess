@@ -15,12 +15,10 @@ import io.javalin.*;
 import io.javalin.http.Context;
 import io.javalin.http.ForbiddenResponse;
 import io.javalin.http.HttpResponseException;
+import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
 import model.UserData;
-import server.Handlers.ClearHandler;
-import server.Handlers.CreateGameHandler;
-import server.Handlers.LoginHandler;
-import server.Handlers.RegisterHandler;
+import server.Handlers.*;
 
 import java.util.Map;
 import java.util.Objects;
@@ -35,6 +33,7 @@ public class Server {
         UserService userService = new UserService(userStorage, authStorage);
         ClearService clearService = new ClearService(userStorage, authStorage,gameStorage);
         GameService gameService = new GameService(authStorage,gameStorage);
+
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .beforeMatched(ctx -> {
                     if(ctx.matchedPath().equals("/game")) { // any game requires auth
@@ -49,6 +48,7 @@ public class Server {
                 .delete("/db", new ClearHandler(clearService))
                 .post("/session", new LoginHandler(userService))
                 .post("/game", new CreateGameHandler(gameService))
+                .put("/game", new JoinGameHandler(gameService))
                 .exception(HttpResponseException.class, this::exceptionHandler)
                 .exception(Exception.class, this::exceptionHandler);
     }
@@ -67,8 +67,11 @@ public class Server {
     private void validateAuthorization(String auth, AuthDAO authStorage){
         if(auth != null) {
             AuthData authData = authStorage.getAuth(auth); // will throw an error if it can't find it in the storage
+            if(authData == null) {
+                throw new UnauthorizedResponse("Error: Unauthorized");
+            }
         } else {
-            throw new ForbiddenResponse("Error: Unauthorized");
+            throw new UnauthorizedResponse("Error: Unauthorized");
         }
     }
 
