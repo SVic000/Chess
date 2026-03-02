@@ -34,7 +34,6 @@ public class UserServiceTest {
         AUTH_STORAGE.clear();
     }
 
-    // register pos run one, register again but perhaps change password?
     @Test
     void registerUserSuccess() throws DataAccessException {
         RegisterRequest test = new RegisterRequest("username","password","email");
@@ -51,7 +50,6 @@ public class UserServiceTest {
         assertThrows(BadRequestResponse.class, ()->SERVICE.register(test));
     }
 
-    // login normal, login different password
     @Test
     void loginSuccess() throws DataAccessException {
         LoginRequest test = new LoginRequest("username","password");
@@ -68,8 +66,6 @@ public class UserServiceTest {
         assertThrows(UnauthorizedResponse.class, ()->SERVICE.login(test));
     }
 
-
-    // logout normal, maybe no negative test since auth done in Server?
     @Test
     void logoutSuccess() throws DataAccessException {
         AuthData auth = AUTH_STORAGE.createAuth("username");
