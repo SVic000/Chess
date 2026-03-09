@@ -1,4 +1,4 @@
-package dataaccess.storage;
+package dataaccess.memoryStorage;
 
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
@@ -19,7 +19,7 @@ public class MemoryUserDAO implements UserDAO {
     }
 
     @Override
-    public Collection<UserData> getUserStorage() {
+    public Collection<UserData> getUserStorage() throws DataAccessException {
         return userStorage.values();
     }
 

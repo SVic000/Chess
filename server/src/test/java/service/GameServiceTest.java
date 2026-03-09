@@ -3,8 +3,8 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
-import dataaccess.storage.MemoryAuthDAO;
-import dataaccess.storage.MemoryGameDAO;
+import dataaccess.memoryStorage.MemoryAuthDAO;
+import dataaccess.memoryStorage.MemoryGameDAO;
 
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.ForbiddenResponse;

@@ -3,20 +3,16 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
-import dataaccess.storage.MemoryAuthDAO;
-import dataaccess.storage.MemoryUserDAO;
+import dataaccess.memoryStorage.MemoryAuthDAO;
+import dataaccess.memoryStorage.MemoryUserDAO;
 
 import io.javalin.http.BadRequestResponse;
-import io.javalin.http.ForbiddenResponse;
 import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
 import model.UserData;
-import org.eclipse.jetty.util.log.Log;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.handlers.objects.*;
-
-import javax.print.DocFlavor;
 
 import java.util.Collection;
 
@@ -29,7 +25,7 @@ public class UserServiceTest {
     static final UserService SERVICE = new UserService(USER_STORAGE,AUTH_STORAGE);
 
     @BeforeEach
-    void clear() {
+    void clear() throws DataAccessException {
         USER_STORAGE.clear();
         AUTH_STORAGE.clear();
     }

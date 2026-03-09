@@ -2,11 +2,12 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
-import dataaccess.storage.MemoryAuthDAO;
-import dataaccess.storage.MemoryGameDAO;
-import dataaccess.storage.MemoryUserDAO;
+import dataaccess.dbStorage.MySqlUserDataAccess;
+import dataaccess.memoryStorage.MemoryAuthDAO;
+import dataaccess.memoryStorage.MemoryGameDAO;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpResponseException;
@@ -22,7 +23,12 @@ public class Server {
     private final Javalin javalin;
 
     public Server() {
-        UserDAO userStorage = new MemoryUserDAO();
+        UserDAO userStorage;
+        try {
+            userStorage = new MySqlUserDataAccess();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
         GameDAO gameStorage = new MemoryGameDAO();
         AuthDAO authStorage = new MemoryAuthDAO();
         UserService userService = new UserService(userStorage, authStorage);
