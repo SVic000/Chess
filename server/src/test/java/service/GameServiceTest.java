@@ -27,7 +27,7 @@ public class GameServiceTest {
     static final GameService SERVICE = new GameService(AUTH_STORAGE,GAME_STORAGE);
 
     @BeforeEach
-    void clear() {
+    void clear() throws DataAccessException {
         GAME_STORAGE.clear();
         AUTH_STORAGE.clear();
     }
@@ -39,7 +39,7 @@ public class GameServiceTest {
         CreateGameResult actual = SERVICE.createGame(test,auth.token());
 
         assertNotNull(actual);
-        assertEquals(1, GAME_STORAGE.getGameStorage().size());
+        assertEquals(1, GAME_STORAGE.listGames().size());
     }
 
     @Test
@@ -59,7 +59,7 @@ public class GameServiceTest {
         JoinGameResult actualRes = SERVICE.joinGame(test, auth.token());
         GameData actualGame = GAME_STORAGE.getGame(game.gameID());
 
-        assertEquals(1, GAME_STORAGE.getGameStorage().size());
+        assertEquals(1, GAME_STORAGE.listGames().size());
         assertEquals(expectedGame,actualGame);
         assertNotNull(actualRes);
     }

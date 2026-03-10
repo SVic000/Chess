@@ -2,18 +2,18 @@ package dataaccess;
 
 import model.GameData;
 
+import javax.xml.crypto.Data;
 import java.util.Collection;
 
 public interface GameDAO {
-    GameData createGame(String gameName);
+    GameData createGame(String gameName) throws DataAccessException;
 
-    GameData getGame(int gameID);
+    GameData getGame(int gameID) throws DataAccessException;
 
-    Collection<GameData> listGames();
+    Collection<GameData> listGames() throws DataAccessException;
 
-    Collection<GameData> getGameStorage();
 
-    void joinGame(int gameID, String username, String color);
+    void joinGame(int gameID, String username, String color)throws DataAccessException;
 
-    void clear();
+    void clear() throws DataAccessException;
 }

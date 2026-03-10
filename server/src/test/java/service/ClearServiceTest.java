@@ -29,7 +29,7 @@ public class ClearServiceTest {
 
         assertEquals(0, AUTH_STORAGE.getAuthStorage().size());
         assertEquals(0, USER_STORAGE.getUserStorage().size());
-        assertEquals(0, GAME_STORAGE.getGameStorage().size());
+        assertEquals(0, GAME_STORAGE.listGames().size());
     }
 
 }

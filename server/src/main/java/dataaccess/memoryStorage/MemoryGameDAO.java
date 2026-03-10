@@ -21,10 +21,6 @@ public class MemoryGameDAO implements GameDAO {
         return gameData;
     }
 
-    @Override
-    public Collection<GameData> getGameStorage() {
-        return gameStorage.values();
-    }
 
 
     @Override
