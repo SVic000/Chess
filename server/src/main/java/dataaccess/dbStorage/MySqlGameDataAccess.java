@@ -49,7 +49,7 @@ public class MySqlGameDataAccess implements GameDAO {
     @Override
     public GameData getGame(int gameID) throws DataAccessException {
         try(Connection conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT * FROM games WHERE gameID";
+            var statement = "SELECT * FROM games WHERE gameID = ?";
             try(PreparedStatement ps = conn.prepareStatement(statement)) {
                 ps.setInt(1,gameID);
                 try(ResultSet rs = ps.executeQuery()) {
@@ -68,7 +68,7 @@ public class MySqlGameDataAccess implements GameDAO {
     public Collection<GameData> listGames() throws DataAccessException {
         Collection<GameData> result = new ArrayList();
         try(Connection conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT gameID FROM games";
+            var statement = "SELECT * FROM games";
             try(PreparedStatement ps = conn.prepareStatement(statement)) {
                 try(ResultSet rs = ps.executeQuery()) {
                     while(rs.next()) {
@@ -86,24 +86,14 @@ public class MySqlGameDataAccess implements GameDAO {
     public void joinGame(int gameID, String username, String color) throws DataAccessException {
         GameData current = getGame(gameID); // will throw error if not in db
         try(Connection conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT gameID FROM games WHERE gameID";
+            String statement;
             String chessGameSerial = new Gson().toJson(current.game());
             if (color.equals("WHITE")) {
-                executeUpdate(statement,
-                        current.gameID(),
-                        current.gameName(),
-                        username,
-                        current.blackUsername(),
-                        chessGameSerial
-                        );
+                statement = "UPDATE games SET whiteUsername = ? WHERE gameID = ?";
+                executeUpdate(statement, username, gameID);
             } else {
-                executeUpdate(statement,
-                        current.gameID(),
-                        current.gameName(),
-                        current.whiteUsername(),
-                        username,
-                        chessGameSerial
-                );
+                statement = "UPDATE games SET blackUsername = ? WHERE gameID = ?";
+                    executeUpdate(statement, username, gameID);
             }
         } catch (Exception e) {
             throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
@@ -143,7 +133,7 @@ public class MySqlGameDataAccess implements GameDAO {
         var blackUsername  = rs.getString("blackUsername");
         var chess  = rs.getString("chessGame");
         ChessGame chessGame = new Gson().fromJson(chess, ChessGame.class);
-        return new GameData(gameID,gameName,whiteUsername,blackUsername,chessGame);
+        return new GameData(gameID,whiteUsername,blackUsername,gameName,chessGame);
     }
 
     private final String[] createStatements = {
