@@ -5,6 +5,7 @@ import dataaccess.UserDAO;
 import io.javalin.http.ForbiddenResponse;
 import io.javalin.http.UnauthorizedResponse;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,4 +41,10 @@ public class MemoryUserDAO implements UserDAO {
         }
         throw new UnauthorizedResponse("Error: User not found");
     }
+
+    @Override
+    public boolean verifyUserPassword(String username, String providedClearTextPassword) throws DataAccessException {
+        return false;
+    }
+
 }

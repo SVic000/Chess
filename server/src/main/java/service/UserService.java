@@ -42,7 +42,7 @@ public class UserService {
         }
         try {
             UserData user = userDAO.getUser(loginRequest.username());
-            if (user.password().equals(loginRequest.password())) {
+            if (userDAO.verifyUserPassword(loginRequest.username(), loginRequest.password())) {
                 AuthData authData = authDAO.createAuth(user.username());
                 result = new LoginResult(user.username(), authData.token(), "");
             } else {

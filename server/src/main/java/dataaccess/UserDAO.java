@@ -14,4 +14,6 @@ public interface UserDAO {
     Collection<UserData> getUserStorage() throws DataAccessException;
 
     UserData getUser(String userName) throws DataAccessException;
+
+    boolean verifyUserPassword(String username, String providedClearTextPassword) throws DataAccessException;
 }

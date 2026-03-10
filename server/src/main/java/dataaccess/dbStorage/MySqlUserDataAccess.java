@@ -7,6 +7,7 @@ import dataaccess.UserDAO;
 import io.javalin.http.ForbiddenResponse;
 import io.javalin.http.UnauthorizedResponse;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -35,7 +36,7 @@ public class MySqlUserDataAccess implements UserDAO {
     public void createUser(UserData user) throws DataAccessException {
         var statement = "INSERT INTO users (username, password, email) VALUES (?,?,?)";
         try {
-            executeUpdate(statement, user.username(), user.password(), user.email());
+            executeUpdate(statement, user.username(), hashUserPassword(user.password()), user.email());
         } catch (DataAccessException e) {
             throw new ForbiddenResponse("Error: already taken");
         }
@@ -127,5 +128,15 @@ public class MySqlUserDataAccess implements UserDAO {
         } catch (SQLException e) {
             throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
         }
+    }
+
+    String hashUserPassword(String clearTextPassword) {
+        return BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
+    }
+
+    @Override
+    public boolean verifyUserPassword(String username, String providedClearTextPassword) throws DataAccessException {
+        UserData dbUser = getUser(username);
+        return BCrypt.checkpw(providedClearTextPassword, dbUser.password());
     }
 }
