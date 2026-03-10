@@ -82,8 +82,7 @@ public class MySqlUserDataAccess implements UserDAO {
         var username = rs.getString("username");
         var password = rs.getString("password");
         var email = rs.getString("email");
-        UserData user = new UserData(username,password,email);
-        return user;
+        return new UserData(username,password,email);
     }
 
     private final String[] createStatements = {

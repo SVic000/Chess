@@ -5,6 +5,7 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
+import dataaccess.dbStorage.MySqlAuthDataAccess;
 import dataaccess.dbStorage.MySqlGameDataAccess;
 import dataaccess.dbStorage.MySqlUserDataAccess;
 import dataaccess.memoryStorage.MemoryAuthDAO;
@@ -26,13 +27,15 @@ public class Server {
     public Server() {
         UserDAO userStorage;
         GameDAO gameStorage;
+        AuthDAO authStorage;
         try {
             userStorage = new MySqlUserDataAccess();
             gameStorage = new MySqlGameDataAccess();
+            authStorage = new MySqlAuthDataAccess();
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
-        AuthDAO authStorage = new MemoryAuthDAO();
+
         UserService userService = new UserService(userStorage, authStorage);
         ClearService clearService = new ClearService(userStorage, authStorage, gameStorage);
         GameService gameService = new GameService(authStorage, gameStorage);

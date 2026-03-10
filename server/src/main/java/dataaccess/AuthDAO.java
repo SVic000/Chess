@@ -5,13 +5,13 @@ import model.AuthData;
 import java.util.Collection;
 
 public interface AuthDAO {
-    void clear();
+    void clear() throws DataAccessException;
 
-    Collection<AuthData> getAuthStorage();
+    Collection<AuthData> getAuthStorage() throws DataAccessException;
 
     AuthData createAuth(String username) throws DataAccessException;
 
-    AuthData getAuth(String token);
+    AuthData getAuth(String token) throws DataAccessException;
 
     void deleteAuth(AuthData authData) throws DataAccessException;
 }

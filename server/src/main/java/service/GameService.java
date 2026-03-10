@@ -65,7 +65,7 @@ public class GameService {
         return new ListGameResult(gameDAO.listGames().stream().toList());
     }
 
-    private void validateAuthorization(String auth) {
+    private void validateAuthorization(String auth) throws DataAccessException {
         if (auth != null) {
             AuthData authData = authDAO.getAuth(auth);
             if (authData == null) {
