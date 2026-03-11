@@ -19,13 +19,13 @@ public class MemoryUserDAO implements UserDAO {
     }
 
     @Override
-    public Collection<UserData> getUserStorage() throws DataAccessException {
+    public Collection<UserData> getUserStorage() {
         return userStorage.values();
     }
 
 
     @Override
-    public void createUser(UserData user) throws DataAccessException {
+    public void createUser(UserData user) {
         if (!userStorage.containsKey(user.username())) {
             userStorage.put(user.username(), user);
             return;
