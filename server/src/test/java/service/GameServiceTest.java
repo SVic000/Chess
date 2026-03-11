@@ -3,6 +3,8 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
+import dataaccess.dbStorage.MySqlAuthDataAccess;
+import dataaccess.dbStorage.MySqlGameDataAccess;
 import dataaccess.memoryStorage.MemoryAuthDAO;
 import dataaccess.memoryStorage.MemoryGameDAO;
 
@@ -21,8 +23,16 @@ import java.util.Collection;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameServiceTest {
-    static final GameDAO GAME_STORAGE = new MemoryGameDAO();
-    static final AuthDAO AUTH_STORAGE = new MemoryAuthDAO();
+    static final GameDAO GAME_STORAGE;
+    static final AuthDAO AUTH_STORAGE;
+    static {
+        try {
+            GAME_STORAGE = new MySqlGameDataAccess();
+            AUTH_STORAGE = new MySqlAuthDataAccess();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     static final GameService SERVICE = new GameService(AUTH_STORAGE,GAME_STORAGE);
 

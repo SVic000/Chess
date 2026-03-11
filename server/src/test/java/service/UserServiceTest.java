@@ -3,6 +3,8 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
+import dataaccess.dbStorage.MySqlAuthDataAccess;
+import dataaccess.dbStorage.MySqlUserDataAccess;
 import dataaccess.memoryStorage.MemoryAuthDAO;
 import dataaccess.memoryStorage.MemoryUserDAO;
 
@@ -19,8 +21,17 @@ import java.util.Collection;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceTest {
-    static final UserDAO USER_STORAGE = new MemoryUserDAO();
-    static final AuthDAO AUTH_STORAGE = new MemoryAuthDAO();
+    static final UserDAO USER_STORAGE;
+    static final AuthDAO AUTH_STORAGE;
+
+    static {
+        try {
+            USER_STORAGE = new MySqlUserDataAccess();
+            AUTH_STORAGE = new MySqlAuthDataAccess();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     static final UserService SERVICE = new UserService(USER_STORAGE,AUTH_STORAGE);
 

@@ -38,7 +38,7 @@ public class MySqlAuthDataAccess implements AuthDAO {
     public Collection<AuthData> getAuthStorage() throws DataAccessException {
         Collection<AuthData> result = new ArrayList<>();
         try(Connection conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT token FROM auths";
+            var statement = "SELECT * FROM auths";
             try(PreparedStatement ps = conn.prepareStatement(statement)) {
                 try(ResultSet rs = ps.executeQuery()) {
                     while(rs.next()) {

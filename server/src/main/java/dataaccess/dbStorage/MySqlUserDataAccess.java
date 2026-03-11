@@ -49,7 +49,7 @@ public class MySqlUserDataAccess implements UserDAO {
     public Collection<UserData> getUserStorage() throws DataAccessException{
         List result = new ArrayList();
         try(Connection conn = DatabaseManager.getConnection()) {
-            var statement = "Select username FROM users";
+            var statement = "Select * FROM users";
             try(PreparedStatement ps = conn.prepareStatement(statement)) {
                 try(ResultSet rs = ps.executeQuery()) {
                     while(rs.next()) {
