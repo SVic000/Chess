@@ -34,7 +34,7 @@ public class MySqlAuthDataAccess implements AuthDAO {
         configureDatabase();
     }
 
-    public static String generateToken() {
+    private static String generateToken() {
         return UUID.randomUUID().toString();
     }
 
@@ -66,12 +66,8 @@ public class MySqlAuthDataAccess implements AuthDAO {
     public AuthData createAuth(String username) throws DataAccessException {
         var statement = "INSERT INTO auths (token, username) VALUES (?,?)";
         String token = generateToken();
-        try {
-            executeUpdate(statement, token, username);
-            return new AuthData(token, username);
-        } catch (DataAccessException e) {
-            throw new ForbiddenResponse("Error: already taken");
-        }
+        executeUpdate(statement, token, username);
+        return new AuthData(token, username);
     }
 
     @Override

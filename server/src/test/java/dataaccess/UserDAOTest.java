@@ -7,6 +7,8 @@ import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
+
 
 public class UserDAOTest {
     static final UserDAO STORAGE;
@@ -92,7 +94,6 @@ public class UserDAOTest {
 
     @Test
     void getUserStorageSuccess() throws DataAccessException {
-        // add something and check to see if the list contains what you're looking for
         UserData test = new UserData("Username","Password","email");
         UserData test1 = new UserData("Username1","Password1","email1");
         STORAGE.createUser(test);
@@ -100,6 +101,19 @@ public class UserDAOTest {
 
         assertDoesNotThrow(STORAGE::getUserStorage);
         assertEquals(2,STORAGE.getUserStorage().size());
+        Collection<UserData> listTest = STORAGE.getUserStorage();
+
+       UserData retrieved1 = (UserData) listTest.toArray()[0];
+       UserData retrieved2 = (UserData) listTest.toArray()[1];
+
+       assertEquals(retrieved1.username(), test.username());
+       assertEquals(retrieved1.email(), test.email());
+       assertTrue(STORAGE.verifyUserPassword(test.username(),test.password()));
+
+
+        assertEquals(retrieved2.username(), test1.username());
+        assertEquals(retrieved2.email(), test1.email());
+        assertTrue(STORAGE.verifyUserPassword(test1.username(),test1.password()));
     }
 
 }
