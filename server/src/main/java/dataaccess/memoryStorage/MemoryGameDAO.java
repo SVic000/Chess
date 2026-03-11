@@ -22,7 +22,6 @@ public class MemoryGameDAO implements GameDAO {
     }
 
 
-
     @Override
     public GameData getGame(int gameID) {
         if (gameStorage.containsKey(gameID)) {

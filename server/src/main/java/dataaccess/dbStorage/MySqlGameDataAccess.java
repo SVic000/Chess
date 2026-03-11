@@ -21,6 +21,18 @@ import static java.sql.Types.NULL;
 
 public class MySqlGameDataAccess implements GameDAO {
     static int gameID = 1;
+    private final String[] createStatements = {
+            """
+            CREATE TABLE IF NOT EXISTS  games (
+              `gameID` INT NOT NULL,
+              `gameName` varchar(256) NOT NULL,
+              `whiteUsername` varchar(256) DEFAULT NULL,
+              `blackUsername` varchar(256) DEFAULT NULL,
+              `chessGame` TEXT NOT NULL,
+              PRIMARY KEY (`gameID`)
+            )
+            """
+    };
 
     public MySqlGameDataAccess() throws DataAccessException {
         configureDatabase();
@@ -33,12 +45,12 @@ public class MySqlGameDataAccess implements GameDAO {
 
         var statement = "INSERT INTO games (gameID, whiteUsername, blackUsername,gameName, chessGame) VALUES (?,?,?,?,?)";
         try {
-            executeUpdate( statement,
+            executeUpdate(statement,
                     gameData.gameID(),
                     gameData.whiteUsername(),
                     gameData.blackUsername(),
                     gameData.gameName(),
-                    chessGameSerial );
+                    chessGameSerial);
         } catch (DataAccessException e) {
             throw new ForbiddenResponse("Error: already taken");
         }
@@ -48,12 +60,12 @@ public class MySqlGameDataAccess implements GameDAO {
 
     @Override
     public GameData getGame(int gameID) throws DataAccessException {
-        try(Connection conn = DatabaseManager.getConnection()) {
+        try (Connection conn = DatabaseManager.getConnection()) {
             var statement = "SELECT * FROM games WHERE gameID = ?";
-            try(PreparedStatement ps = conn.prepareStatement(statement)) {
-                ps.setInt(1,gameID);
-                try(ResultSet rs = ps.executeQuery()) {
-                    if(rs.next()) {
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setInt(1, gameID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
                         return readGame(rs);
                     }
                 }
@@ -67,11 +79,11 @@ public class MySqlGameDataAccess implements GameDAO {
     @Override
     public Collection<GameData> listGames() throws DataAccessException {
         Collection<GameData> result = new ArrayList();
-        try(Connection conn = DatabaseManager.getConnection()) {
+        try (Connection conn = DatabaseManager.getConnection()) {
             var statement = "SELECT * FROM games";
-            try(PreparedStatement ps = conn.prepareStatement(statement)) {
-                try(ResultSet rs = ps.executeQuery()) {
-                    while(rs.next()) {
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
                         result.add(readGame(rs));
                     }
                 }
@@ -85,7 +97,7 @@ public class MySqlGameDataAccess implements GameDAO {
     @Override
     public void joinGame(int gameID, String username, String color) throws DataAccessException {
         GameData current = getGame(gameID); // will throw error if not in db
-        try(Connection conn = DatabaseManager.getConnection()) {
+        try (Connection conn = DatabaseManager.getConnection()) {
             String statement;
             String chessGameSerial = new Gson().toJson(current.game());
             if (color.equals("WHITE")) {
@@ -93,7 +105,7 @@ public class MySqlGameDataAccess implements GameDAO {
                 executeUpdate(statement, username, gameID);
             } else {
                 statement = "UPDATE games SET blackUsername = ? WHERE gameID = ?";
-                    executeUpdate(statement, username, gameID);
+                executeUpdate(statement, username, gameID);
             }
         } catch (Exception e) {
             throw new DataAccessException(String.format("Error: unable to read data: %s", e.getMessage()));
@@ -111,9 +123,14 @@ public class MySqlGameDataAccess implements GameDAO {
             try (PreparedStatement ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (int i = 0; i < params.length; i++) {
                     Object param = params[i];
-                    if (param instanceof String p) ps.setString(i + 1, p);
-                    if (param instanceof Integer p) ps.setInt(i + 1, p);
-                    else if (param == null) ps.setNull(i + 1, NULL);
+                    if (param instanceof String p) {
+                        ps.setString(i + 1, p);
+                    }
+                    if (param instanceof Integer p) {
+                        ps.setInt(i + 1, p);
+                    } else if (param == null) {
+                        ps.setNull(i + 1, NULL);
+                    }
                 }
                 ps.executeUpdate();
                 ResultSet rs = ps.getGeneratedKeys();
@@ -129,25 +146,12 @@ public class MySqlGameDataAccess implements GameDAO {
     private GameData readGame(ResultSet rs) throws SQLException {
         var gameID = rs.getInt("gameID");
         var gameName = rs.getString("gameName");
-        var whiteUsername= rs.getString("whiteUsername");
-        var blackUsername  = rs.getString("blackUsername");
-        var chess  = rs.getString("chessGame");
+        var whiteUsername = rs.getString("whiteUsername");
+        var blackUsername = rs.getString("blackUsername");
+        var chess = rs.getString("chessGame");
         ChessGame chessGame = new Gson().fromJson(chess, ChessGame.class);
-        return new GameData(gameID,whiteUsername,blackUsername,gameName,chessGame);
+        return new GameData(gameID, whiteUsername, blackUsername, gameName, chessGame);
     }
-
-    private final String[] createStatements = {
-            """
-            CREATE TABLE IF NOT EXISTS  games (
-              `gameID` INT NOT NULL,
-              `gameName` varchar(256) NOT NULL,
-              `whiteUsername` varchar(256) DEFAULT NULL,
-              `blackUsername` varchar(256) DEFAULT NULL,
-              `chessGame` TEXT NOT NULL,
-              PRIMARY KEY (`gameID`)
-            )
-            """
-    };
 
     private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();

@@ -1,16 +1,16 @@
 package service;
 
-import dataaccess.DataAccessException;
-import dataaccess.UserDAO;
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
+import dataaccess.UserDAO;
 import dataaccess.memoryStorage.MemoryAuthDAO;
 import dataaccess.memoryStorage.MemoryGameDAO;
 import dataaccess.memoryStorage.MemoryUserDAO;
 import model.UserData;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ClearServiceTest {
     static final UserDAO USER_STORAGE = new MemoryUserDAO();
@@ -21,7 +21,7 @@ public class ClearServiceTest {
 
     @Test
     void clear() throws DataAccessException {
-        USER_STORAGE.createUser(new UserData("username","password","email"));
+        USER_STORAGE.createUser(new UserData("username", "password", "email"));
         AUTH_STORAGE.createAuth("username");
         GAME_STORAGE.createGame("gameName");
 

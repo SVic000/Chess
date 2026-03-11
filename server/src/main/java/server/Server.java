@@ -8,8 +8,6 @@ import dataaccess.UserDAO;
 import dataaccess.dbStorage.MySqlAuthDataAccess;
 import dataaccess.dbStorage.MySqlGameDataAccess;
 import dataaccess.dbStorage.MySqlUserDataAccess;
-import dataaccess.memoryStorage.MemoryAuthDAO;
-import dataaccess.memoryStorage.MemoryGameDAO;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpResponseException;

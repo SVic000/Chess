@@ -5,9 +5,6 @@ import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import dataaccess.dbStorage.MySqlAuthDataAccess;
 import dataaccess.dbStorage.MySqlUserDataAccess;
-import dataaccess.memoryStorage.MemoryAuthDAO;
-import dataaccess.memoryStorage.MemoryUserDAO;
-
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
@@ -23,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserServiceTest {
     static final UserDAO USER_STORAGE;
     static final AuthDAO AUTH_STORAGE;
+    static final UserService SERVICE = new UserService(USER_STORAGE, AUTH_STORAGE);
 
     static {
         try {
@@ -33,8 +31,6 @@ public class UserServiceTest {
         }
     }
 
-    static final UserService SERVICE = new UserService(USER_STORAGE,AUTH_STORAGE);
-
     @BeforeEach
     void clear() throws DataAccessException {
         USER_STORAGE.clear();
@@ -43,24 +39,24 @@ public class UserServiceTest {
 
     @Test
     void registerUserSuccess() throws DataAccessException {
-        RegisterRequest test = new RegisterRequest("username","password","email");
+        RegisterRequest test = new RegisterRequest("username", "password", "email");
         RegisterResult actual = SERVICE.register(test);
 
         assertEquals(test.username(), actual.username());
-        assertNotEquals(null,actual.authToken());
-        assertEquals(1,AUTH_STORAGE.getAuthStorage().size());
+        assertNotEquals(null, actual.authToken());
+        assertEquals(1, AUTH_STORAGE.getAuthStorage().size());
     }
 
     @Test
     void registerUserNoUsername() throws DataAccessException {
         RegisterRequest test = new RegisterRequest(null, "password", "email");
-        assertThrows(BadRequestResponse.class, ()->SERVICE.register(test));
+        assertThrows(BadRequestResponse.class, () -> SERVICE.register(test));
     }
 
     @Test
     void loginSuccess() throws DataAccessException {
-        LoginRequest test = new LoginRequest("username","password");
-        USER_STORAGE.createUser(new UserData("username","password","email"));
+        LoginRequest test = new LoginRequest("username", "password");
+        USER_STORAGE.createUser(new UserData("username", "password", "email"));
 
         LoginResult actual = SERVICE.login(test);
         Collection<AuthData> authStorage = AUTH_STORAGE.getAuthStorage();
@@ -68,9 +64,9 @@ public class UserServiceTest {
     }
 
     @Test
-    void loginNotExistingUser(){
-        LoginRequest test = new LoginRequest("username","password");
-        assertThrows(UnauthorizedResponse.class, ()->SERVICE.login(test));
+    void loginNotExistingUser() {
+        LoginRequest test = new LoginRequest("username", "password");
+        assertThrows(UnauthorizedResponse.class, () -> SERVICE.login(test));
     }
 
     @Test
@@ -85,7 +81,7 @@ public class UserServiceTest {
     @Test
     void logoutUnauthorized() {
         LogoutRequest test = new LogoutRequest("");
-        assertThrows(UnauthorizedResponse.class, ()->SERVICE.logout(test));
+        assertThrows(UnauthorizedResponse.class, () -> SERVICE.logout(test));
     }
 
 }

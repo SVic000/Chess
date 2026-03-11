@@ -20,6 +20,16 @@ import static java.sql.Types.NULL;
 
 public class MySqlAuthDataAccess implements AuthDAO {
 
+    private final String[] createStatements = {
+            """
+            CREATE TABLE IF NOT EXISTS  auths (
+              `token` varchar(256) NOT NULL,
+              `userName` varchar(256) NOT NULL,
+              PRIMARY KEY (`token`)
+            )
+            """
+    };
+
     public MySqlAuthDataAccess() throws DataAccessException {
         configureDatabase();
     }
@@ -37,11 +47,11 @@ public class MySqlAuthDataAccess implements AuthDAO {
     @Override
     public Collection<AuthData> getAuthStorage() throws DataAccessException {
         Collection<AuthData> result = new ArrayList<>();
-        try(Connection conn = DatabaseManager.getConnection()) {
+        try (Connection conn = DatabaseManager.getConnection()) {
             var statement = "SELECT * FROM auths";
-            try(PreparedStatement ps = conn.prepareStatement(statement)) {
-                try(ResultSet rs = ps.executeQuery()) {
-                    while(rs.next()) {
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
                         result.add(readAuth(rs));
                     }
                 }
@@ -58,7 +68,7 @@ public class MySqlAuthDataAccess implements AuthDAO {
         String token = generateToken();
         try {
             executeUpdate(statement, token, username);
-            return  new AuthData(token, username);
+            return new AuthData(token, username);
         } catch (DataAccessException e) {
             throw new ForbiddenResponse("Error: already taken");
         }
@@ -66,12 +76,12 @@ public class MySqlAuthDataAccess implements AuthDAO {
 
     @Override
     public AuthData getAuth(String token) throws DataAccessException {
-        try(Connection conn = DatabaseManager.getConnection()) {
+        try (Connection conn = DatabaseManager.getConnection()) {
             var statement = "SELECT * FROM auths WHERE token = ?";
-            try(PreparedStatement ps = conn.prepareStatement(statement)) {
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
                 ps.setString(1, token);
-                try(ResultSet rs = ps.executeQuery()) {
-                    if(rs.next()) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
                         return readAuth(rs);
                     }
                 }
@@ -85,9 +95,9 @@ public class MySqlAuthDataAccess implements AuthDAO {
     @Override
     public void deleteAuth(AuthData authData) throws DataAccessException {
         getAuth(authData.token()); // throw not authorized error if not found
-        try(Connection conn = DatabaseManager.getConnection()) {
+        try (Connection conn = DatabaseManager.getConnection()) {
             var statement = "DELETE FROM auths WHERE token = ?";
-            executeUpdate(statement,authData.token());
+            executeUpdate(statement, authData.token());
         } catch (Exception e) {
             throw new DataAccessException(String.format("Error: unable to read data: %s", e.getMessage()));
         }
@@ -98,8 +108,11 @@ public class MySqlAuthDataAccess implements AuthDAO {
             try (PreparedStatement ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (int i = 0; i < params.length; i++) {
                     Object param = params[i];
-                    if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param == null) ps.setNull(i + 1, NULL);
+                    if (param instanceof String p) {
+                        ps.setString(i + 1, p);
+                    } else if (param == null) {
+                        ps.setNull(i + 1, NULL);
+                    }
                 }
                 ps.executeUpdate();
                 ResultSet rs = ps.getGeneratedKeys();
@@ -114,19 +127,9 @@ public class MySqlAuthDataAccess implements AuthDAO {
 
     private AuthData readAuth(ResultSet rs) throws SQLException {
         var token = rs.getString("token");
-        var username= rs.getString("username");
+        var username = rs.getString("username");
         return new AuthData(token, username);
     }
-
-    private final String[] createStatements = {
-            """
-            CREATE TABLE IF NOT EXISTS  auths (
-              `token` varchar(256) NOT NULL,
-              `userName` varchar(256) NOT NULL,
-              PRIMARY KEY (`token`)
-            )
-            """
-    };
 
     private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();

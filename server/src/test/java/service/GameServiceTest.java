@@ -5,9 +5,6 @@ import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.dbStorage.MySqlAuthDataAccess;
 import dataaccess.dbStorage.MySqlGameDataAccess;
-import dataaccess.memoryStorage.MemoryAuthDAO;
-import dataaccess.memoryStorage.MemoryGameDAO;
-
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.ForbiddenResponse;
 import io.javalin.http.UnauthorizedResponse;
@@ -25,16 +22,17 @@ import static org.junit.jupiter.api.Assertions.*;
 public class GameServiceTest {
     static final GameDAO GAME_STORAGE;
     static final AuthDAO AUTH_STORAGE;
+    static final GameService SERVICE;
+
     static {
         try {
             GAME_STORAGE = new MySqlGameDataAccess();
             AUTH_STORAGE = new MySqlAuthDataAccess();
+            SERVICE = new GameService(AUTH_STORAGE, GAME_STORAGE);
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
     }
-
-    static final GameService SERVICE = new GameService(AUTH_STORAGE,GAME_STORAGE);
 
     @BeforeEach
     void clear() throws DataAccessException {
@@ -46,7 +44,7 @@ public class GameServiceTest {
     void createGameSuccess() throws DataAccessException {
         CreateGameRequest test = new CreateGameRequest("Name");
         AuthData auth = AUTH_STORAGE.createAuth("username");
-        CreateGameResult actual = SERVICE.createGame(test,auth.token());
+        CreateGameResult actual = SERVICE.createGame(test, auth.token());
 
         assertNotNull(actual);
         assertEquals(1, GAME_STORAGE.listGames().size());
@@ -55,7 +53,7 @@ public class GameServiceTest {
     @Test
     void createNoGivenGameName() throws DataAccessException {
         AuthData auth = AUTH_STORAGE.createAuth("username");
-        assertThrows(BadRequestResponse.class, ()->SERVICE.createGame(new CreateGameRequest(""), auth.token()));
+        assertThrows(BadRequestResponse.class, () -> SERVICE.createGame(new CreateGameRequest(""), auth.token()));
     }
 
     @Test
@@ -64,13 +62,13 @@ public class GameServiceTest {
         AuthData auth = AUTH_STORAGE.createAuth("username");
 
         JoinGameRequest test = new JoinGameRequest("WHITE", game.gameID());
-        GameData expectedGame = new GameData(game.gameID(),"username",null,"test",game.game());
+        GameData expectedGame = new GameData(game.gameID(), "username", null, "test", game.game());
 
         JoinGameResult actualRes = SERVICE.joinGame(test, auth.token());
         GameData actualGame = GAME_STORAGE.getGame(game.gameID());
 
         assertEquals(1, GAME_STORAGE.listGames().size());
-        assertEquals(expectedGame,actualGame);
+        assertEquals(expectedGame, actualGame);
         assertNotNull(actualRes);
     }
 
@@ -83,7 +81,7 @@ public class GameServiceTest {
         JoinGameRequest test = new JoinGameRequest("WHITE", game.gameID());
         SERVICE.joinGame(test, takenAuth.token());
 
-        assertThrows(ForbiddenResponse.class,()->SERVICE.joinGame(test,auth.token()));
+        assertThrows(ForbiddenResponse.class, () -> SERVICE.joinGame(test, auth.token()));
     }
 
     @Test
@@ -105,6 +103,6 @@ public class GameServiceTest {
 
     @Test
     void listGameUnauthorized() {
-        assertThrows(UnauthorizedResponse.class, ()->SERVICE.listGames("token"));
+        assertThrows(UnauthorizedResponse.class, () -> SERVICE.listGames("token"));
     }
 }
