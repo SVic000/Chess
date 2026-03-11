@@ -54,7 +54,7 @@ public class GameDAOTest {
     }
 
     @Test
-    void getGameWithNoID (){
+    void getGameWithNoID() {
         assertThrows(BadRequestResponse.class, () -> STORAGE.getGame(0));
     }
 

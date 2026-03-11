@@ -19,7 +19,7 @@ public class GameService {
     }
 
     public CreateGameResult createGame(CreateGameRequest request, String authToken) throws DataAccessException {
-        new ValidateAuthorization(authDAO,authToken);
+        new ValidateAuthorization(authDAO, authToken);
 
         if (request.gameName() == null || request.gameName().isEmpty()) {
             throw new BadRequestResponse("Error: bad request");
@@ -30,7 +30,7 @@ public class GameService {
 
 
     public JoinGameResult joinGame(JoinGameRequest request, String authToken) throws DataAccessException {
-        new ValidateAuthorization(authDAO,authToken);
+        new ValidateAuthorization(authDAO, authToken);
 
         AuthData authData = authDAO.getAuth(authToken);
         GameData gameData = gameDAO.getGame(request.gameID());
@@ -60,7 +60,7 @@ public class GameService {
 
 
     public ListGameResult listGames(String auth) throws DataAccessException {
-        new ValidateAuthorization(authDAO,auth);
+        new ValidateAuthorization(authDAO, auth);
         return new ListGameResult(gameDAO.listGames().stream().toList());
     }
 
