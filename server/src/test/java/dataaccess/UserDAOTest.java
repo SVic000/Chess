@@ -77,7 +77,7 @@ public class UserDAOTest {
     }
 
     @Test
-    void VerifyUserWrongPassword() throws DataAccessException {
+    void verifyUserWrongPassword() throws DataAccessException {
         UserData test = new UserData("Username", "Password", "email");
         STORAGE.createUser(test);
 
