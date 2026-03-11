@@ -59,7 +59,7 @@ public class MySqlGameDataAccess implements GameDAO {
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(String.format("Error: unable to read data: %s", e.getMessage()));
         }
         throw new BadRequestResponse("Error: Game not found");
     }
@@ -77,7 +77,7 @@ public class MySqlGameDataAccess implements GameDAO {
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(String.format("Error: unable to read data: %s", e.getMessage()));
         }
         return result;
     }
@@ -96,7 +96,7 @@ public class MySqlGameDataAccess implements GameDAO {
                     executeUpdate(statement, username, gameID);
             }
         } catch (Exception e) {
-            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(String.format("Error: unable to read data: %s", e.getMessage()));
         }
     }
 
@@ -122,7 +122,7 @@ public class MySqlGameDataAccess implements GameDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
+            throw new DataAccessException(String.format("Error: unable to update database: %s, %s", statement, e.getMessage()));
         }
     }
 
@@ -158,7 +158,7 @@ public class MySqlGameDataAccess implements GameDAO {
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
+            throw new DataAccessException(String.format("Error: unable to configure database: %s", ex.getMessage()));
         }
     }
 }

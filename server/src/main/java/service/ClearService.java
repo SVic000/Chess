@@ -17,8 +17,12 @@ public class ClearService {
     }
 
     public void clear() throws DataAccessException {
-        userDAO.clear();
-        authDAO.clear();
-        gameDAO.clear();
+        try {
+            userDAO.clear();
+            authDAO.clear();
+            gameDAO.clear();
+        } catch (DataAccessException e) {
+            throw new DataAccessException(String.format("Error: unable to read data: %s", e.getMessage()));
+        }
     }
 }

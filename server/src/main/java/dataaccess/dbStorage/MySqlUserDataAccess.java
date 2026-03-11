@@ -38,7 +38,10 @@ public class MySqlUserDataAccess implements UserDAO {
         try {
             executeUpdate(statement, user.username(), hashUserPassword(user.password()), user.email());
         } catch (DataAccessException e) {
-            throw new ForbiddenResponse("Error: already taken");
+            if(e.getMessage().contains("Duplicate entry")) {
+                throw new ForbiddenResponse("Error: already taken");
+            }
+            throw new DataAccessException(String.format("Error: unable to read data: %s", e.getMessage()));
         }
     }
 
@@ -55,7 +58,7 @@ public class MySqlUserDataAccess implements UserDAO {
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(String.format("Error: unable to read data: %s", e.getMessage()));
         }
         return result;
     }
@@ -73,7 +76,7 @@ public class MySqlUserDataAccess implements UserDAO {
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(String.format("Error: unable to read data: %s", e.getMessage()));
         }
         throw new UnauthorizedResponse("Error: User not found");
     }
@@ -105,7 +108,7 @@ public class MySqlUserDataAccess implements UserDAO {
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
+            throw new DataAccessException(String.format("Error: unable to configure database: %s", ex.getMessage()));
         }
     }
 
@@ -125,7 +128,7 @@ public class MySqlUserDataAccess implements UserDAO {
                 return "";
             }
         } catch (SQLException e) {
-            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
+            throw new DataAccessException(String.format("Error: unable to update database: %s, %s", statement, e.getMessage()));
         }
     }
 
