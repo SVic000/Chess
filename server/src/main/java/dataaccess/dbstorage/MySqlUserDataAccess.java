@@ -1,4 +1,4 @@
-package dataaccess.dbStorage;
+package dataaccess.dbstorage;
 
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
@@ -16,13 +16,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
-
 public class MySqlUserDataAccess implements UserDAO {
+    private final ConfigureAndExecute configureAndExecute = new ConfigureAndExecute();
 
-    private final String[] createStatements = {
-            """
+    public MySqlUserDataAccess() throws DataAccessException {
+        String[] createStatements = {
+                """
             CREATE TABLE IF NOT EXISTS  users (
               `userName` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
@@ -30,23 +29,21 @@ public class MySqlUserDataAccess implements UserDAO {
               PRIMARY KEY (`userName`)
             )
             """
-    };
-
-    public MySqlUserDataAccess() throws DataAccessException {
-        configureDatabase();
+        };
+        configureAndExecute.configureDatabase(createStatements);
     }
 
     @Override
     public void clear() throws DataAccessException {
         var statement = "TRUNCATE users";
-        executeUpdate(statement);
+        configureAndExecute.executeUpdate(statement);
     }
 
     @Override
     public void createUser(UserData user) throws DataAccessException {
         var statement = "INSERT INTO users (username, password, email) VALUES (?,?,?)";
         try {
-            executeUpdate(statement, user.username(), hashUserPassword(user.password()), user.email());
+            configureAndExecute.executeUpdate(statement, user.username(), hashUserPassword(user.password()), user.email());
         } catch (DataAccessException e) {
             if (e.getMessage().contains("Duplicate entry")) {
                 throw new ForbiddenResponse("Error: already taken");
@@ -96,42 +93,6 @@ public class MySqlUserDataAccess implements UserDAO {
         var password = rs.getString("password");
         var email = rs.getString("email");
         return new UserData(username, password, email);
-    }
-
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (Connection conn = DatabaseManager.getConnection()) {
-            for (String statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Error: unable to configure database: %s", ex.getMessage()));
-        }
-    }
-
-    private String executeUpdate(String statement, Object... params) throws DataAccessException {
-        try (Connection conn = DatabaseManager.getConnection()) {
-            try (PreparedStatement ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
-                for (int i = 0; i < params.length; i++) {
-                    Object param = params[i];
-                    if (param instanceof String p) {
-                        ps.setString(i + 1, p);
-                    } else if (param == null) {
-                        ps.setNull(i + 1, NULL);
-                    }
-                }
-                ps.executeUpdate();
-                ResultSet rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    return rs.getString(1);
-                }
-                return "";
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException(String.format("Error: unable to update database: %s, %s", statement, e.getMessage()));
-        }
     }
 
     String hashUserPassword(String clearTextPassword) {

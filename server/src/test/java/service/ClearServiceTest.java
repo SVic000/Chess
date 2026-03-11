@@ -4,9 +4,9 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
-import dataaccess.memoryStorage.MemoryAuthDAO;
-import dataaccess.memoryStorage.MemoryGameDAO;
-import dataaccess.memoryStorage.MemoryUserDAO;
+import dataaccess.memorystorage.MemoryAuthDAO;
+import dataaccess.memorystorage.MemoryGameDAO;
+import dataaccess.memorystorage.MemoryUserDAO;
 import model.UserData;
 import org.junit.jupiter.api.Test;
 

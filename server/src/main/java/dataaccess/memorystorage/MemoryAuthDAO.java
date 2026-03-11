@@ -1,4 +1,4 @@
-package dataaccess.memoryStorage;
+package dataaccess.memorystorage;
 
 import dataaccess.AuthDAO;
 import io.javalin.http.BadRequestResponse;

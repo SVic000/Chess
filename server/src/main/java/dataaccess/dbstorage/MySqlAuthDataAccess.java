@@ -1,9 +1,8 @@
-package dataaccess.dbStorage;
+package dataaccess.dbstorage;
 
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
-import io.javalin.http.ForbiddenResponse;
 import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
 
@@ -19,19 +18,19 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 
 public class MySqlAuthDataAccess implements AuthDAO {
+    private final ConfigureAndExecute configureAndExecute = new ConfigureAndExecute();
 
-    private final String[] createStatements = {
-            """
+    public MySqlAuthDataAccess() throws DataAccessException {
+        String[] createStatements = {
+                """
             CREATE TABLE IF NOT EXISTS  auths (
               `token` varchar(256) NOT NULL,
               `userName` varchar(256) NOT NULL,
               PRIMARY KEY (`token`)
             )
             """
-    };
-
-    public MySqlAuthDataAccess() throws DataAccessException {
-        configureDatabase();
+        };
+        configureAndExecute.configureDatabase(createStatements);
     }
 
     private static String generateToken() {
@@ -41,7 +40,7 @@ public class MySqlAuthDataAccess implements AuthDAO {
     @Override
     public void clear() throws DataAccessException {
         var statement = "TRUNCATE auths";
-        executeUpdate(statement);
+        configureAndExecute.executeUpdate(statement);
     }
 
     @Override
@@ -66,7 +65,7 @@ public class MySqlAuthDataAccess implements AuthDAO {
     public AuthData createAuth(String username) throws DataAccessException {
         var statement = "INSERT INTO auths (token, username) VALUES (?,?)";
         String token = generateToken();
-        executeUpdate(statement, token, username);
+        configureAndExecute.executeUpdate(statement, token, username);
         return new AuthData(token, username);
     }
 
@@ -93,31 +92,9 @@ public class MySqlAuthDataAccess implements AuthDAO {
         getAuth(authData.token()); // throw not authorized error if not found
         try (Connection conn = DatabaseManager.getConnection()) {
             var statement = "DELETE FROM auths WHERE token = ?";
-            executeUpdate(statement, authData.token());
+            configureAndExecute.executeUpdate(statement, authData.token());
         } catch (Exception e) {
             throw new DataAccessException(String.format("Error: unable to read data: %s", e.getMessage()));
-        }
-    }
-
-    private void executeUpdate(String statement, Object... params) throws DataAccessException {
-        try (Connection conn = DatabaseManager.getConnection()) {
-            try (PreparedStatement ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
-                for (int i = 0; i < params.length; i++) {
-                    Object param = params[i];
-                    if (param instanceof String p) {
-                        ps.setString(i + 1, p);
-                    } else if (param == null) {
-                        ps.setNull(i + 1, NULL);
-                    }
-                }
-                ps.executeUpdate();
-                ResultSet rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    rs.getString(1);
-                }
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException(String.format("Error: unable to update database: %s, %s", statement, e.getMessage()));
         }
     }
 
@@ -127,16 +104,4 @@ public class MySqlAuthDataAccess implements AuthDAO {
         return new AuthData(token, username);
     }
 
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (Connection conn = DatabaseManager.getConnection()) {
-            for (String statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Error: unable to configure database: %s", ex.getMessage()));
-        }
-    }
 }

@@ -1,7 +1,7 @@
 package dataaccess;
 
 import chess.ChessGame;
-import dataaccess.dbStorage.MySqlGameDataAccess;
+import dataaccess.dbstorage.MySqlGameDataAccess;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.ForbiddenResponse;
 import model.GameData;

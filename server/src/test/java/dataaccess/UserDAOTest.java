@@ -1,7 +1,7 @@
 package dataaccess;
 import static org.junit.jupiter.api.Assertions.*;
 
-import dataaccess.dbStorage.MySqlUserDataAccess;
+import dataaccess.dbstorage.MySqlUserDataAccess;
 import io.javalin.http.UnauthorizedResponse;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
