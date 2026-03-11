@@ -20,12 +20,13 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserServiceTest {
     static final UserDAO USER_STORAGE;
     static final AuthDAO AUTH_STORAGE;
-    static final UserService SERVICE = new UserService(USER_STORAGE, AUTH_STORAGE);
+    static final UserService SERVICE;
 
     static {
         try {
             USER_STORAGE = new MySqlUserDataAccess();
             AUTH_STORAGE = new MySqlAuthDataAccess();
+            SERVICE = new UserService(USER_STORAGE, AUTH_STORAGE);
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
