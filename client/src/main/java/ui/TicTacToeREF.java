@@ -26,12 +26,12 @@ public class TicTacToeREF {
 
         out.print(ERASE_SCREEN);
 
-        drawHeaders(out);
+  //      drawHeaders(out);
 
         drawTicTacToeBoard(out);
 
-        out.print(SET_BG_COLOR_BLACK);
-        out.print(SET_TEXT_COLOR_WHITE);
+//        out.print(SET_BG_COLOR + "130m");
+ //       out.print(SET_TEXT_COLOR_WHITE);
     }
 
     private static void drawHeaders(PrintStream out) {
@@ -60,8 +60,8 @@ public class TicTacToeREF {
     }
 
     private static void printHeaderText(PrintStream out, String player) {
-        out.print(SET_BG_COLOR_BLACK);
-        out.print(SET_TEXT_COLOR_GREEN);
+        out.print(SET_TEXT_COLOR_BLACK);
+        out.print(SET_BG_COLOR_OFF_WHITE);
 
         out.print(player);
 
@@ -138,7 +138,7 @@ public class TicTacToeREF {
     }
 
     private static void setBlack(PrintStream out) {
-        out.print(SET_BG_COLOR_BLACK);
+       out.print(SET_BG_COLOR_BURNT_ORANGE);
         out.print(SET_TEXT_COLOR_BLACK);
     }
 
