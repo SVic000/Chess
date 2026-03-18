@@ -5,6 +5,7 @@ import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.dbstorage.MySqlAuthDataAccess;
 import dataaccess.dbstorage.MySqlGameDataAccess;
+import httpobjs.*;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.ForbiddenResponse;
 import io.javalin.http.UnauthorizedResponse;
@@ -12,7 +13,6 @@ import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import server.handlers.objects.*;
 
 import java.util.ArrayList;
 import java.util.Collection;

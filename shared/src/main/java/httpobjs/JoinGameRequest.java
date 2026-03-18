@@ -1,4 +1,4 @@
-package server.handlers.objects;
+package httpobjs;
 
 public record JoinGameRequest(String playerColor, int gameID) {
 }

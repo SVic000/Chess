@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import org.jetbrains.annotations.NotNull;
-import server.handlers.objects.CreateGameRequest;
-import server.handlers.objects.CreateGameResult;
+import httpobjs.CreateGameRequest;
+import httpobjs.CreateGameResult;
 import service.GameService;
 
 public class CreateGameHandler implements Handler {

@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import org.jetbrains.annotations.NotNull;
-import server.handlers.objects.LoginRequest;
-import server.handlers.objects.LoginResult;
+import httpobjs.LoginRequest;
+import httpobjs.LoginResult;
 import service.UserService;
 
 public class LoginHandler implements Handler {

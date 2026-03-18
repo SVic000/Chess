@@ -5,13 +5,13 @@ import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import dataaccess.dbstorage.MySqlAuthDataAccess;
 import dataaccess.dbstorage.MySqlUserDataAccess;
+import httpobjs.*;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import server.handlers.objects.*;
 
 import java.util.Collection;
 

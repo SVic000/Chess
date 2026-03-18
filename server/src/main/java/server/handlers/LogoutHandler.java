@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import org.jetbrains.annotations.NotNull;
-import server.handlers.objects.ClearResult;
-import server.handlers.objects.LogoutRequest;
+import httpobjs.ClearResult;
+import httpobjs.LogoutRequest;
 import service.UserService;
 
 public class LogoutHandler implements Handler {

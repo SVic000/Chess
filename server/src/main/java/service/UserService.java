@@ -3,11 +3,11 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
+import httpobjs.*;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
 import model.UserData;
-import server.handlers.objects.*;
 
 public class UserService {
     private final UserDAO userDAO;

@@ -3,11 +3,11 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
+import httpobjs.*;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.ForbiddenResponse;
 import model.AuthData;
 import model.GameData;
-import server.handlers.objects.*;
 
 public class GameService {
     private final AuthDAO authDAO;

@@ -1,4 +1,4 @@
-package server.handlers.objects;
+package httpobjs;
 
 public record LogoutRequest(String authToken) {
 }
