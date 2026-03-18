@@ -38,6 +38,8 @@ public class DrawChessBoard {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
         printHeaderTextRow(out);
+        newRow(out);
+
         if(color.equals("WHITE")) {
             printWhiteBoard(out);
         } else {
@@ -81,14 +83,16 @@ public class DrawChessBoard {
 
     static void printWhiteBoard(PrintStream out) {
         boolean isColorDark = FALSE;
+        int index = 0;
         for(int i = 8; i > 0; i--) {
-            printHeaderTextSingle(out, i-1);
+            printHeaderTextSingle(out, index);
             for(int j = 1; j < 9; j++) {
                 isColorDark = wasPreviousColorDark(out, isColorDark);
                 printBoardPiece(out,i,j);
             }
-            printHeaderTextSingle(out, i-1);
+            printHeaderTextSingle(out, index);
             isColorDark = wasPreviousColorDark(out, isColorDark);
+            index++;
             newRow(out);
         }
     }
@@ -108,10 +112,10 @@ public class DrawChessBoard {
     private static void updateLetterAndNumberOrder(String color) {
         if(color.equals("BLACK")) {
             letters = List.of(EMPTY, " h "," g ", " f ", " e ", " d ", " c ", " b ", " a ", EMPTY);
-            numbers = List.of(" 8 ", " 7 ", " 6 ", " 5 ", " 4 ", " 3 ", " 2 ", " 1 ");
+            numbers = List.of(" 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 ");
         } else {
             letters = List.of(EMPTY, " a ", " b ", " c ", " d ", " e ", " f ", " g ", " h ", EMPTY);
-            numbers = List.of(" 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 ");
+            numbers = List.of(" 8 ", " 7 ", " 6 ", " 5 ", " 4 ", " 3 ", " 2 ", " 1 ");
         }
     }
 
