@@ -13,7 +13,6 @@ import static java.lang.Boolean.TRUE;
 import static ui.EscapeSequences.*;
 
 public class DrawChessBoard {
-    private final int CHESSBOARD_WIDTH_IN_SQUARES = 8;
     private static ChessGame game = new ChessGame();
     private static String color = "WHITE";
     private static List<String> letters;
