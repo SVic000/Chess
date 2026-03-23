@@ -45,6 +45,7 @@ public class DrawChessBoard {
         } else {
             printBlackBoard(out);
         }
+
         printHeaderTextRow(out);
     }
 
