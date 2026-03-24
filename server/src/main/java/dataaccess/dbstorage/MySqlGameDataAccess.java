@@ -114,6 +114,7 @@ public class MySqlGameDataAccess implements GameDAO {
     public void clear() throws DataAccessException {
         var statement = "TRUNCATE games";
         configureAndExecute.executeUpdate(statement);
+        gameID = 1;
     }
 
     private GameData readGame(ResultSet rs) throws SQLException {
