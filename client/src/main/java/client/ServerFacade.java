@@ -1,9 +1,6 @@
 package client;
 
 import httpobjs.*;
-import io.javalin.http.HttpResponseException;
-
-import java.net.http.HttpRequest;
 
 public class ServerFacade {
     private final ClientCommunicator communicator;
@@ -12,14 +9,14 @@ public class ServerFacade {
         communicator = new ClientCommunicator(url);
     }
 
-    public RegisterResult register(RegisterRequest request, String authToken) {
-        var buildReq = communicator.buildRequest("POST", "/user", request, authToken);
+    public RegisterResult register(RegisterRequest request) {
+        var buildReq = communicator.buildRequest("POST", "/user", request, "");
         var response = communicator.sendRequest(buildReq);
         return communicator.handleResponse(response, RegisterResult.class);
     }
 
-    public LoginResult login(LoginRequest request, String authToken) {
-        var buildReq = communicator.buildRequest("POST", "/session", request, authToken);
+    public LoginResult login(LoginRequest request) {
+        var buildReq = communicator.buildRequest("POST", "/session", request, "");
         var response = communicator.sendRequest(buildReq);
         return communicator.handleResponse(response, LoginResult.class);
     }
@@ -44,11 +41,11 @@ public class ServerFacade {
 
     public void logout(LogoutRequest request, String authToken) {
         var buildReq = communicator.buildRequest("DELETE", "/session", request, authToken);
-        var response = communicator.sendRequest(buildReq);
+        communicator.sendRequest(buildReq);
     }
 
-    public void clear(ClearRequest request, String authToken) {
-        var buildReq = communicator.buildRequest("DELETE", "/db", request, authToken);
-        var response = communicator.sendRequest(buildReq);
+    public void clear() {
+        var buildReq = communicator.buildRequest("DELETE", "/db", new ClearRequest(""), "");
+        communicator.sendRequest(buildReq);
     }
 }
