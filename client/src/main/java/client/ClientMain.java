@@ -37,9 +37,6 @@ public class ClientMain {
                 if(!result.equals("4")) {
                     System.out.println(result);
                     System.out.println();
-                    if(line.equals("2")) {
-                        System.out.println(menu());
-                    }
                 }
                 if(isLoggedIn) {
                     signedInREPL(scanner);
@@ -155,9 +152,8 @@ public class ClientMain {
 
     private static String logOut() {
         assertSignedIn();
-        LogoutRequest req = new LogoutRequest(authToken);
         try {
-            SERVER.logout(req, authToken);
+            SERVER.logout(authToken);
         } catch (HttpResponseException e) {
             return "Server Error: Unable to log you out, try again.";
         }
@@ -297,8 +293,11 @@ public class ClientMain {
             return res.message();
         }
 
+        isLoggedIn = true;
+        authToken = res.authToken();
+
         System.out.println();
-        return "Registered new user " + username +", please make sure to login.";
+        return "Registered new user " + username +". Welcome!";
     }
 
     public static String help() {
