@@ -1,11 +1,8 @@
 package client;
 
 import httpobjs.*;
-import org.eclipse.jetty.util.log.Log;
 import org.junit.jupiter.api.*;
 import server.Server;
-
-import javax.swing.tree.ExpandVetoException;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -22,7 +22,7 @@ public class ServerFacade {
     }
 
     public CreateGameResult createGame(CreateGameRequest request, String authToken) {
-        var buildReq = communicator.buildRequest("POST","/game",request, authToken);
+        var buildReq = communicator.buildRequest("POST", "/game", request, authToken);
         var response = communicator.sendRequest(buildReq);
         return communicator.handleResponse(response, CreateGameResult.class);
     }

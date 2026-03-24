@@ -6,7 +6,10 @@ import io.javalin.http.HttpResponseException;
 import model.GameData;
 import ui.DrawChessBoard;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Scanner;
 
 public class ClientMain {
     private static final ServerFacade SERVER = new ServerFacade("http://localhost:8080");
@@ -21,29 +24,29 @@ public class ClientMain {
     }
 
     public static void signedOutREPL() {
-       System.out.print(menu());
+        System.out.print(menu());
 
-       Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
         var result = "";
-        while(!result.equals("4")) {
+        while (!result.equals("4")) {
             String line = scanner.nextLine();
 
             try {
                 result = eval(line, scanner);
-                if(line.equals("-10")) {
+                if (line.equals("-10")) {
                     SERVER.clear();
                     System.out.println("hidden clear worked");
                 }
-                if(!result.equals("4")) {
+                if (!result.equals("4")) {
                     System.out.println(result);
                     System.out.println();
                 }
-                if(isLoggedIn) {
+                if (isLoggedIn) {
                     signedInREPL(scanner);
                     result = "";
                     System.out.print(menu());
                 }
-            }catch (Throwable e){
+            } catch (Throwable e) {
                 var msg = e.getMessage();
                 System.out.println(msg);
                 System.out.println(menu());
@@ -56,18 +59,18 @@ public class ClientMain {
         System.out.print(menu());
 
         var result = "";
-        while(!result.equals("5")) {
+        while (!result.equals("5")) {
             String line = scanner.nextLine();
 
             try {
                 result = eval(line, scanner);
-                if(!result.equals("5")) {
+                if (!result.equals("5")) {
                     System.out.println(result);
                     System.out.println();
-                    if(!line.equals("3")) {
-                        if(line.equals("2")) {
+                    if (!line.equals("3")) {
+                        if (line.equals("2")) {
                             System.out.println();
-                            for(GameData data : lastListCall) {
+                            for (GameData data : lastListCall) {
                                 System.out.print("Game Name: ");
                                 System.out.print(data.gameName());
                                 System.out.print(" Game ID: ");
@@ -79,11 +82,11 @@ public class ClientMain {
                                 System.out.println();
                             }
                         }
-                        if(!line.equals("6")) {
+                        if (!line.equals("6")) {
                             System.out.print(menu());
                         }
 
-                        if(line.equals("-10")) {
+                        if (line.equals("-10")) {
                             SERVER.clear();
                             System.out.println("Secret clear worked");
                         }
@@ -92,7 +95,7 @@ public class ClientMain {
 //                    if(line.equals("3")) {
 //                        continue;  add call to game REPL here (Phase 6)
 //                    }
-            } catch (Throwable e){
+            } catch (Throwable e) {
                 var msg = e.getMessage();
                 System.out.println(msg);
                 System.out.println(menu());
@@ -104,7 +107,7 @@ public class ClientMain {
 
 
     public static String menu() {
-        if(!isLoggedIn) {
+        if (!isLoggedIn) {
             return """
                     1. Login
                     2. Register
@@ -125,29 +128,29 @@ public class ClientMain {
     }
 
     private static String eval(String line, Scanner scanner) {
-       try {
-           String[] token = line.toLowerCase().split(" ");
-           String cmd = (token.length > 0) ? token[0] : "3";
-           if(!isLoggedIn) {
-               return switch (cmd) {
-                   case "1" -> logIn(scanner);
-                   case "2" -> register(scanner);
-                   case "4" -> "4";
-                   default -> help();
-               };
-           } else {
-               return switch (cmd) {
-                   case "1" -> createGame(scanner);
-                   case "2" -> listGames();
-                   case "3" -> joinGame(scanner);
-                   case "4" -> observerGame(scanner);
-                   case "5" -> logOut();
-                   default -> help();
-               };
-           }
-       } catch (Exception ex) {
-           return ex.getMessage();
-       }
+        try {
+            String[] token = line.toLowerCase().split(" ");
+            String cmd = (token.length > 0) ? token[0] : "3";
+            if (!isLoggedIn) {
+                return switch (cmd) {
+                    case "1" -> logIn(scanner);
+                    case "2" -> register(scanner);
+                    case "4" -> "4";
+                    default -> help();
+                };
+            } else {
+                return switch (cmd) {
+                    case "1" -> createGame(scanner);
+                    case "2" -> listGames();
+                    case "3" -> joinGame(scanner);
+                    case "4" -> observerGame(scanner);
+                    case "5" -> logOut();
+                    default -> help();
+                };
+            }
+        } catch (Exception ex) {
+            return ex.getMessage();
+        }
     }
 
     private static String logOut() {
@@ -164,7 +167,7 @@ public class ClientMain {
 
     private static String observerGame(Scanner scanner) {
         assertSignedIn();
-        if(lastListCall == null) {
+        if (lastListCall == null) {
             return "You must call list games before you enter a game!";
         }
 
@@ -182,7 +185,7 @@ public class ClientMain {
             System.out.println();
             System.out.println();
             return "Observing " + game.gameName();
-        } catch (NumberFormatException ex){
+        } catch (NumberFormatException ex) {
             return "Game ID is not valid, try again.";
         }
     }
@@ -204,8 +207,8 @@ public class ClientMain {
         JoinGameRequest req = new JoinGameRequest(color, gameID);
 
         JoinGameResult res = SERVER.joinGame(req, authToken);
-        if(!Objects.equals(res.message(), "")) {
-            if(res.message().contains("500")) {
+        if (!Objects.equals(res.message(), "")) {
+            if (res.message().contains("500")) {
                 return "Server Error: Please try again.";
             }
             return res.message();
@@ -235,14 +238,14 @@ public class ClientMain {
         assertSignedIn();
         System.out.print("Enter your desired game name: ");
         String name = scanner.nextLine().trim();
-        if(name.isEmpty()) {
+        if (name.isEmpty()) {
             return "Not a valid game name, try again";
         }
         CreateGameRequest req = new CreateGameRequest(name);
         CreateGameResult res = SERVER.createGame(req, authToken);
 
-        if(!Objects.equals(res.message(), "")) {
-            if(res.message().contains("500")) {
+        if (!Objects.equals(res.message(), "")) {
+            if (res.message().contains("500")) {
                 return "Server Error. Please try again";
             }
             return res.message();
@@ -261,8 +264,8 @@ public class ClientMain {
 
         LoginResult res = SERVER.login(req);
 
-        if(!Objects.equals(res.message(), "")) {
-            if(res.message().contains("500")) {
+        if (!Objects.equals(res.message(), "")) {
+            if (res.message().contains("500")) {
                 return "Server Error. Please try again.";
             }
             return res.message();
@@ -283,11 +286,11 @@ public class ClientMain {
         System.out.print("Enter your password: ");
         String password = scanner.nextLine().trim();
 
-        RegisterRequest req = new RegisterRequest(username,password,email);
+        RegisterRequest req = new RegisterRequest(username, password, email);
 
         RegisterResult res = SERVER.register(req);
-        if(!Objects.equals(res.message(), "")) {
-            if(res.message().contains("500")) {
+        if (!Objects.equals(res.message(), "")) {
+            if (res.message().contains("500")) {
                 return "Server Error. Please try again";
             }
             return res.message();
@@ -297,11 +300,11 @@ public class ClientMain {
         authToken = res.authToken();
 
         System.out.println();
-        return "Registered new user " + username +". Welcome!";
+        return "Registered new user " + username + ". Welcome!";
     }
 
     public static String help() {
-        if(!isLoggedIn) {
+        if (!isLoggedIn) {
             return """
                     Make sure to only type the number of the command you're interested in.
                     
@@ -321,7 +324,7 @@ public class ClientMain {
                 4. Observe Game - See a current game that's being played
                 5. Logout - Logout out of your account
                 6. Help - to get help with possible commands
-             
+                
                 """;
     }
 
