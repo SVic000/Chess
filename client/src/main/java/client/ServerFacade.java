@@ -6,51 +6,49 @@ import io.javalin.http.HttpResponseException;
 import java.net.http.HttpRequest;
 
 public class ServerFacade {
-    private final String SERVERURL;
     private final ClientCommunicator communicator;
 
     public ServerFacade(String url) {
-        SERVERURL = url;
         communicator = new ClientCommunicator(url);
     }
 
-    public RegisterResult register(RegisterRequest request) {
-        var buildReq = communicator.buildRequest("POST", "/user", request);
+    public RegisterResult register(RegisterRequest request, String authToken) {
+        var buildReq = communicator.buildRequest("POST", "/user", request, authToken);
         var response = communicator.sendRequest(buildReq);
         return communicator.handleResponse(response, RegisterResult.class);
     }
 
-    public LoginResult login(LoginRequest request) {
-        var buildReq = communicator.buildRequest("POST", "/session", request);
+    public LoginResult login(LoginRequest request, String authToken) {
+        var buildReq = communicator.buildRequest("POST", "/session", request, authToken);
         var response = communicator.sendRequest(buildReq);
         return communicator.handleResponse(response, LoginResult.class);
     }
 
-    public CreateGameResult createGame(CreateGameRequest request) {
-        var buildReq = communicator.buildRequest("POST","/game",request);
+    public CreateGameResult createGame(CreateGameRequest request, String authToken) {
+        var buildReq = communicator.buildRequest("POST","/game",request, authToken);
         var response = communicator.sendRequest(buildReq);
         return communicator.handleResponse(response, CreateGameResult.class);
     }
 
-    public JoinGameResult joinGame(JoinGameRequest request) {
-        var buildReq = communicator.buildRequest("PUT", "/game", request);
+    public JoinGameResult joinGame(JoinGameRequest request, String authToken) {
+        var buildReq = communicator.buildRequest("PUT", "/game", request, authToken);
         var response = communicator.sendRequest(buildReq);
         return communicator.handleResponse(response, JoinGameResult.class);
     }
 
-    public ListGameResult listGames(ClearRequest request) {
-        var buildReq = communicator.buildRequest("GET", "/game", request);
+    public ListGameResult listGames(String authToken) {
+        var buildReq = communicator.buildRequest("GET", "/game", null, authToken);
         var response = communicator.sendRequest(buildReq);
         return communicator.handleResponse(response, ListGameResult.class);
     }
 
-    public void logout(LogoutRequest request) {
-        var buildReq = communicator.buildRequest("DELETE", "/session", request);
+    public void logout(LogoutRequest request, String authToken) {
+        var buildReq = communicator.buildRequest("DELETE", "/session", request, authToken);
         var response = communicator.sendRequest(buildReq);
     }
 
-    public void clear(ClearRequest request) {
-        var buildReq = communicator.buildRequest("DELETE", "/db", request);
+    public void clear(ClearRequest request, String authToken) {
+        var buildReq = communicator.buildRequest("DELETE", "/db", request, authToken);
         var response = communicator.sendRequest(buildReq);
     }
 }
