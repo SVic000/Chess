@@ -1,9 +1,13 @@
 package client;
 
+import chess.ChessGame;
+import httpobjs.CreateGameRequest;
+import httpobjs.JoinGameRequest;
 import httpobjs.LoginRequest;
 import httpobjs.RegisterRequest;
 import io.javalin.http.ForbiddenResponse;
 import model.GameData;
+import ui.DrawChessBoard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +17,8 @@ import java.util.Scanner;
 public class ClientMain {
     private static boolean isLoggedIn = false;
     private static List<GameData> lastListCall = new ArrayList<>();
+    private static String loggedInUser = null;
+    private static String authToken = null;
 
     public static void main(String[] args) {
         System.out.println("Welcome to Chess ♕! Sign in to start.");
@@ -36,9 +42,8 @@ public class ClientMain {
                         System.out.println(menu());
                     }
                 }
-
                 if(isLoggedIn) {
-                    signedInREPL();
+                    signedInREPL(scanner);
                 }
             } catch (Throwable e){
                 var msg = e.toString();
@@ -48,10 +53,32 @@ public class ClientMain {
         System.out.println("Goodbye!");
     }
 
-    public static void signedInREPL() {
+    public static void signedInREPL(Scanner scanner) {
         System.out.print(menu());
 
-        // FINISH THIS IMPLEMENTATION AS WELL
+        var result = "";
+        while(!result.equals("5")) {
+            String line = scanner.nextLine();
+
+            try {
+                result = eval(line, scanner);
+                if(!result.equals("5")) {
+                    System.out.println(result);
+                    System.out.println();
+                    if(!line.equals("3")) {
+                        if(!line.equals("6")) {
+                            System.out.print(menu());
+                        }
+                    }
+                }
+                if(line.equals("3")) {
+                    continue; // add call to game REPL here (Phase 6)
+                }
+            } catch (Throwable e){
+                var msg = e.toString();
+                System.out.print(msg);
+            }
+        }
     }
 
 
@@ -103,27 +130,77 @@ public class ClientMain {
     }
 
     private static String logOut() {
-        return "Not implemented";
+        assertSignedIn();
+        // server call to logout
+
+        isLoggedIn = false;
+        authToken = null;
+        loggedInUser = null;
+        return "Successfully logged out";
     }
 
     private static String observerGame(Scanner scanner) {
         assertSignedIn();
-        return "Not implemented";
+        System.out.print("Enter the game id you'd like to observe: ");
+        String[] input = scanner.nextLine().split(" ");
+        try {
+            int gameID = Integer.parseInt(Arrays.toString(input));
+            if(lastListCall == null) {
+                listGames();
+            }
+            GameData game = lastListCall.get(gameID);
+            System.out.println("Observing " + game.gameName());
+            new DrawChessBoard(game.game());
+            return "Observing " + game.gameName();
+        } catch (NumberFormatException ex){
+            return "Game ID is not valid, try again.";
+        }
     }
 
     private static String joinGame(Scanner scanner) {
         assertSignedIn();
-        return "Not implemented";
+        // will be joining another REPL1 here in phase 6
+        System.out.print("Enter the game ID of the game you'd like to join: ");
+        String[] input = scanner.nextLine().split(" ");
+        int gameID = -1;
+        try {
+            gameID = Integer.parseInt(Arrays.toString(input));
+        } catch (NumberFormatException e) {
+            return "That's not a valid game ID, try again.";
+        }
+        System.out.print("Enter the color you'd like to join as (WHITE/BLACK): ");
+        String color = Arrays.toString(scanner.nextLine().toUpperCase().split(" "));
+
+        JoinGameRequest req = new JoinGameRequest(color, gameID);
+        // SERVER FACADE CALL HERE
+
+        GameData game = lastListCall.get(gameID); // if error, don't do this line
+        new DrawChessBoard(game.game(), color); // or this line
+
+        return "Successfully joined " + game.gameName() + " game!";
     }
 
     private static String listGames() {
         assertSignedIn();
-        return "Not implemented";
+
+        // SERVER FACADE CALL HERE
+        // WILL CHANGE VALUE OF LASTLISTCALL VAR
+
+        return "Not implemented until Facade is built";
     }
 
     private static String createGame(Scanner scanner) {
         assertSignedIn();
-        return "Not implemented";
+        System.out.print("Enter your desired game name: ");
+        String[] name = scanner.nextLine().split(" ");
+        if(name.length == 0) {
+            return "Not a valid game name, try again";
+        }
+        CreateGameRequest req = new CreateGameRequest(Arrays.toString(name));
+        // MAKE SERVER CALL HERE
+        // IF ERROR, THEN YEAH
+
+        return Arrays.toString(name) + " game successfully created with a game ID of: "; // add response here
     }
 
     public static String logIn(Scanner scanner) {
@@ -134,8 +211,10 @@ public class ClientMain {
 
         LoginRequest req = new LoginRequest(Arrays.toString(username), Arrays.toString(password));
         // SERVER FACADE LOGIN REQ GOES HERE
+        // Get the token string back...?
 
         isLoggedIn = true; // if there's an error, don't change this var
+        loggedInUser = Arrays.toString(username); // also change this since they didn't log in
 
         System.out.println();
         return "Successfully logged in! Hi " + Arrays.toString(username);
