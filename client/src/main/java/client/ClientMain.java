@@ -1,11 +1,8 @@
 package client;
 
-import chess.ChessGame;
-import httpobjs.CreateGameRequest;
-import httpobjs.JoinGameRequest;
-import httpobjs.LoginRequest;
-import httpobjs.RegisterRequest;
+import httpobjs.*;
 import io.javalin.http.ForbiddenResponse;
+import io.javalin.http.HttpResponseException;
 import model.GameData;
 import ui.DrawChessBoard;
 
@@ -15,10 +12,11 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ClientMain {
+    private static final ServerFacade SERVER = new ServerFacade("http://localhost:8080");
+
     private static boolean isLoggedIn = false;
     private static List<GameData> lastListCall = new ArrayList<>();
-    private static String loggedInUser = null;
-    private static String authToken = null;
+    private static String authToken = "";
 
     public static void main(String[] args) {
         System.out.println("Welcome to Chess ♕! Sign in to start.");
@@ -68,6 +66,20 @@ public class ClientMain {
                     System.out.println(result);
                     System.out.println();
                     if(!line.equals("3")) {
+                        if(line.equals("2")) {
+                            System.out.println();
+                            for(GameData data : lastListCall) {
+                                System.out.print("Game Name: ");
+                                System.out.print(data.gameName());
+                                System.out.print(" Game ID: ");
+                                System.out.print(data.gameID());
+                                System.out.print(" White player: ");
+                                System.out.print(data.whiteUsername());
+                                System.out.print(" Black player: ");
+                                System.out.print(data.blackUsername());
+                                System.out.println();
+                            }
+                        }
                         if(!line.equals("6")) {
                             System.out.print(menu());
                         }
@@ -135,23 +147,27 @@ public class ClientMain {
 
     private static String logOut() {
         assertSignedIn();
-        // server call to logout
-
+        LogoutRequest req = new LogoutRequest(authToken);
+        try {
+            SERVER.logout(req, authToken);
+        } catch (HttpResponseException e) {
+            return "Server Error: Unable to log you out, try again.";
+        }
         isLoggedIn = false;
-        authToken = null;
-        loggedInUser = null;
+        authToken = "";
         return "5";
     }
 
     private static String observerGame(Scanner scanner) {
         assertSignedIn();
+        if(lastListCall == null) {
+            return "You must call list games before you enter a game!";
+        }
+
         System.out.print("Enter the game id you'd like to observe: ");
         String[] input = scanner.nextLine().split(" ");
         try {
             int gameID = Integer.parseInt(Arrays.toString(input));
-            if(lastListCall == null) {
-                listGames();
-            }
             GameData game = lastListCall.get(gameID);
             System.out.println("Observing " + game.gameName());
             new DrawChessBoard(game.game());
@@ -163,7 +179,7 @@ public class ClientMain {
 
     private static String joinGame(Scanner scanner) {
         assertSignedIn();
-        // will be joining another REPL1 here in phase 6
+        // will be joining another REPL here in phase 6
         System.out.print("Enter the game ID of the game you'd like to join: ");
         String[] input = scanner.nextLine().split(" ");
         int gameID = -1;
@@ -176,10 +192,17 @@ public class ClientMain {
         String color = Arrays.toString(scanner.nextLine().toUpperCase().split(" "));
 
         JoinGameRequest req = new JoinGameRequest(color, gameID);
-        // SERVER FACADE CALL HERE
 
-        GameData game = lastListCall.get(gameID); // if error, don't do this line
-        new DrawChessBoard(game.game(), color); // or this line
+        JoinGameResult result = SERVER.joinGame(req, authToken);
+        if(result.message() != null) {
+            if(result.message().contains("500")) {
+                return "Server Error: Please try again.";
+            }
+            return result.message();
+        }
+
+        GameData game = lastListCall.get(gameID);
+        new DrawChessBoard(game.game(), color);
 
         return "Successfully joined " + game.gameName() + " game!";
     }
@@ -187,10 +210,9 @@ public class ClientMain {
     private static String listGames() {
         assertSignedIn();
 
-        // SERVER FACADE CALL HERE
-        // WILL CHANGE VALUE OF LASTLISTCALL VAR
-
-        return "Not implemented until Facade is built";
+        httpobjs.ListGameResult res = SERVER.listGames(authToken);
+        lastListCall = (List<GameData>) res.games();
+        return "Here is the list of current games: ";
     }
 
     private static String createGame(Scanner scanner) {
@@ -201,10 +223,16 @@ public class ClientMain {
             return "Not a valid game name, try again";
         }
         CreateGameRequest req = new CreateGameRequest(Arrays.toString(name));
-        // MAKE SERVER CALL HERE
-        // IF ERROR, THEN YEAH
+        CreateGameResult res = SERVER.createGame(req, authToken);
 
-        return Arrays.toString(name) + " game successfully created with a game ID of: "; // add response here
+        if(res.message() != null) {
+            if(res.message().contains("500")) {
+                return "Server Error. Please try again";
+            }
+            return res.message();
+        }
+
+        return "Created " + Arrays.toString(name) + " game successfully.";
     }
 
     public static String logIn(Scanner scanner) {
@@ -214,11 +242,18 @@ public class ClientMain {
         String[] password = scanner.nextLine().split(" ");
 
         LoginRequest req = new LoginRequest(Arrays.toString(username), Arrays.toString(password));
-        // SERVER FACADE LOGIN REQ GOES HERE
-        // Get the token string back...?
 
-        isLoggedIn = true; // if there's an error, don't change this var
-        loggedInUser = Arrays.toString(username); // also change this since they didn't log in
+        LoginResult res = SERVER.login(req, authToken);
+
+        if(res.message() != null) {
+            if(res.message().contains("500")) {
+                return "Server Error. Please try again.";
+            }
+            return res.message();
+        }
+
+        authToken = res.authToken();
+        isLoggedIn = true;
 
         System.out.println();
         return "Successfully logged in! Hi " + Arrays.toString(username);
@@ -236,9 +271,15 @@ public class ClientMain {
                 Arrays.toString(username),
                 Arrays.toString(password),
                 Arrays.toString(email));
-        // SERVER FACADE REGISTER CALL GOES HERE
 
-        // if there's an error, make sure to change this return
+        RegisterResult res = SERVER.register(req, authToken);
+        if(res.message() != null) {
+            if(res.message().contains("500")) {
+                return "Server Error. Please try again";
+            }
+            return res.message();
+        }
+
         System.out.println();
         return "Registered new user " + Arrays.toString(username) +", please make sure to login.";
     }
