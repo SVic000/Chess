@@ -44,6 +44,8 @@ public class ClientMain {
                 }
                 if(isLoggedIn) {
                     signedInREPL(scanner);
+                    result = "";
+                    System.out.print(menu());
                 }
             } catch (Throwable e){
                 var msg = e.toString();
@@ -79,6 +81,8 @@ public class ClientMain {
                 System.out.print(msg);
             }
         }
+        System.out.println("Successfully logged out.");
+        System.out.println();
     }
 
 
@@ -136,7 +140,7 @@ public class ClientMain {
         isLoggedIn = false;
         authToken = null;
         loggedInUser = null;
-        return "Successfully logged out";
+        return "5";
     }
 
     private static String observerGame(Scanner scanner) {
