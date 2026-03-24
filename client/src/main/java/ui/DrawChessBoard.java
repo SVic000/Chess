@@ -14,7 +14,7 @@ import static ui.EscapeSequences.*;
 
 public class DrawChessBoard {
     private static ChessGame game = new ChessGame();
-    private static String color = "WHITE";
+    private static String color;
     private static List<String> letters;
     private static List<String> numbers;
     private static final String EMPTY = "   ";
@@ -23,6 +23,7 @@ public class DrawChessBoard {
     // for observer
     public DrawChessBoard(ChessGame game) {
         DrawChessBoard.game = game;
+        DrawChessBoard.color = "WHITE";
         draw();
     }
 
@@ -47,6 +48,9 @@ public class DrawChessBoard {
         }
 
         printHeaderTextRow(out);
+
+        out.print(RESET_TEXT_COLOR);
+        out.print(RESET_BG_COLOR);
     }
 
 

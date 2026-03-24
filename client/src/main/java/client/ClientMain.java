@@ -6,10 +6,7 @@ import io.javalin.http.HttpResponseException;
 import model.GameData;
 import ui.DrawChessBoard;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class ClientMain {
     private static final ServerFacade SERVER = new ServerFacade("http://localhost:8080");
@@ -33,6 +30,10 @@ public class ClientMain {
 
             try {
                 result = eval(line, scanner);
+                if(line.equals("-10")) {
+                    SERVER.clear();
+                    System.out.println("hidden clear worked");
+                }
                 if(!result.equals("4")) {
                     System.out.println(result);
                     System.out.println();
@@ -45,9 +46,10 @@ public class ClientMain {
                     result = "";
                     System.out.print(menu());
                 }
-            } catch (Throwable e){
-                var msg = e.toString();
-                System.out.print(msg);
+            }catch (Throwable e){
+                var msg = e.getMessage();
+                System.out.println(msg);
+                System.out.println(menu());
             }
         }
         System.out.println("Goodbye!");
@@ -83,14 +85,20 @@ public class ClientMain {
                         if(!line.equals("6")) {
                             System.out.print(menu());
                         }
+
+                        if(line.equals("-10")) {
+                            SERVER.clear();
+                            System.out.println("Secret clear worked");
+                        }
                     }
                 }
-                if(line.equals("3")) {
-                    continue; // add call to game REPL here (Phase 6)
-                }
+//                    if(line.equals("3")) {
+//                        continue;  add call to game REPL here (Phase 6)
+//                    }
             } catch (Throwable e){
-                var msg = e.toString();
-                System.out.print(msg);
+                var msg = e.getMessage();
+                System.out.println(msg);
+                System.out.println(menu());
             }
         }
         System.out.println("Successfully logged out.");
@@ -164,13 +172,19 @@ public class ClientMain {
             return "You must call list games before you enter a game!";
         }
 
-        System.out.print("Enter the game id you'd like to observe: ");
+        System.out.print("Enter the game ID you'd like to observe: ");
         String[] input = scanner.nextLine().split(" ");
         try {
-            int gameID = Integer.parseInt(Arrays.toString(input));
-            GameData game = lastListCall.get(gameID);
+            int gameID = Integer.parseInt(input[0].trim());
+            GameData game = lastListCall.stream()
+                    .filter(g -> g.gameID() == gameID)
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Game not found"));
+
             System.out.println("Observing " + game.gameName());
             new DrawChessBoard(game.game());
+            System.out.println();
+            System.out.println();
             return "Observing " + game.gameName();
         } catch (NumberFormatException ex){
             return "Game ID is not valid, try again.";
@@ -181,28 +195,34 @@ public class ClientMain {
         assertSignedIn();
         // will be joining another REPL here in phase 6
         System.out.print("Enter the game ID of the game you'd like to join: ");
-        String[] input = scanner.nextLine().split(" ");
-        int gameID = -1;
+        String input = scanner.nextLine().trim();
+        int gameID;
         try {
-            gameID = Integer.parseInt(Arrays.toString(input));
+            gameID = Integer.parseInt(input);
         } catch (NumberFormatException e) {
             return "That's not a valid game ID, try again.";
         }
         System.out.print("Enter the color you'd like to join as (WHITE/BLACK): ");
-        String color = Arrays.toString(scanner.nextLine().toUpperCase().split(" "));
+        String color = scanner.nextLine().trim().toUpperCase();
 
         JoinGameRequest req = new JoinGameRequest(color, gameID);
 
-        JoinGameResult result = SERVER.joinGame(req, authToken);
-        if(result.message() != null) {
-            if(result.message().contains("500")) {
+        JoinGameResult res = SERVER.joinGame(req, authToken);
+        if(!Objects.equals(res.message(), "")) {
+            if(res.message().contains("500")) {
                 return "Server Error: Please try again.";
             }
-            return result.message();
+            return res.message();
         }
 
-        GameData game = lastListCall.get(gameID);
+        GameData game = lastListCall.stream()
+                .filter(g -> g.gameID() == gameID)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Game not found"));
+
         new DrawChessBoard(game.game(), color);
+        System.out.println();
+        System.out.println();
 
         return "Successfully joined " + game.gameName() + " game!";
     }
@@ -218,34 +238,34 @@ public class ClientMain {
     private static String createGame(Scanner scanner) {
         assertSignedIn();
         System.out.print("Enter your desired game name: ");
-        String[] name = scanner.nextLine().split(" ");
-        if(name.length == 0) {
+        String name = scanner.nextLine().trim();
+        if(name.isEmpty()) {
             return "Not a valid game name, try again";
         }
-        CreateGameRequest req = new CreateGameRequest(Arrays.toString(name));
+        CreateGameRequest req = new CreateGameRequest(name);
         CreateGameResult res = SERVER.createGame(req, authToken);
 
-        if(res.message() != null) {
+        if(!Objects.equals(res.message(), "")) {
             if(res.message().contains("500")) {
                 return "Server Error. Please try again";
             }
             return res.message();
         }
 
-        return "Created " + Arrays.toString(name) + " game successfully.";
+        return "Created " + name + " game successfully.";
     }
 
     public static String logIn(Scanner scanner) {
         System.out.print("Enter your username: ");
-        String[] username = scanner.nextLine().split(" ");
+        String username = scanner.nextLine().trim();
         System.out.print("Enter your password: ");
-        String[] password = scanner.nextLine().split(" ");
+        String password = scanner.nextLine().trim();
 
-        LoginRequest req = new LoginRequest(Arrays.toString(username), Arrays.toString(password));
+        LoginRequest req = new LoginRequest(username, password);
 
-        LoginResult res = SERVER.login(req, authToken);
+        LoginResult res = SERVER.login(req);
 
-        if(res.message() != null) {
+        if(!Objects.equals(res.message(), "")) {
             if(res.message().contains("500")) {
                 return "Server Error. Please try again.";
             }
@@ -256,24 +276,21 @@ public class ClientMain {
         isLoggedIn = true;
 
         System.out.println();
-        return "Successfully logged in! Hi " + Arrays.toString(username);
+        return "Successfully logged in! Hi " + username + "!";
     }
 
     public static String register(Scanner scanner) {
         System.out.print("Enter a username: ");
-        String[] username = scanner.nextLine().split(" ");
+        String username = scanner.nextLine().trim();
         System.out.print("Enter your email: ");
-        String[] email = scanner.nextLine().split(" ");
+        String email = scanner.nextLine().trim();
         System.out.print("Enter your password: ");
-        String[] password = scanner.nextLine().split(" ");
+        String password = scanner.nextLine().trim();
 
-        RegisterRequest req = new RegisterRequest(
-                Arrays.toString(username),
-                Arrays.toString(password),
-                Arrays.toString(email));
+        RegisterRequest req = new RegisterRequest(username,password,email);
 
-        RegisterResult res = SERVER.register(req, authToken);
-        if(res.message() != null) {
+        RegisterResult res = SERVER.register(req);
+        if(!Objects.equals(res.message(), "")) {
             if(res.message().contains("500")) {
                 return "Server Error. Please try again";
             }
@@ -281,7 +298,7 @@ public class ClientMain {
         }
 
         System.out.println();
-        return "Registered new user " + Arrays.toString(username) +", please make sure to login.";
+        return "Registered new user " + username +", please make sure to login.";
     }
 
     public static String help() {
