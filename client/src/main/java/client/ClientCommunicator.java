@@ -17,10 +17,11 @@ public class ClientCommunicator {
         SERVER_URL = serverUrl;
     }
 
-    HttpRequest buildRequest(String method, String path, Object body) {
+    HttpRequest buildRequest(String method, String path, Object body, String authToken) {
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(SERVER_URL + path))
                 .method(method, makeRequestBody(body));
+        request.setHeader("Authorization", authToken);
         if (body != null) {
             request.setHeader("Content-Type", "application/json");
         }
