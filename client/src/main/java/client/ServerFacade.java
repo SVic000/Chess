@@ -39,13 +39,13 @@ public class ServerFacade {
         return communicator.handleResponse(response, ListGameResult.class);
     }
 
-    public void logout(LogoutRequest request, String authToken) {
-        var buildReq = communicator.buildRequest("DELETE", "/session", request, authToken);
+    public void logout(String authToken) {
+        var buildReq = communicator.buildRequest("DELETE", "/session", null, authToken);
         communicator.sendRequest(buildReq);
     }
 
     public void clear() {
-        var buildReq = communicator.buildRequest("DELETE", "/db", new ClearRequest(""), "");
+        var buildReq = communicator.buildRequest("DELETE", "/db", null, "");
         communicator.sendRequest(buildReq);
     }
 }
