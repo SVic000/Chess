@@ -72,6 +72,9 @@ public class ClientMain {
                     System.out.println();
                     for (int keys : ORDER.keySet()) {
                         GameData game = ORDER.get(keys);
+                        if(game == null) {
+                            break;
+                        }
                         System.out.print("Game Name: ");
                         System.out.print(game.gameName());
                         System.out.print(" Game ID: ");
@@ -231,7 +234,7 @@ public class ClientMain {
         lastListCall = (List<GameData>) res.games();
         ORDER.clear();
         for(int i = 0; i < lastListCall.size(); i++) {
-            ORDER.put(i, lastListCall.get(i));
+            ORDER.put(i+1, lastListCall.get(i));
         }
         return "Here is the list of current games: ";
     }

@@ -61,7 +61,7 @@ public class GameService {
 
     public ListGameResult listGames(String auth) throws DataAccessException {
         new ValidateAuthorization(authDAO, auth);
-        return new ListGameResult(gameDAO.listGames().stream().toList());
+        return new ListGameResult(gameDAO.listGames().stream().toList(), "");
     }
 
 }

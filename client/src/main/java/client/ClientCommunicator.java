@@ -43,7 +43,7 @@ public class ClientCommunicator {
         }
     }
 
-    <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws ResponseException {
+    <T> T handleResponse(HttpResponse<String> response, com.google.gson.reflect.TypeToken<T> typeToken) throws ResponseException {
         var status = response.statusCode();
 
         if (!isSuccessful(status)) {
@@ -51,12 +51,11 @@ public class ClientCommunicator {
             if (body != null) {
                 throw new ResponseException(status, body);
             }
-
             throw new ResponseException(status, "other failure: " + status);
         }
 
-        if (responseClass != null) {
-            return new Gson().fromJson(response.body(), responseClass);
+        if (typeToken != null) {
+            return new Gson().fromJson(response.body(), typeToken.getType());
         }
 
         return null;

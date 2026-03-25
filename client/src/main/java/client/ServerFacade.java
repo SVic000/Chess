@@ -1,5 +1,6 @@
 package client;
 
+import com.google.gson.reflect.TypeToken;
 import httpobjs.*;
 
 public class ServerFacade {
@@ -12,31 +13,31 @@ public class ServerFacade {
     public RegisterResult register(RegisterRequest request) {
         var buildReq = communicator.buildRequest("POST", "/user", request, "");
         var response = communicator.sendRequest(buildReq);
-        return communicator.handleResponse(response, RegisterResult.class);
+        return communicator.handleResponse(response, new TypeToken<RegisterResult>(){});
     }
 
     public LoginResult login(LoginRequest request) {
         var buildReq = communicator.buildRequest("POST", "/session", request, "");
         var response = communicator.sendRequest(buildReq);
-        return communicator.handleResponse(response, LoginResult.class);
+        return communicator.handleResponse(response, new TypeToken<LoginResult>(){});
     }
 
     public CreateGameResult createGame(CreateGameRequest request, String authToken) {
         var buildReq = communicator.buildRequest("POST", "/game", request, authToken);
         var response = communicator.sendRequest(buildReq);
-        return communicator.handleResponse(response, CreateGameResult.class);
+        return communicator.handleResponse(response, new TypeToken<CreateGameResult>(){});
     }
 
     public JoinGameResult joinGame(JoinGameRequest request, String authToken) {
         var buildReq = communicator.buildRequest("PUT", "/game", request, authToken);
         var response = communicator.sendRequest(buildReq);
-        return communicator.handleResponse(response, JoinGameResult.class);
+        return communicator.handleResponse(response, new TypeToken<JoinGameResult>(){});
     }
 
     public ListGameResult listGames(String authToken) {
         var buildReq = communicator.buildRequest("GET", "/game", null, authToken);
         var response = communicator.sendRequest(buildReq);
-        return communicator.handleResponse(response, ListGameResult.class);
+        return communicator.handleResponse(response, new TypeToken<ListGameResult>(){});
     }
 
     public void logout(String authToken) {
