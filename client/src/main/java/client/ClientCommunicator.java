@@ -8,17 +8,17 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class ClientCommunicator {
-    private final String SERVER_URL;
-    private final HttpClient CLIENT = HttpClient.newHttpClient();
+    private final String server_url;
+    private final HttpClient client = HttpClient.newHttpClient();
 
 
     public ClientCommunicator(String serverUrl) {
-        SERVER_URL = serverUrl;
+        server_url = serverUrl;
     }
 
     HttpRequest buildRequest(String method, String path, Object body, String authToken) {
         var request = HttpRequest.newBuilder()
-                .uri(URI.create(SERVER_URL + path))
+                .uri(URI.create(server_url + path))
                 .method(method, makeRequestBody(body));
         request.setHeader("Authorization", authToken);
         if (body != null) {
@@ -37,7 +37,7 @@ public class ClientCommunicator {
 
     HttpResponse<String> sendRequest(HttpRequest request) throws ResponseException {
         try {
-            return CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            return client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
         }
