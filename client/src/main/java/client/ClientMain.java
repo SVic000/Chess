@@ -62,34 +62,35 @@ public class ClientMain {
 
             try {
                 result = eval(line, scanner);
-                if (!result.equals("5")) {
-                    System.out.println(result);
+                if (result.equals("5")) {
+                    continue;
+                }
+                System.out.println(result);
+                System.out.println();
+                if (line.equals("3")) {
+                    continue;
+                }
+                if (line.equals("2")) {
                     System.out.println();
-                    if (line.equals("3")) {
-                        continue;
-                    }
-                    if (line.equals("2")) {
+                    for (GameData data : lastListCall) {
+                        System.out.print("Game Name: ");
+                        System.out.print(data.gameName());
+                        System.out.print(" Game ID: ");
+                        System.out.print(data.gameID());
+                        System.out.print(" White player: ");
+                        System.out.print(data.whiteUsername());
+                        System.out.print(" Black player: ");
+                        System.out.print(data.blackUsername());
                         System.out.println();
-                        for (GameData data : lastListCall) {
-                            System.out.print("Game Name: ");
-                            System.out.print(data.gameName());
-                            System.out.print(" Game ID: ");
-                            System.out.print(data.gameID());
-                            System.out.print(" White player: ");
-                            System.out.print(data.whiteUsername());
-                            System.out.print(" Black player: ");
-                            System.out.print(data.blackUsername());
-                            System.out.println();
-                        }
                     }
-                    if (!line.equals("6")) {
-                        System.out.print(menu());
-                    }
+                }
+                if (!line.equals("6")) {
+                    System.out.print(menu());
+                }
 
-                    if (line.equals("-10")) {
-                        SERVER.clear();
-                        System.out.println("Secret clear worked");
-                    }
+                if (line.equals("-10")) {
+                    SERVER.clear();
+                    System.out.println("Secret clear worked");
                 }
             } catch (Throwable e) {
                 var msg = e.getMessage();

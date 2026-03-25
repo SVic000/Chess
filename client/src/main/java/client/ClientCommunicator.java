@@ -8,17 +8,17 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class ClientCommunicator {
-    private final String server_url;
+    private final String serverUrl;
     private final HttpClient client = HttpClient.newHttpClient();
 
 
     public ClientCommunicator(String serverUrl) {
-        server_url = serverUrl;
+        this.serverUrl = serverUrl;
     }
 
     HttpRequest buildRequest(String method, String path, Object body, String authToken) {
         var request = HttpRequest.newBuilder()
-                .uri(URI.create(server_url + path))
+                .uri(URI.create(serverUrl + path))
                 .method(method, makeRequestBody(body));
         request.setHeader("Authorization", authToken);
         if (body != null) {
