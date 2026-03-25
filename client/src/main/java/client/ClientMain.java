@@ -4,15 +4,13 @@ import httpobjs.*;
 import model.GameData;
 import ui.DrawChessBoard;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 public class ClientMain {
     private static final ServerFacade SERVER = new ServerFacade("http://localhost:8080");
-
     private static boolean isLoggedIn = false;
+    private static final Serializer serializer = new Serializer();
+    private static final HashMap<Integer, GameData> order = new HashMap<>();
     private static List<GameData> lastListCall = new ArrayList<>();
     private static String authToken = "";
 
@@ -45,8 +43,8 @@ public class ClientMain {
                     System.out.print(menu());
                 }
             } catch (Throwable e) {
-                var msg = e.getMessage();
-                System.out.println(msg);
+                var msg = serializer.decrypt(e);
+                System.out.println(msg.message());
                 System.out.println(menu());
             }
         }
@@ -72,15 +70,16 @@ public class ClientMain {
                 }
                 if (line.equals("2")) {
                     System.out.println();
-                    for (GameData data : lastListCall) {
+                    for (int keys : order.keySet()) {
+                        GameData game = order.get(keys);
                         System.out.print("Game Name: ");
-                        System.out.print(data.gameName());
+                        System.out.print(game.gameName());
                         System.out.print(" Game ID: ");
-                        System.out.print(data.gameID());
+                        System.out.print(keys);
                         System.out.print(" White player: ");
-                        System.out.print(data.whiteUsername());
+                        System.out.print(game.whiteUsername());
                         System.out.print(" Black player: ");
-                        System.out.print(data.blackUsername());
+                        System.out.print(game.blackUsername());
                         System.out.println();
                     }
                 }
@@ -92,9 +91,9 @@ public class ClientMain {
                     SERVER.clear();
                     System.out.println("Secret clear worked");
                 }
-            } catch (Throwable e) {
-                var msg = e.getMessage();
-                System.out.println(msg);
+            }  catch (Throwable e) {
+                var msg = serializer.decrypt(e);
+                System.out.println(msg.message());
                 System.out.println(menu());
             }
         }
@@ -124,7 +123,7 @@ public class ClientMain {
                 """;
     }
 
-    private static String eval(String line, Scanner scanner) {
+    private static String eval(String line, Scanner scanner) throws Exception {
         try {
             String[] token = line.toLowerCase().split(" ");
             String cmd = (token.length > 0) ? token[0] : "3";
@@ -146,7 +145,7 @@ public class ClientMain {
                 };
             }
         } catch (Exception ex) {
-            return ex.getMessage();
+            throw new Exception(ex.getMessage());
         }
     }
 
@@ -172,10 +171,11 @@ public class ClientMain {
         String[] input = scanner.nextLine().split(" ");
         try {
             int gameID = Integer.parseInt(input[0].trim());
-            GameData game = lastListCall.stream()
-                    .filter(g -> g.gameID() == gameID)
-                    .findFirst()
-                    .orElseThrow(() -> new RuntimeException("Game not found"));
+            GameData game = order.get(gameID);
+
+            if (game == null) {
+                return "Error: Game does not exist, try again.";
+            }
 
             System.out.println("Observing " + game.gameName());
             new DrawChessBoard(game.game());
@@ -183,7 +183,7 @@ public class ClientMain {
             System.out.println();
             return "Observing " + game.gameName();
         } catch (NumberFormatException ex) {
-            return "Game ID is not valid, try again.";
+            return "Error: Game ID is not valid, try again.";
         }
     }
 
@@ -211,10 +211,11 @@ public class ClientMain {
             return res.message();
         }
 
-        GameData game = lastListCall.stream()
-                .filter(g -> g.gameID() == gameID)
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Game not found"));
+        GameData game = order.get(gameID);
+
+        if(game == null) {
+            throw new RuntimeException("Game does not exist");
+        }
 
         new DrawChessBoard(game.game(), color);
         System.out.println();
@@ -226,8 +227,12 @@ public class ClientMain {
     private static String listGames() {
         assertSignedIn();
 
-        httpobjs.ListGameResult res = SERVER.listGames(authToken);
+        ListGameResult res = SERVER.listGames(authToken);
         lastListCall = (List<GameData>) res.games();
+        order.clear();
+        for(int i = 0; i < lastListCall.size(); i++) {
+            order.put(i, lastListCall.get(i));
+        }
         return "Here is the list of current games: ";
     }
 
