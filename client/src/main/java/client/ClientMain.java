@@ -9,8 +9,8 @@ import java.util.*;
 public class ClientMain {
     private static final ServerFacade SERVER = new ServerFacade("http://localhost:8080");
     private static boolean isLoggedIn = false;
-    private static final Serializer serializer = new Serializer();
-    private static final HashMap<Integer, GameData> order = new HashMap<>();
+    private static final Serializer SERIALIZER = new Serializer();
+    private static final HashMap<Integer, GameData> ORDER = new HashMap<>();
     private static List<GameData> lastListCall = new ArrayList<>();
     private static String authToken = "";
 
@@ -43,7 +43,7 @@ public class ClientMain {
                     System.out.print(menu());
                 }
             } catch (Throwable e) {
-                var msg = serializer.decrypt(e);
+                var msg = SERIALIZER.decrypt(e);
                 System.out.println(msg.message());
                 System.out.println(menu());
             }
@@ -70,8 +70,8 @@ public class ClientMain {
                 }
                 if (line.equals("2")) {
                     System.out.println();
-                    for (int keys : order.keySet()) {
-                        GameData game = order.get(keys);
+                    for (int keys : ORDER.keySet()) {
+                        GameData game = ORDER.get(keys);
                         System.out.print("Game Name: ");
                         System.out.print(game.gameName());
                         System.out.print(" Game ID: ");
@@ -92,7 +92,7 @@ public class ClientMain {
                     System.out.println("Secret clear worked");
                 }
             }  catch (Throwable e) {
-                var msg = serializer.decrypt(e);
+                var msg = SERIALIZER.decrypt(e);
                 System.out.println(msg.message());
                 System.out.println(menu());
             }
@@ -171,7 +171,7 @@ public class ClientMain {
         String[] input = scanner.nextLine().split(" ");
         try {
             int gameID = Integer.parseInt(input[0].trim());
-            GameData game = order.get(gameID);
+            GameData game = ORDER.get(gameID);
 
             if (game == null) {
                 return "Error: Game does not exist, try again.";
@@ -211,7 +211,7 @@ public class ClientMain {
             return res.message();
         }
 
-        GameData game = order.get(gameID);
+        GameData game = ORDER.get(gameID);
 
         if(game == null) {
             throw new RuntimeException("Game does not exist");
@@ -229,9 +229,9 @@ public class ClientMain {
 
         ListGameResult res = SERVER.listGames(authToken);
         lastListCall = (List<GameData>) res.games();
-        order.clear();
+        ORDER.clear();
         for(int i = 0; i < lastListCall.size(); i++) {
-            order.put(i, lastListCall.get(i));
+            ORDER.put(i, lastListCall.get(i));
         }
         return "Here is the list of current games: ";
     }
