@@ -1,7 +1,6 @@
 package client;
 
 import com.google.gson.Gson;
-import io.javalin.http.HttpResponseException;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -36,24 +35,24 @@ public class ClientCommunicator {
         }
     }
 
-    HttpResponse<String> sendRequest(HttpRequest request) throws HttpResponseException {
+    HttpResponse<String> sendRequest(HttpRequest request) throws ResponseException {
         try {
             return CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (Exception ex) {
-            throw new HttpResponseException(500, ex.getMessage());
+            throw new ResponseException(500, ex.getMessage());
         }
     }
 
-    <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws HttpResponseException {
+    <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws ResponseException {
         var status = response.statusCode();
 
         if (!isSuccessful(status)) {
             var body = response.body();
             if (body != null) {
-                throw new HttpResponseException(status, body);
+                throw new ResponseException(status, body);
             }
 
-            throw new HttpResponseException(status, "other failure: " + status);
+            throw new ResponseException(status, "other failure: " + status);
         }
 
         if (responseClass != null) {

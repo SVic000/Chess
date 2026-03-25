@@ -1,8 +1,6 @@
 package client;
 
 import httpobjs.*;
-import io.javalin.http.ForbiddenResponse;
-import io.javalin.http.HttpResponseException;
 import model.GameData;
 import ui.DrawChessBoard;
 
@@ -157,7 +155,7 @@ public class ClientMain {
         assertSignedIn();
         try {
             SERVER.logout(authToken);
-        } catch (HttpResponseException e) {
+        } catch (ResponseException e) {
             return "Server Error: Unable to log you out, try again.";
         }
         isLoggedIn = false;
@@ -328,9 +326,9 @@ public class ClientMain {
                 """;
     }
 
-    private static void assertSignedIn() throws ForbiddenResponse {
+    private static void assertSignedIn() throws ResponseException {
         if (!isLoggedIn) {
-            throw new ForbiddenResponse("Error: You are not logged in");
+            throw new ResponseException(403, "Error: You are not logged in");
         }
     }
 }
