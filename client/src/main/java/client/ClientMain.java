@@ -75,10 +75,10 @@ public class ClientMain {
                         if(game == null) {
                             break;
                         }
+                        System.out.print(keys);
+                        System.out.print(". ");
                         System.out.print("Game Name: ");
                         System.out.print(game.gameName());
-                        System.out.print(" Game ID: ");
-                        System.out.print(keys);
                         System.out.print(" White player: ");
                         System.out.print(game.whiteUsername());
                         System.out.print(" Black player: ");
@@ -203,6 +203,9 @@ public class ClientMain {
         }
         System.out.print("Enter the color you'd like to join as (WHITE/BLACK): ");
         String color = scanner.nextLine().trim().toUpperCase();
+        if(!color.equals("WHITE") && !color.equals("BLACK")) {
+            return "Not a valid color. Try again.";
+        }
 
         JoinGameRequest req = new JoinGameRequest(color, gameID);
 
