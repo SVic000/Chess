@@ -57,47 +57,46 @@ public class ClientMain {
         var result = "";
         while (!result.equals("5")) {
             String line = scanner.nextLine();
-
             try {
                 result = eval(line, scanner);
-                if (result.equals("5")) {
-                    continue;
-                }
-                System.out.println(result);
-                System.out.println();
-                if (line.equals("3")) {
-                    continue;
-                }
-                if (line.equals("2")) {
-                    System.out.println();
-                    for (int keys : ORDER.keySet()) {
-                        GameData game = ORDER.get(keys);
-                        if(game == null) {
-                            break;
-                        }
-                        System.out.print(keys);
-                        System.out.print(". ");
-                        System.out.print("Game Name: ");
-                        System.out.print(game.gameName());
-                        System.out.print(" White player: ");
-                        System.out.print(game.whiteUsername());
-                        System.out.print(" Black player: ");
-                        System.out.print(game.blackUsername());
-                        System.out.println();
-                    }
-                }
-                if (!line.equals("6")) {
-                    System.out.print(menu());
-                }
-
-                if (line.equals("-10")) {
-                    SERVER.clear();
-                    System.out.println("Secret clear worked");
-                }
-            }  catch (Throwable e) {
+            }   catch (Throwable e) {
                 var msg = SERIALIZER.decrypt(e);
                 System.out.println(msg.message());
                 System.out.println(menu());
+            }
+            if (result.equals("5")) {
+                continue;
+            }
+            System.out.println(result);
+            System.out.println();
+            if (line.equals("3")) {
+                continue;
+            }
+            if (line.equals("2")) {
+                System.out.println();
+                for (int keys : ORDER.keySet()) {
+                    GameData game = ORDER.get(keys);
+                    if(game == null) {
+                        break;
+                    }
+                    System.out.print(keys);
+                    System.out.print(". ");
+                    System.out.print("Game Name: ");
+                    System.out.print(game.gameName());
+                    System.out.print(", White player: ");
+                    System.out.print(game.whiteUsername());
+                    System.out.print(", Black player: ");
+                    System.out.print(game.blackUsername());
+                    System.out.println();
+                }
+            }
+            if (!line.equals("6")) {
+                System.out.print(menu());
+            }
+
+            if (line.equals("-10")) {
+                SERVER.clear();
+                System.out.println("Secret clear worked");
             }
         }
         System.out.println("Successfully logged out.");
