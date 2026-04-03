@@ -13,6 +13,7 @@ import java.util.Objects;
 public class ChessGame {
     private ChessBoard board = new ChessBoard();
     private TeamColor currentTurn = TeamColor.WHITE;
+    private boolean is_game_active = true;
 
     public ChessGame() {
         board.resetBoard();
@@ -33,6 +34,11 @@ public class ChessGame {
     public void setTeamTurn(TeamColor team) {
         currentTurn = team;
     }
+
+    public void endGame() {
+        is_game_active = false;
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -99,6 +105,9 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
         ChessPiece boardPiece = board.getPiece(move.getStartPosition());
+        if(!is_game_active) {
+            return;
+        }
         if (validMoves.contains(move) && boardPiece != null && boardPiece.getTeamColor().equals(currentTurn)) {
             testMove(move);
             currentTurn = currentTurn.equals(TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
