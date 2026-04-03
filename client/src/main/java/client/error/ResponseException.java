@@ -1,4 +1,4 @@
-package client;
+package client.error;
 
 public class ResponseException extends RuntimeException {
     private final int statusCode;

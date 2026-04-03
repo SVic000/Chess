@@ -1,5 +1,6 @@
 package client;
 
+import client.error.ResponseException;
 import httpobjs.*;
 import model.GameData;
 import ui.DrawChessBoard;

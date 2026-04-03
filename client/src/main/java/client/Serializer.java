@@ -1,5 +1,6 @@
 package client;
 
+import client.error.ClientError;
 import com.google.gson.Gson;
 
 public class Serializer {

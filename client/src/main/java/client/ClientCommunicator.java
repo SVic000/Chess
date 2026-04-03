@@ -1,5 +1,6 @@
 package client;
 
+import client.error.ResponseException;
 import com.google.gson.Gson;
 
 import java.net.URI;
