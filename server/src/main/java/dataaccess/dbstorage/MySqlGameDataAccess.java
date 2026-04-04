@@ -9,6 +9,7 @@ import io.javalin.http.BadRequestResponse;
 import io.javalin.http.ForbiddenResponse;
 import model.GameData;
 
+import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -72,6 +73,18 @@ public class MySqlGameDataAccess implements GameDAO {
             throw new DataAccessException(String.format("Error: unable to read data: %s", e.getMessage()));
         }
         throw new BadRequestResponse("Error: Game not found");
+    }
+
+    @Override
+    public GameData updateGame(int gameID, ChessGame game) throws DataAccessException {
+        String chessGameSerial = new Gson().toJson(game);
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = "UPDATE games SET chessGame = ? WHERE gameID = ?";
+            configureAndExecute.executeUpdate(statement, chessGameSerial, gameID);
+        } catch (SQLException e) {
+            throw new DataAccessException("Error: unable to update game");
+        }
+        return getGame(gameID);
     }
 
     @Override

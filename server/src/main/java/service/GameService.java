@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
@@ -26,6 +27,25 @@ public class GameService {
         }
         GameData game = gameDAO.createGame(request.gameName());
         return new CreateGameResult(game.gameID(), "");
+    }
+
+    public UpdateGameResult updateGame(UpdateGameRequest request, String authToken) throws DataAccessException {
+        new ValidateAuthorization(authDAO, authToken);
+        GameData current = gameDAO.getGame(request.gameID());
+        if(request.color() == null || request.move() == null) {
+            // observer can't update the game
+            // and game only updates when a move is made
+            throw new RuntimeException("Error: Game cannot be updated.");
+        }
+
+        // make the updated move on the chessGame, send that up in the update
+        // then send back the updated board and a message if it didn't work
+
+        try {
+            gameDAO.updateGame(current.gameID(),);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -57,7 +77,6 @@ public class GameService {
         }
         return !(!request.playerColor().equals("WHITE") & !request.playerColor().equals("BLACK"));
     }
-
 
     public ListGameResult listGames(String auth) throws DataAccessException {
         new ValidateAuthorization(authDAO, auth);

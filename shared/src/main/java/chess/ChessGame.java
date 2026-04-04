@@ -13,7 +13,7 @@ import java.util.Objects;
 public class ChessGame {
     private ChessBoard board = new ChessBoard();
     private TeamColor currentTurn = TeamColor.WHITE;
-    private boolean is_game_active = true;
+    private boolean isGameActive = true;
 
     public ChessGame() {
         board.resetBoard();
@@ -36,7 +36,7 @@ public class ChessGame {
     }
 
     public void endGame() {
-        is_game_active = false;
+        isGameActive = false;
     }
 
 
@@ -105,7 +105,7 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
         ChessPiece boardPiece = board.getPiece(move.getStartPosition());
-        if(!is_game_active) {
+        if(!isGameActive) {
             return;
         }
         if (validMoves.contains(move) && boardPiece != null && boardPiece.getTeamColor().equals(currentTurn)) {
@@ -239,4 +239,9 @@ public class ChessGame {
         WHITE,
         BLACK
     }
+
+    public boolean isGameActive() {
+        return isGameActive;
+    }
+
 }

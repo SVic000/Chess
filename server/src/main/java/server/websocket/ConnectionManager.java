@@ -9,10 +9,8 @@ import java.util.Set;
 public class ConnectionManager {
     public final Map<Integer, Set<Session>> connections = new HashMap<>();
 
-
-    // handle when someone joins a game
-    // handle when someone makes a  move
-    // handle when someone resigns
-    // handle when someone leaves
+    // this class's only job is to keep track of who's where and when to send a message!
+    // key = gameid
+    // session = active players (including observers)
 }
 

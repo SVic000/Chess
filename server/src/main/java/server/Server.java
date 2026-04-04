@@ -12,6 +12,7 @@ import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpResponseException;
 import server.handlers.*;
+import server.websocket.WebSocketHandler;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
@@ -21,6 +22,7 @@ import java.util.Objects;
 
 public class Server {
     private final Javalin javalin;
+    private final WebSocketHandler webSocketHandler;
 
     public Server() {
         UserDAO userStorage;
@@ -38,6 +40,8 @@ public class Server {
         ClearService clearService = new ClearService(userStorage, authStorage, gameStorage);
         GameService gameService = new GameService(authStorage, gameStorage);
 
+        webSocketHandler = new WebSocketHandler(userService,gameService);
+
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .post("/user", new RegisterHandler(userService))
                 .delete("/db", new ClearHandler(clearService))
@@ -47,7 +51,12 @@ public class Server {
                 .put("/game", new JoinGameHandler(gameService))
                 .get("/game", new ListGamesHandler(gameService))
                 .exception(HttpResponseException.class, this::exceptionHandler)
-                .exception(Exception.class, this::exceptionHandler);
+                .exception(Exception.class, this::exceptionHandler)
+                .ws("/ws", ws -> {
+                    ws.onConnect(webSocketHandler);
+                    ws.onMessage(webSocketHandler);
+                    ws.onClose(webSocketHandler);
+                });
     }
 
     private void exceptionHandler(Exception e, Context ctx) {
