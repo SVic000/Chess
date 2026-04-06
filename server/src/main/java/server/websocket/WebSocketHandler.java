@@ -1,10 +1,13 @@
 package server.websocket;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
+import dataaccess.UserDAO;
 import io.javalin.websocket.WsCloseContext;
 import io.javalin.websocket.WsCloseHandler;
 import io.javalin.websocket.WsConnectContext;
@@ -57,9 +60,91 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    public void handleMakeMove(Session session, MakeMoveCommand command) {
+    public void handleMakeMove(Session session, MakeMoveCommand command) throws IOException {
         String message;
         ServerMessage notification;
+        AuthData user;
+        GameData game;
+        GameData updated;
+        ChessGame current;
+        ChessMove move = command.getChessMove();
+        try {
+            user = authDAO.getAuth(command.getAuthToken());
+            game = gameDAO.getGame(command.getGameID());
+
+            if(!user.username().equals(game.whiteUsername()) && !user.username().equals(game.blackUsername())) {
+                message = "Error: Observers can't make a move";
+                notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR,message);
+                connections.sendToSession(session,notification);
+                return;
+            }
+        } catch (DataAccessException e) {
+            message = e.getMessage();
+            notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR,message);
+            connections.sendToSession(session,notification);
+            return;
+        }
+        if(!game.game().isGameActive()) {
+            message = "Error: game is over. Can't make moves.";
+            notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR,message);
+            connections.sendToSession(session,notification);
+            return;
+        }
+        ChessGame.TeamColor color = user.username().equals(game.whiteUsername()) ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+        ChessGame.TeamColor enemy = color.equals(ChessGame.TeamColor.WHITE) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+        try {
+            game.game().makeMove(command.getChessMove());
+            if(game.game().isInCheckmate(color)
+                    || game.game().isInCheckmate(enemy)
+                    || game.game().isInStalemate(color)
+                    || game.game().isInCheck(enemy)) {
+                game.game().endGame();
+            }
+            updated = gameDAO.updateGame(command.getGameID(),game.game());
+            current = updated.game();
+        } catch (InvalidMoveException | DataAccessException e) {
+            message = e.getMessage();
+            notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR,message);
+            connections.sendToSession(session,notification);
+            return;
+        }
+
+        notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, current);
+        connections.broadcast(null, game.gameID(), notification);
+
+        message = String.format("%s moved %s to %s", user.username(), move.getStartPosition(), move.getEndPosition());
+        notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connections.broadcast(session, command.getGameID(), notification);
+
+        if(current.isInCheckmate(color)) {
+            message = String.format("%s is in checkmate. Game over.", color);
+            notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,message);
+            connections.broadcast(null,command.getGameID(),notification);
+        } else if (current.isInCheckmate(enemy)) {
+            message = String.format("%s is in checkmate. Game over.", enemy);
+            notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,message);
+            connections.broadcast(null,command.getGameID(),notification);
+        }
+        if(current.isInStalemate(color)) {
+            message = String.format("%s is in stalemate. Game over.", color);
+            notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,message);
+            connections.broadcast(null,command.getGameID(),notification);
+        }
+        if(current.isInStalemate(enemy)) {
+            message = String.format("%s is in stalemate. Game over.", enemy);
+            notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,message);
+            connections.broadcast(null,command.getGameID(),notification);
+        }
+        if(current.isInCheck(color)) {
+            message = String.format("%s is in check.", color);
+            notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,message);
+            connections.broadcast(null,command.getGameID(),notification);
+        }
+        if (current.isInCheck(enemy)) {
+            message = String.format("%s is in check.", enemy);
+            notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,message);
+            connections.broadcast(null,command.getGameID(),notification);
+        }
 
     }
 
