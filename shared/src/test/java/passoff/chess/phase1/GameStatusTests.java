@@ -25,7 +25,7 @@ public class GameStatusTests {
         var game = new ChessGame();
         var expectedBoard = TestUtilities.defaultBoard();
         Assertions.assertEquals(expectedBoard, game.getBoard(), "Incorrect starting board");
-        Assertions.assertEquals(ChessGame.TeamColor.WHITE, game.getTeamTurn(), "Incorrect starting team turn");
+        Assertions.assertEquals(ChessGame.TeamColor.WHITE, game.getCurrentTurn(), "Incorrect starting team turn");
     }
 
     @Test

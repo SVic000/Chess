@@ -22,7 +22,7 @@ public class ChessGame {
     /**
      * @return Which team's turn it is
      */
-    public TeamColor getTeamTurn() {
+    public TeamColor getCurrentTurn() {
         return currentTurn;
     }
 
