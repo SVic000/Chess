@@ -57,13 +57,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     public void handleMakeMove(Session session, MakeMoveCommand command) {
-        // will need to check if the game is playable!
-        // will get game from service
+        String message;
+        ServerMessage notification;
 
     }
 
     public void handleResign(Session session, UserGameCommand command) {
-
+        String message;
+        ServerMessage notification;
     }
 
     public void handleJoin(Session session, UserGameCommand command) throws DataAccessException, IOException {
@@ -77,7 +78,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, game.game());
             connections.sendToSession(session, notification);
 
-            message = getMessage(user.username(),game);
+            message = getMessageConnect(user.username(),game);
             notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             connections.broadcast(session, game.gameID(), notification);
         } catch (DataAccessException e) {
@@ -87,7 +88,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    public String getMessage(String username, GameData game) {
+    public String getMessageConnect(String username, GameData game) {
         if(username.equals(game.whiteUsername())) {
             return String.format("%s joined as White Player.", username);
         } else if(username.equals(game.blackUsername())) {
@@ -97,7 +98,22 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    public void handleLeave(Session session, UserGameCommand command){
+    public void handleLeave(Session session, UserGameCommand command) throws IOException {
+        String message;
+        ServerMessage notification;
+        try {
+            AuthData user = authDAO.getAuth(command.getAuthToken());
+            GameData game = gameDAO.getGame(command.getGameID());
 
+            connections.remove(game.gameID(), session);
+
+            message = String.format("%s left the game", user.username());
+            notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            connections.broadcast(session, game.gameID(), notification);
+        } catch (DataAccessException e) {
+            message = "Error: Unable to leave game";
+            notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR,message);
+            connections.sendToSession(session, notification);
+        }
     }
 }
