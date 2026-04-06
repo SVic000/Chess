@@ -1,5 +1,6 @@
 package httpobjs;
+import chess.ChessGame;
 import chess.ChessMove;
 
-public record UpdateGameRequest (int gameID, String color, ChessMove move, String authToken) {
+public record UpdateGameRequest (int gameID, ChessGame.TeamColor color, ChessMove move, String authToken) {
 }

@@ -8,6 +8,7 @@ import io.javalin.websocket.WsConnectContext;
 import io.javalin.websocket.WsConnectHandler;
 import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
+import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.NotNull;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
@@ -39,7 +40,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
     // will send notif, error, or load game
 
-    public void handleMakeMove() {
+    public void handleMakeMove(Session session) {
         // will need to check if the game is playable!
         // will get game from service
 

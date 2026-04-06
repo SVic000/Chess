@@ -2,6 +2,7 @@ package client.websocket;
 
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.WebSocketContainer;
 import websocket.messages.*;
 import websocket.commands.*;
 
@@ -42,24 +43,6 @@ public class WebSocketFacade extends Endpoint {
     //Endpoint requires this method, but you don't have to do anything
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
-    }
-
-    public void enterPetShop(String visitorName) throws ResponseException {
-        try {
-            var action = new Action(Action.Type.ENTER, visitorName);
-            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-        } catch (IOException ex) {
-            throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
-        }
-    }
-
-    public void leavePetShop(String visitorName) throws ResponseException {
-        try {
-            var action = new Action(Action.Type.EXIT, visitorName);
-            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-        } catch (IOException ex) {
-            throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
-        }
     }
 
 }
