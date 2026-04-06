@@ -1,5 +1,6 @@
 package server.websocket;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.UserGameCommand;
@@ -44,6 +45,13 @@ public class ConnectionManager {
                     c.getRemote().sendString(msg);
                 }
             }
+        }
+    }
+
+    public void sendToSession(Session session, ServerMessage notification) throws IOException {
+        String msg = new Gson().toJson(notification);
+        if(session.isOpen()) {
+            session.getRemote().sendString(msg);
         }
     }
 }
