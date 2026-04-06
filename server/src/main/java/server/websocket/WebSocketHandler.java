@@ -1,5 +1,6 @@
 package server.websocket;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
@@ -62,9 +63,48 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     }
 
-    public void handleResign(Session session, UserGameCommand command) {
+    public void handleResign(Session session, UserGameCommand command) throws IOException {
         String message;
         ServerMessage notification;
+        try {
+            AuthData user = authDAO.getAuth(command.getAuthToken());
+            GameData game = gameDAO.getGame(command.getGameID());
+
+            if(user.username().equals(game.whiteUsername())) {
+                message = String.format("%s resigns, Black Wins.", user.username());
+            } else if(user.username().equals(game.blackUsername())) {
+                message = String.format("%s resigns, White Wins.",user.username());
+            } else {
+                message = "Error: can't resign as an observer.";
+                notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, message);
+                try {
+                    connections.sendToSession(session, notification);
+                    return;
+                } catch (IOException e) {
+                    message = "Error: Unable to resign.";
+                    notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, message);
+                    connections.sendToSession(session,notification);
+                    return;
+                }
+
+            }
+            ChessGame board = game.game();
+            if(!board.isGameActive()) {
+                message = "Error: can't resign from a game that's over.";
+                notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, message);
+                connections.sendToSession(session,notification);
+                return;
+            }
+            board.endGame();
+            gameDAO.updateGame(game.gameID(), board);
+
+            notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,message);
+            connections.broadcast(null,command.getGameID(),notification);
+        } catch (DataAccessException | IOException e) {
+            message = e.getMessage();
+            notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR,message);
+            connections.sendToSession(session,notification);
+        }
     }
 
     public void handleJoin(Session session, UserGameCommand command) throws DataAccessException, IOException {
@@ -94,7 +134,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         } else if(username.equals(game.blackUsername())) {
             return String.format("%s joined as Black Player.", username);
         } else {
-            return String.format("%s joined as an observer", username);
+            return String.format("%s joined as an observer.", username);
         }
     }
 
@@ -113,11 +153,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 gameDAO.joinGame(command.getGameID(),null, "BLACK");
             }
 
-            message = String.format("%s left the game", user.username());
+            message = String.format("%s left the game.", user.username());
             notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             connections.broadcast(session, game.gameID(), notification);
         } catch (DataAccessException e) {
-            message = "Error: Unable to leave game";
+            message = "Error: Unable to leave game.";
             notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR,message);
             connections.sendToSession(session, notification);
         }
