@@ -107,6 +107,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
             connections.remove(game.gameID(), session);
 
+            if(user.username().equals(game.whiteUsername())) {
+                gameDAO.joinGame(command.getGameID(), null,"WHITE");
+            } else if(user.username().equals(game.blackUsername())) {
+                gameDAO.joinGame(command.getGameID(),null, "BLACK");
+            }
+
             message = String.format("%s left the game", user.username());
             notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             connections.broadcast(session, game.gameID(), notification);
