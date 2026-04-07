@@ -6,26 +6,20 @@ import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.GameDAO;
 import io.javalin.http.BadRequestResponse;
-import io.javalin.http.ForbiddenResponse;
 import model.GameData;
 
-import javax.xml.crypto.Data;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
 public class MySqlGameDataAccess implements GameDAO {
-    static int gameID = 1;
     private final ConfigureAndExecute configureAndExecute = new ConfigureAndExecute();
 
     public MySqlGameDataAccess() throws DataAccessException {
         String[] createStatements = {
                 """
             CREATE TABLE IF NOT EXISTS  games (
-              `gameID` INT NOT NULL,
+              `gameID` INT NOT NULL AUTO_INCREMENT,
               `gameName` varchar(256) NOT NULL,
               `whiteUsername` varchar(256) DEFAULT NULL,
               `blackUsername` varchar(256) DEFAULT NULL,
@@ -39,22 +33,33 @@ public class MySqlGameDataAccess implements GameDAO {
 
     @Override
     public GameData createGame(String gameName) {
-        GameData gameData = new GameData(gameID, null, null, gameName, new ChessGame());
-        String chessGameSerial = new Gson().toJson(gameData.game());
+        ChessGame newGame = new ChessGame();
+        String chessGameSerial = new Gson().toJson(newGame);
 
-        var statement = "INSERT INTO games (gameID, whiteUsername, blackUsername,gameName, chessGame) VALUES (?,?,?,?,?)";
-        try {
-            configureAndExecute.executeUpdate(statement,
-                    gameData.gameID(),
-                    gameData.whiteUsername(),
-                    gameData.blackUsername(),
-                    gameData.gameName(),
-                    chessGameSerial);
-        } catch (DataAccessException e) {
-            throw new ForbiddenResponse("Error: already taken");
+        String statement = "INSERT INTO games (whiteUsername, blackUsername, gameName, chessGame) VALUES (?,?,?,?)";
+
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
+
+            ps.setString(1, null);
+            ps.setString(2, null);
+            ps.setString(3, gameName);
+            ps.setString(4, chessGameSerial);
+
+            ps.executeUpdate();
+
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    int newID = rs.getInt(1);
+                    return new GameData(newID, null, null, gameName, newGame);
+                }
+            }
+
+            throw new DataAccessException("Error: failed to retrieve generated game ID");
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error creating game: " + e.getMessage());
         }
-        gameID += 1;
-        return gameData;
     }
 
     @Override
@@ -107,10 +112,9 @@ public class MySqlGameDataAccess implements GameDAO {
 
     @Override
     public void joinGame(int gameID, String username, String color) throws DataAccessException {
-        GameData current = getGame(gameID); // will throw error if not in db
+        GameData current = getGame(gameID);
         try (Connection conn = DatabaseManager.getConnection()) {
             String statement;
-            String chessGameSerial = new Gson().toJson(current.game());
             if (color.equals("WHITE")) {
                 statement = "UPDATE games SET whiteUsername = ? WHERE gameID = ?";
                 configureAndExecute.executeUpdate(statement, username, gameID);
@@ -127,7 +131,6 @@ public class MySqlGameDataAccess implements GameDAO {
     public void clear() throws DataAccessException {
         var statement = "TRUNCATE games";
         configureAndExecute.executeUpdate(statement);
-        gameID = 1;
     }
 
     private GameData readGame(ResultSet rs) throws SQLException {
@@ -139,5 +142,4 @@ public class MySqlGameDataAccess implements GameDAO {
         ChessGame chessGame = new Gson().fromJson(chess, ChessGame.class);
         return new GameData(gameID, whiteUsername, blackUsername, gameName, chessGame);
     }
-
 }
