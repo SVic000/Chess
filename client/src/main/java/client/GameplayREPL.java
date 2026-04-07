@@ -124,9 +124,6 @@ public class GameplayREPL implements NotificationHandler {
     }
 
     private String makeMove() {
-        // ask which piece they want to move ( make sure it's their color )
-        // ask where they want to move it ( can be wrong since error will catch it in the server )
-        // then do that :)
         ChessPosition start;
         ChessPosition end;
         ChessPiece.PieceType promotion = null;
