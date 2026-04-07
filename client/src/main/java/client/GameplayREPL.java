@@ -39,6 +39,7 @@ public class GameplayREPL implements NotificationHandler {
         switch(message.getServerMessageType()) {
             case LOAD_GAME -> {
                 game = message.getGame();
+                System.out.println();
                 new DrawChessBoard(game, color.toString());
                 System.out.println();
             }
