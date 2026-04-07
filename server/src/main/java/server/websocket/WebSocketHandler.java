@@ -93,11 +93,15 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         ChessGame.TeamColor color = user.username().equals(game.whiteUsername()) ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
         ChessGame.TeamColor enemy = color.equals(ChessGame.TeamColor.WHITE) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
         try {
+            if(!game.game().getCurrentTurn().equals(color)) {
+                message = "Error: not your turn, you can't make a move.";
+                notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR,message);
+                connections.sendToSession(session,notification);
+                return;
+            }
             game.game().makeMove(command.getChessMove());
-            if(game.game().isInCheckmate(color)
-                    || game.game().isInCheckmate(enemy)
-                    || game.game().isInStalemate(color)
-                    || game.game().isInCheck(enemy)) {
+            if(game.game().isInCheckmate(enemy)
+                    || game.game().isInStalemate(enemy)) {
                 game.game().endGame();
             }
             updated = gameDAO.updateGame(command.getGameID(),game.game());
@@ -116,36 +120,19 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.broadcast(session, command.getGameID(), notification);
 
-        if(current.isInCheckmate(color)) {
-            message = String.format("%s is in checkmate. Game over.", color);
-            notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,message);
-            connections.broadcast(null,command.getGameID(),notification);
-        } else if (current.isInCheckmate(enemy)) {
+        if (current.isInCheckmate(enemy)) {
             message = String.format("%s is in checkmate. Game over.", enemy);
             notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,message);
             connections.broadcast(null,command.getGameID(),notification);
-        }
-        if(current.isInStalemate(color)) {
-            message = String.format("%s is in stalemate. Game over.", color);
-            notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,message);
-            connections.broadcast(null,command.getGameID(),notification);
-        }
-        if(current.isInStalemate(enemy)) {
+        } else if(current.isInStalemate(enemy)) {
             message = String.format("%s is in stalemate. Game over.", enemy);
             notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,message);
             connections.broadcast(null,command.getGameID(),notification);
-        }
-        if(current.isInCheck(color)) {
-            message = String.format("%s is in check.", color);
-            notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,message);
-            connections.broadcast(null,command.getGameID(),notification);
-        }
-        if (current.isInCheck(enemy)) {
+        } else if (current.isInCheck(enemy)) {
             message = String.format("%s is in check.", enemy);
             notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,message);
             connections.broadcast(null,command.getGameID(),notification);
         }
-
     }
 
     public void handleResign(Session session, UserGameCommand command) throws IOException {
