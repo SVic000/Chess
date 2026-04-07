@@ -1,11 +1,13 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -24,12 +26,11 @@ public class DrawChessBoard {
     private static ChessPosition anchor;
 
     // for highlight pieces
-    public DrawChessBoard(ChessGame game, String color, Collection<ChessPosition> highlights) {
+    public DrawChessBoard(ChessGame game, String color, ChessPosition anchor, Collection<ChessPosition> highlights) {
         DrawChessBoard.game = game;
-        List<ChessPosition> temp = highlights.stream().toList();
-        anchor = temp.getFirst();
-        highlights.remove(anchor);
         DrawChessBoard.highlights = highlights;
+        DrawChessBoard.anchor = anchor;
+        DrawChessBoard.color = color;
         draw();
     }
 
@@ -60,11 +61,22 @@ public class DrawChessBoard {
     }
 
 
-    private static boolean wasPreviousColorDark(PrintStream out, boolean color) {
+    private static boolean wasPreviousColorDark(PrintStream out, boolean color, boolean highlight, boolean anchor) {
         if (color) {
-            out.print(SET_BG_COLOR_BURNT_ORANGE);
+            if(highlight) {
+                out.print(SET_BG_COLOR_DARKER_GREEN);
+            } else {
+                out.print(SET_BG_COLOR_BURNT_ORANGE);
+            }
         } else {
-            out.print(SET_BG_COLOR_OFF_WHITE);
+            if(highlight) {
+                out.print(SET_BG_COLOR_LIGHT_GREEN);
+            } else {
+                out.print(SET_BG_COLOR_OFF_WHITE);
+            }
+        }
+        if(anchor) {
+            out.print(SET_BG_COLOR_GOOD_YELLOW);
         }
         return color ? FALSE : TRUE;
     }
@@ -85,13 +97,11 @@ public class DrawChessBoard {
         for (int i = 1; i < 9; i++) {
             printHeaderTextSingle(out, i - 1);
             for (int j = 8; j > 0; j--) {
-                // add a function that checks if ChessPosition (i,j) == anchor
-                // or if that ChessPosition is in highlights
-                isColorDark = wasPreviousColorDark(out, isColorDark);
+                isColorDark = checkIsDark(i,j, isColorDark, out);
                 printBoardPiece(out, i, j);
             }
             printHeaderTextSingle(out, i - 1);
-            isColorDark = wasPreviousColorDark(out, isColorDark);
+            isColorDark = wasPreviousColorDark(out, isColorDark,false,false);
             newRow(out);
         }
     }
@@ -102,14 +112,38 @@ public class DrawChessBoard {
         for (int i = 8; i > 0; i--) {
             printHeaderTextSingle(out, index);
             for (int j = 1; j < 9; j++) {
-                isColorDark = wasPreviousColorDark(out, isColorDark);
+                isColorDark = checkIsDark(i,j,isColorDark,out);
                 printBoardPiece(out, i, j);
             }
             printHeaderTextSingle(out, index);
-            isColorDark = wasPreviousColorDark(out, isColorDark);
+            isColorDark = wasPreviousColorDark(out, isColorDark,false,false);
             index++;
             newRow(out);
         }
+    }
+
+    static boolean isPositionAnchor(int row, int col){
+        ChessPosition check = new ChessPosition(row,col);
+        return check.equals(anchor);
+    }
+
+    static boolean isPositionInHighlight(int row, int col) {
+        ChessPosition check = new ChessPosition(row,col);
+        if(highlights == null) {
+            return false;
+        }
+        return highlights.contains(check);
+    }
+
+    static boolean checkIsDark(int i, int j, boolean isColorDark, PrintStream out) {
+        if(isPositionAnchor(i,j)) {
+            isColorDark = wasPreviousColorDark(out,isColorDark,false,true);
+        } else if (isPositionInHighlight(i,j)) {
+            isColorDark = wasPreviousColorDark(out,isColorDark,true,false);
+        } else {
+            isColorDark = wasPreviousColorDark(out, isColorDark, false,false);
+        }
+        return isColorDark;
     }
 
     private static void newRow(PrintStream out) {
@@ -159,5 +193,15 @@ public class DrawChessBoard {
             case KNIGHT -> value = piece.getTeamColor().equals(ChessGame.TeamColor.WHITE) ? WHITE_KNIGHT : BLACK_KNIGHT;
         }
         return value;
+    }
+
+
+    static Collection<ChessPosition> convertToEndPosition(Collection<ChessMove> validMoves) {
+        Collection<ChessPosition> result = new ArrayList<>();
+
+        for(ChessMove move : validMoves) {
+            result.add(move.getEndPosition());
+        }
+        return result;
     }
 }

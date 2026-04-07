@@ -122,7 +122,6 @@ public class GameplayREPL implements NotificationHandler {
 
     private String legalMoves() {
         ChessPosition location;
-        Collection<ChessPosition> highlightSquares = new ArrayList<>();
         System.out.print("Enter the position of the piece you'd like to highlight - col(a-h) and row(1-8): ");
         String tokens = scanner.nextLine().toLowerCase();
         try {
@@ -134,12 +133,11 @@ public class GameplayREPL implements NotificationHandler {
         if(boardPiece == null) {
             return "Error: Unable to highlight moves of an empty position.";
         }
-        highlightSquares.add(location);
-        highlightSquares.addAll(convertToEndPosition(game.validMoves(location)));
 
-        new DrawChessBoard(game,color.toString(),highlightSquares);
+        Collection<ChessPosition> highlightSquares = new ArrayList<>(convertToEndPosition(game.validMoves(location)));
 
-        return "Not implemented";
+        new DrawChessBoard(game,color.toString(),location, highlightSquares);
+        return "";
     }
 
     Collection<ChessPosition> convertToEndPosition(Collection<ChessMove> validMoves) {
