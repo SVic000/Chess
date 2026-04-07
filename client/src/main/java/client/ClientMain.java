@@ -2,11 +2,9 @@ package client;
 
 import chess.ChessGame;
 import client.error.ResponseException;
-import client.websocket.NotificationHandler;
 import client.websocket.WebSocketFacade;
 import httpobjs.*;
 import model.GameData;
-import ui.DrawChessBoard;
 
 import java.util.*;
 
@@ -69,14 +67,9 @@ public class ClientMain {
                 System.out.println(msg.message());
                 System.out.println(menu());
             }
-            if (result.equals("5")) {
-                continue;
-            }
             System.out.println(result);
             System.out.println();
-            if (line.equals("3")) {
-                continue;
-            }
+
             if (line.equals("2")) {
                 System.out.println();
                 for (int keys : ORDER.keySet()) {
@@ -86,7 +79,7 @@ public class ClientMain {
                     }
                     System.out.print(keys);
                     System.out.print(". ");
-                    System.out.print("Game Name: ");
+                    System.out.print("Name: ");
                     System.out.print(game.gameName());
                     System.out.print(", White player: ");
                     System.out.print(game.whiteUsername());
@@ -94,6 +87,7 @@ public class ClientMain {
                     System.out.print(game.blackUsername());
                     System.out.println();
                 }
+                System.out.println();
             }
             if (!line.equals("6")) {
                 System.out.print(menu());
@@ -174,7 +168,7 @@ public class ClientMain {
             return "You must call list games before you enter a game!";
         }
 
-        System.out.print("Enter the game ID you'd like to observe: ");
+        System.out.print("Enter the number of the game you'd like to observe: ");
         String[] input = scanner.nextLine().split(" ");
         try {
             int gameID = Integer.parseInt(input[0].trim());
@@ -203,14 +197,14 @@ public class ClientMain {
             repl.run();
             return "";
         } catch (NumberFormatException ex) {
-            return "Error: Game ID is not valid, try again.";
+            return "Error: Game index is not valid, try again.s";
         }
     }
 
     private static String joinGame(Scanner scanner) {
         assertSignedIn();
         // will be joining another REPL here in phase 6
-        System.out.print("Enter the game ID of the game you'd like to join: ");
+        System.out.print("Enter the number of the game you'd like to join: ");
         String input = scanner.nextLine().trim();
         int gameID;
         try {
@@ -223,6 +217,7 @@ public class ClientMain {
         if(!color.equals("WHITE") && !color.equals("BLACK")) {
             return "Not a valid color. Try again.";
         }
+        System.out.println();
 
         JoinGameRequest req = new JoinGameRequest(color, gameID);
 
@@ -256,7 +251,8 @@ public class ClientMain {
         ws.sendJoin(authToken,gameID);
 
         repl.run();
-        return "";
+
+        return "Successfully left the game.";
     }
 
     private static String listGames() {

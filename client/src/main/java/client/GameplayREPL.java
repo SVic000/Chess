@@ -1,12 +1,10 @@
 package client;
 
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import client.error.ResponseException;
 import client.websocket.NotificationHandler;
 import client.websocket.WebSocketFacade;
+import org.eclipse.jetty.server.Response;
 import ui.DrawChessBoard;
 import websocket.messages.ServerMessage;
 
@@ -42,6 +40,7 @@ public class GameplayREPL implements NotificationHandler {
             case LOAD_GAME -> {
                 game = message.getGame();
                 new DrawChessBoard(game, color.toString());
+                System.out.println();
             }
             case ERROR, NOTIFICATION -> System.out.println(message.getMessage());
         }
@@ -61,9 +60,11 @@ public class GameplayREPL implements NotificationHandler {
                 System.out.println(menu());
             }
 
-            System.out.println(result);
-            System.out.println();
-            System.out.print(menu());
+            if(!result.equals("5")) {
+                System.out.println(result);
+                System.out.println();
+                System.out.print(menu());
+            }
         }
     }
 
@@ -132,10 +133,10 @@ public class GameplayREPL implements NotificationHandler {
         if(role.equals("observer")) {
             return "Error: can't make a move as an observer.";
         }
-        System.out.print("Enter the starting column (a-h) and row(1-8): ");
-        String[] tokens = scanner.nextLine().toLowerCase().split("");
+        System.out.print("Enter the starting piece position - column (a-h) and row(1-8): ");
+        String tokens = scanner.nextLine().toLowerCase();
         try {
-            start = convertToPosition(tokens[0], tokens[1]);
+            start = convertToPosition(tokens.substring(0,1), tokens.substring(1));
         } catch (RuntimeException e) {
             return e.getMessage();
         }
@@ -147,11 +148,11 @@ public class GameplayREPL implements NotificationHandler {
         if(!color.equals(boardPiece.getTeamColor())) {
             return "Error: Unable to move a piece that's not on your team.";
         }
-        System.out.print("Enter the end column (a-h) and row(1-8): ");
-        tokens = scanner.nextLine().toLowerCase().split("");
+        System.out.print("Enter the ending position -  column (a-h) and row(1-8): ");
+        tokens = scanner.nextLine().toLowerCase();
         try {
-            end = convertToPosition(tokens[0], tokens[1]);
-        } catch (RuntimeException e) {
+            end = convertToPosition(tokens.substring(0,1), tokens.substring(1));
+        } catch (Exception e) {
             return e.getMessage();
         }
         String piece = "";
@@ -169,21 +170,30 @@ public class GameplayREPL implements NotificationHandler {
             }
             try {
                 promotion = convertToPieceType(piece);
-            } catch (RuntimeException e) {
+            } catch (Exception e) {
                 return e.getMessage();
             }
         }
         ChessMove move = new ChessMove(start,end,promotion);
-
+        ChessBoard old = (ChessBoard) game.getBoard().clone();
         server.sendMakeMove(authToken,gameID,move);
+        if (old.equals(game.getBoard())) {
+            return "";
+        }
+
         return String.format("Moved %s to %s.", start,end);
     }
 
     private ChessPosition convertToPosition(String col, String row) {
-        int rows = Integer.parseInt(row);
+        int rows;
+        try {
+            rows = Integer.parseInt(row);
+        } catch (NumberFormatException e) {
+            throw new ResponseException(403, "Error: Enter a valid row (1-8)");
+        }
         int cols;
         if(rows > 8 | rows < 0) {
-            throw new RuntimeException("Error: enter a valid row (1-8).");
+            throw new ResponseException(400, "Error: enter a valid row (1-8).");
         }
         switch(col) {
             case "a" -> cols = 1;
@@ -195,7 +205,7 @@ public class GameplayREPL implements NotificationHandler {
             case "g" -> cols = 7;
             case "h" -> cols = 8;
             default -> {
-                throw new RuntimeException("Error: enter a valid column (a-h).");
+                throw new ResponseException(400, "Error: enter a valid column (a-h).");
             }
         }
         return new ChessPosition(rows,cols);
@@ -215,6 +225,9 @@ public class GameplayREPL implements NotificationHandler {
             case "knight" -> {
                 return ChessPiece.PieceType.KNIGHT;
             }
+            case "" -> {
+                return null;
+            }
             default -> {
                 throw new ResponseException(401, "Error: Enter a valid promotion piece type (Knight, Rook, Bishop, Queen).");
             }
@@ -222,11 +235,14 @@ public class GameplayREPL implements NotificationHandler {
     }
 
     private String resign() {
+        if(role.equals("observer")) {
+            return "Error: Can't resign as an observer";
+        }
         System.out.println("Are you sure you want to Resign? (yes/no): ");
         String response = scanner.nextLine().trim().toLowerCase();
         if(response.equals("yes")) {
             server.sendResign(authToken, gameID);
-            return "Resigned from game.";
+            return "";
         }
         return "Resign canceled.";
     }
