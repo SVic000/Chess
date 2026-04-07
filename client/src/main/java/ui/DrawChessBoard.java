@@ -6,6 +6,7 @@ import chess.ChessPosition;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.List;
 
 import static java.lang.Boolean.FALSE;
@@ -19,11 +20,16 @@ public class DrawChessBoard {
     private static String color;
     private static List<String> letters;
     private static List<String> numbers;
+    private static Collection<ChessPosition> highlights;
+    private static ChessPosition anchor;
 
-    // for observer
-    public DrawChessBoard(ChessGame game) {
+    // for highlight pieces
+    public DrawChessBoard(ChessGame game, String color, Collection<ChessPosition> highlights) {
         DrawChessBoard.game = game;
-        DrawChessBoard.color = "WHITE";
+        List<ChessPosition> temp = highlights.stream().toList();
+        anchor = temp.getFirst();
+        highlights.remove(anchor);
+        DrawChessBoard.highlights = highlights;
         draw();
     }
 
@@ -74,9 +80,13 @@ public class DrawChessBoard {
 
     static void printBlackBoard(PrintStream out) {
         boolean isColorDark = FALSE;
+        ChessPosition location;
+
         for (int i = 1; i < 9; i++) {
             printHeaderTextSingle(out, i - 1);
             for (int j = 8; j > 0; j--) {
+                // add a function that checks if ChessPosition (i,j) == anchor
+                // or if that ChessPosition is in highlights
                 isColorDark = wasPreviousColorDark(out, isColorDark);
                 printBoardPiece(out, i, j);
             }
