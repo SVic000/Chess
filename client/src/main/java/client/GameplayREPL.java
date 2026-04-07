@@ -215,7 +215,7 @@ public class GameplayREPL implements NotificationHandler {
                 return ChessPiece.PieceType.KNIGHT;
             }
             default -> {
-                throw new ResponseException(401, "Error: Enter a valid promotion piece type (Knight, Rook, Bishop, Queen)");
+                throw new ResponseException(401, "Error: Enter a valid promotion piece type (Knight, Rook, Bishop, Queen).");
             }
         }
     }
