@@ -1,47 +1,41 @@
 package ui;
 
 import chess.ChessGame;
-import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 import static ui.EscapeSequences.*;
 
 public class DrawChessBoard {
-    private static final String EMPTY = "   ";
-    private static final int HEADER_WIDTH = 10;
-    private static ChessGame game = new ChessGame();
-    private static String color;
-    private static List<String> letters;
-    private static List<String> numbers;
-    private static Collection<ChessPosition> highlights;
-    private static ChessPosition anchor;
+    private ChessGame game = new ChessGame();
+    private final String color;
+    private List<String> letters;
+    private List<String> numbers;
+    private Collection<ChessPosition> highlights;
+    private ChessPosition anchor;
 
     // for highlight pieces
     public DrawChessBoard(ChessGame game, String color, ChessPosition anchor, Collection<ChessPosition> highlights) {
-        DrawChessBoard.game = game;
-        DrawChessBoard.highlights = highlights;
-        DrawChessBoard.anchor = anchor;
-        DrawChessBoard.color = color;
+        this.game = game;
+        this.highlights = highlights;
+        this.anchor = anchor;
+        this.color = color;
         draw();
     }
 
     // for join game
     public DrawChessBoard(ChessGame game, String color) {
-        DrawChessBoard.color = color;
-        DrawChessBoard.game = game;
+        this.color = color;
+        this.game = game;
         draw();
     }
 
-    private static void draw() {
+    private void draw() {
         updateLetterAndNumberOrder(color);
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
@@ -61,7 +55,7 @@ public class DrawChessBoard {
     }
 
 
-    private static boolean wasPreviousColorDark(PrintStream out, boolean color, boolean highlight, boolean anchor) {
+    private boolean wasPreviousColorDark(PrintStream out, boolean color, boolean highlight, boolean anchor) {
         if (color) {
             if(highlight) {
                 out.print(SET_BG_COLOR_DARKER_GREEN);
@@ -78,21 +72,21 @@ public class DrawChessBoard {
         if(anchor) {
             out.print(SET_BG_COLOR_GOOD_YELLOW);
         }
-        return color ? FALSE : TRUE;
+        return !color;
     }
 
-    private static void printHeaderTextRow(PrintStream out) {
+    private void printHeaderTextRow(PrintStream out) {
         out.print(SET_TEXT_COLOR_BLACK);
         out.print(SET_BG_COLOR_LIGHT_GREY);
 
+        int HEADER_WIDTH = 10;
         for (int i = 0; i < HEADER_WIDTH; i++) {
             out.print(letters.get(i));
         }
     }
 
-    static void printBlackBoard(PrintStream out) {
-        boolean isColorDark = FALSE;
-        ChessPosition location;
+    void printBlackBoard(PrintStream out) {
+        boolean isColorDark = false;
 
         for (int i = 1; i < 9; i++) {
             printHeaderTextSingle(out, i - 1);
@@ -106,8 +100,8 @@ public class DrawChessBoard {
         }
     }
 
-    static void printWhiteBoard(PrintStream out) {
-        boolean isColorDark = FALSE;
+    void printWhiteBoard(PrintStream out) {
+        boolean isColorDark = false;
         int index = 0;
         for (int i = 8; i > 0; i--) {
             printHeaderTextSingle(out, index);
@@ -122,12 +116,12 @@ public class DrawChessBoard {
         }
     }
 
-    static boolean isPositionAnchor(int row, int col){
+    boolean isPositionAnchor(int row, int col){
         ChessPosition check = new ChessPosition(row,col);
         return check.equals(anchor);
     }
 
-    static boolean isPositionInHighlight(int row, int col) {
+    boolean isPositionInHighlight(int row, int col) {
         ChessPosition check = new ChessPosition(row,col);
         if(highlights == null) {
             return false;
@@ -135,7 +129,7 @@ public class DrawChessBoard {
         return highlights.contains(check);
     }
 
-    static boolean checkIsDark(int i, int j, boolean isColorDark, PrintStream out) {
+    boolean checkIsDark(int i, int j, boolean isColorDark, PrintStream out) {
         if(isPositionAnchor(i,j)) {
             isColorDark = wasPreviousColorDark(out,isColorDark,false,true);
         } else if (isPositionInHighlight(i,j)) {
@@ -146,19 +140,20 @@ public class DrawChessBoard {
         return isColorDark;
     }
 
-    private static void newRow(PrintStream out) {
+    private void newRow(PrintStream out) {
         out.print(RESET_BG_COLOR);
         out.println();
     }
 
-    private static void printHeaderTextSingle(PrintStream out, int index) {
+    private void printHeaderTextSingle(PrintStream out, int index) {
         out.print(SET_TEXT_COLOR_BLACK);
         out.print(SET_BG_COLOR_LIGHT_GREY);
 
         out.print(numbers.get(index));
     }
 
-    private static void updateLetterAndNumberOrder(String color) {
+    private void updateLetterAndNumberOrder(String color) {
+        String EMPTY = "   ";
         if (color.equals("BLACK")) {
             letters = List.of(EMPTY, " h ", " g ", " f ", " e ", " d ", " c ", " b ", " a ", EMPTY);
             numbers = List.of(" 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 ");
@@ -168,7 +163,7 @@ public class DrawChessBoard {
         }
     }
 
-    private static void printBoardPiece(PrintStream out, int row, int col) {
+    private void printBoardPiece(PrintStream out, int row, int col) {
         ChessPiece piece = game.getBoard().getPiece(new ChessPosition(row, col));
         if (piece == null) {
             out.print("   ");
@@ -182,7 +177,7 @@ public class DrawChessBoard {
         out.print(getChessPieceChar(piece));
     }
 
-    private static String getChessPieceChar(ChessPiece piece) {
+    private String getChessPieceChar(ChessPiece piece) {
         String value = " ";
         switch (piece.getPieceType()) {
             case PAWN -> value = piece.getTeamColor().equals(ChessGame.TeamColor.WHITE) ? WHITE_PAWN : BLACK_PAWN;
