@@ -194,14 +194,4 @@ public class DrawChessBoard {
         }
         return value;
     }
-
-
-    static Collection<ChessPosition> convertToEndPosition(Collection<ChessMove> validMoves) {
-        Collection<ChessPosition> result = new ArrayList<>();
-
-        for(ChessMove move : validMoves) {
-            result.add(move.getEndPosition());
-        }
-        return result;
-    }
 }
