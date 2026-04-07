@@ -40,6 +40,14 @@ public class ServerMessage {
         return this.serverMessageType;
     }
 
+    public ChessGame getGame() {
+        return game;
+    }
+
+    public String getMessage(){
+        return message;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
