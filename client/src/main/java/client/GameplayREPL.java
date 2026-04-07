@@ -8,6 +8,8 @@ import org.eclipse.jetty.server.Response;
 import ui.DrawChessBoard;
 import websocket.messages.ServerMessage;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Scanner;
 
 public class GameplayREPL implements NotificationHandler {
@@ -119,12 +121,36 @@ public class GameplayREPL implements NotificationHandler {
     }
 
     private String legalMoves() {
-        // ask which piece they're wanting to get legal moves for
-        // get moves for that piece
-        // pass into draw board a new constructor with a list of valid positions
-        // modify draw board to accommodate that
+        ChessPosition location;
+        Collection<ChessPosition> highlightSquares = new ArrayList<>();
+        System.out.print("Enter the position of the piece you'd like to highlight - col(a-h) and row(1-8): ");
+        String tokens = scanner.nextLine().toLowerCase();
+        try {
+            location = convertToPosition(tokens.substring(0,1), tokens.substring(1));
+        } catch (RuntimeException e) {
+            return e.getMessage();
+        }
+        ChessPiece boardPiece = game.getBoard().getPiece(location);
+        if(boardPiece == null) {
+            return "Error: Unable to highlight moves of an empty position.";
+        }
+        highlightSquares.add(location);
+        highlightSquares.addAll(convertToEndPosition(game.validMoves(location)));
+
+        new DrawChessBoard(game,color.toString(),highlightSquares);
+
         return "Not implemented";
     }
+
+    Collection<ChessPosition> convertToEndPosition(Collection<ChessMove> validMoves) {
+        Collection<ChessPosition> result = new ArrayList<>();
+
+        for(ChessMove move : validMoves) {
+            result.add(move.getEndPosition());
+        }
+        return result;
+    }
+
 
     private String makeMove() {
         ChessPosition start;
