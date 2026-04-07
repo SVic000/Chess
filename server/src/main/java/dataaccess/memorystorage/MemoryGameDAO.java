@@ -1,6 +1,7 @@
 package dataaccess.memorystorage;
 
 import chess.ChessGame;
+import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import io.javalin.http.BadRequestResponse;
 import model.GameData;
@@ -34,6 +35,11 @@ public class MemoryGameDAO implements GameDAO {
     @Override
     public Collection<GameData> listGames() {
         return gameStorage.values();
+    }
+
+    @Override
+    public GameData updateGame(int gameID, ChessGame game) throws DataAccessException {
+        return null;
     }
 
     @Override
