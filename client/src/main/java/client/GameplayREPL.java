@@ -7,10 +7,7 @@ import chess.ChessPosition;
 import client.error.ResponseException;
 import client.websocket.NotificationHandler;
 import client.websocket.WebSocketFacade;
-import kotlin.sequences.DropWhileSequence;
 import ui.DrawChessBoard;
-import websocket.commands.MakeMoveCommand;
-import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
 import java.util.Scanner;
@@ -19,7 +16,7 @@ public class GameplayREPL implements NotificationHandler {
     private final String authToken;
     private final int gameID;
     private ChessGame.TeamColor color = ChessGame.TeamColor.WHITE;
-    private final WebSocketFacade server;
+    private WebSocketFacade server;
     private static Scanner scanner = null;
     private static Serializer SERIALIZER = null;
     private ChessGame game;
@@ -33,6 +30,10 @@ public class GameplayREPL implements NotificationHandler {
         this.role = role;
         GameplayREPL.scanner = scanner;
         SERIALIZER = serializer;
+    }
+
+    public void setServer(WebSocketFacade server) {
+        this.server = server;
     }
 
     @Override

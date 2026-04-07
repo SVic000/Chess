@@ -1,6 +1,9 @@
 package client;
 
+import chess.ChessGame;
 import client.error.ResponseException;
+import client.websocket.NotificationHandler;
+import client.websocket.WebSocketFacade;
 import httpobjs.*;
 import model.GameData;
 import ui.DrawChessBoard;
@@ -14,6 +17,7 @@ public class ClientMain {
     private static final HashMap<Integer, GameData> ORDER = new HashMap<>();
     private static List<GameData> lastListCall = new ArrayList<>();
     private static String authToken = "";
+    private WebSocketFacade ws;
 
     public static void main(String[] args) {
         System.out.println("Welcome to Chess ♕! Sign in to start.");
@@ -180,11 +184,24 @@ public class ClientMain {
                 return "Error: Game does not exist, try again.";
             }
 
-            System.out.println("Observing " + game.gameName());
-            new DrawChessBoard(game.game());
-            System.out.println();
-            System.out.println();
-            return "Observing " + game.gameName();
+            GameplayREPL repl = new GameplayREPL(
+                    SERIALIZER,
+                    scanner,
+                    "observer",
+                    authToken,
+                    gameID,
+                    ChessGame.TeamColor.WHITE,
+                    null
+            );
+
+            WebSocketFacade ws = new WebSocketFacade("http://localhost:8080",repl);
+
+            repl.setServer(ws);
+
+            ws.sendJoin(authToken,gameID);
+
+            repl.run();
+            return "";
         } catch (NumberFormatException ex) {
             return "Error: Game ID is not valid, try again.";
         }
@@ -222,12 +239,24 @@ public class ClientMain {
         if(game == null) {
             throw new RuntimeException("Game does not exist");
         }
+        GameplayREPL repl = new GameplayREPL(
+                SERIALIZER,
+                scanner,
+                "player",
+                authToken,
+                gameID,
+                ChessGame.TeamColor.valueOf(color),
+                null
+        );
 
-        new DrawChessBoard(game.game(), color);
-        System.out.println();
-        System.out.println();
+        WebSocketFacade ws = new WebSocketFacade("http://localhost:8080", repl);
 
-        return "Successfully joined " + game.gameName() + " game!";
+        repl.setServer(ws);
+
+        ws.sendJoin(authToken,gameID);
+
+        repl.run();
+        return "";
     }
 
     private static String listGames() {
