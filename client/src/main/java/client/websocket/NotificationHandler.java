@@ -1,7 +1,7 @@
 package client.websocket;
 
-import websocket.commands.UserGameCommand;
+import websocket.messages.ServerMessage;
 
 public interface NotificationHandler {
-    void notify(UserGameCommand message);
+    void notify(ServerMessage message);
 }
