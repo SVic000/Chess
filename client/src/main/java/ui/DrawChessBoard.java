@@ -103,7 +103,7 @@ public class DrawChessBoard {
     }
 
     private static void newRow(PrintStream out) {
-        out.print(SET_BG_COLOR_BLACK);
+        out.print(RESET_BG_COLOR);
         out.println();
     }
 
