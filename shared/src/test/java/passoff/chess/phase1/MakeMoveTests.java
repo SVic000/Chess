@@ -212,10 +212,10 @@ public class MakeMoveTests {
         String failureMessage = "Team color not changed after move made";
 
         game.makeMove(new ChessMove(new ChessPosition(2, 5), new ChessPosition(4, 5), null));
-        Assertions.assertEquals(ChessGame.TeamColor.BLACK, game.getCurrentTurn(), failureMessage);
+        Assertions.assertEquals(ChessGame.TeamColor.BLACK, game.getTeamTurn(), failureMessage);
 
         game.makeMove(new ChessMove(new ChessPosition(7, 5), new ChessPosition(5, 5), null));
-        Assertions.assertEquals(ChessGame.TeamColor.WHITE, game.getCurrentTurn(), failureMessage);
+        Assertions.assertEquals(ChessGame.TeamColor.WHITE, game.getTeamTurn(), failureMessage);
     }
 
     @Test
