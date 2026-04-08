@@ -18,20 +18,23 @@ public class DrawChessBoard {
     private List<String> numbers;
     private Collection<ChessPosition> highlights;
     private ChessPosition anchor;
+    private String boardColor = SET_BG_COLOR_BURNT_ORANGE;
 
     // for highlight pieces
-    public DrawChessBoard(ChessGame game, String color, ChessPosition anchor, Collection<ChessPosition> highlights) {
+    public DrawChessBoard(ChessGame game, String color, ChessPosition anchor, Collection<ChessPosition> highlights, String boardColor) {
         this.game = game;
         this.highlights = highlights;
         this.anchor = anchor;
         this.color = color;
+        this.boardColor = boardColor;
         draw();
     }
 
     // for join game
-    public DrawChessBoard(ChessGame game, String color) {
+    public DrawChessBoard(ChessGame game, String color, String boardColor) {
         this.color = color;
         this.game = game;
+        this.boardColor = boardColor;
         draw();
     }
 
@@ -60,7 +63,7 @@ public class DrawChessBoard {
             if(highlight) {
                 out.print(SET_BG_COLOR_DARKER_GREEN);
             } else {
-                out.print(SET_BG_COLOR_BURNT_ORANGE);
+                out.print(boardColor);
             }
         } else {
             if(highlight) {

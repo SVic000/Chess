@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Scanner;
 
+import static ui.EscapeSequences.*;
+
 public class GameplayREPL implements NotificationHandler {
     private static Scanner scanner = null;
     private static Serializer serializer = null;
@@ -20,6 +22,7 @@ public class GameplayREPL implements NotificationHandler {
     private WebSocketFacade server;
     private ChessGame game;
     private String role = "observer";
+    private String boardColor = SET_BG_COLOR_DARKEST_GRAY;
 
     public GameplayREPL(Serializer serializer, Scanner scanner, String role, String authToken, int gameID,
                         ChessGame.TeamColor color, WebSocketFacade server) {
@@ -34,6 +37,7 @@ public class GameplayREPL implements NotificationHandler {
 
     public static String menu() {
         return """
+                0. Change board color
                 1. Redraw Chessboard
                 2. Show Legal Moves
                 3. Make move
@@ -48,6 +52,7 @@ public class GameplayREPL implements NotificationHandler {
         return """
                 Make sure to only input the number of the command you're looking for!
                 
+                0. Change Board Color - Change your boards color options: grey, red, blue, orange, green, purple
                 1. Redraw Chessboard - Redraws current game chessboard
                 2. Show Legal Moves - Highlights legal moves of a piece on the board
                 3. Make move - Makes a move on the board
@@ -68,7 +73,7 @@ public class GameplayREPL implements NotificationHandler {
             case LOAD_GAME -> {
                 game = message.getGame();
                 System.out.println();
-                new DrawChessBoard(game, color.toString());
+                new DrawChessBoard(game, color.toString(),boardColor);
                 System.out.println();
             }
             case ERROR, NOTIFICATION -> System.out.println(message.getMessage());
@@ -85,7 +90,7 @@ public class GameplayREPL implements NotificationHandler {
                 result = eval(line);
                 System.out.println(result);
 
-                if (line.matches("[1-4]")) {
+                if (line.matches("[0-4]")) {
                     System.out.print(menu());
                 }
 
@@ -101,18 +106,38 @@ public class GameplayREPL implements NotificationHandler {
         String cmd = line.trim();
 
         return switch (cmd) {
+            case "0" -> updateBoardColor();
             case "1" -> redrawBoard();
             case "2" -> legalMoves();
             case "3" -> makeMove();
             case "4" -> resign();
             case "5" -> leave();
-            case "6" -> help();
             default -> help();
         };
     }
 
+    private String updateBoardColor() {
+        System.out.print("Enter the color of the board you'd like (grey, blue, red, orange, green, purple): ");
+        String tokens = scanner.nextLine().trim().toLowerCase();
+        switch (tokens) {
+            case "blue" -> boardColor = SET_BG_COLOR_GOOD_BLUE;
+            case "orange" -> boardColor = SET_BG_COLOR_BURNT_ORANGE;
+            case "red" -> boardColor = SET_BG_COLOR_GOOD_RED;
+            case "grey" -> boardColor = SET_BG_COLOR_DARKEST_GRAY;
+            case "purple" -> boardColor = SET_BG_COLOR_PURPLE;
+            case "green" -> boardColor = SET_BG_COLOR_DEEP_GREEN;
+            default -> {
+                boardColor = SET_BG_COLOR_DARKEST_GRAY;
+                return "Error: Invalid color option, set board to default.";
+            }
+        }
+        new DrawChessBoard(game,color.toString(),null,null,boardColor);
+        System.out.println();
+        return "Successfully updated your board!";
+    }
+
     private String redrawBoard() {
-        new DrawChessBoard(game, color.toString());
+        new DrawChessBoard(game, color.toString(),boardColor);
         return "";
     }
 
@@ -132,7 +157,7 @@ public class GameplayREPL implements NotificationHandler {
 
         Collection<ChessPosition> highlightSquares = new ArrayList<>(convertToEndPosition(game.validMoves(location)));
 
-        new DrawChessBoard(game, color.toString(), location, highlightSquares);
+        new DrawChessBoard(game, color.toString(), location, highlightSquares,boardColor);
         return "";
     }
 

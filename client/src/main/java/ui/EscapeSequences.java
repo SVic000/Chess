@@ -59,6 +59,11 @@ public class EscapeSequences {
     public static final String SET_BG_COLOR_GOOD_YELLOW = SET_BG_COLOR + "178m";
     public static final String SET_BG_COLOR_LIGHT_GREEN = SET_BG_COLOR + "149m";
     public static final String SET_BG_COLOR_DARKER_GREEN = SET_BG_COLOR + "64m";
+    public static final String SET_BG_COLOR_DARKEST_GRAY = SET_BG_COLOR + "238m";
+    public static final String SET_BG_COLOR_GOOD_RED = SET_BG_COLOR + "124m";
+    public static final String SET_BG_COLOR_GOOD_BLUE = SET_BG_COLOR + "25m";
+    public static final String SET_BG_COLOR_PURPLE = SET_BG_COLOR + "54m";
+    public static final String SET_BG_COLOR_DEEP_GREEN = SET_BG_COLOR + "22m";
 
     public static String moveCursorToLocation(int x, int y) {
         return UNICODE_ESCAPE + "[" + y + ";" + x + "H";
