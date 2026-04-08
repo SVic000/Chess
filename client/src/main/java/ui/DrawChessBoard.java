@@ -79,8 +79,8 @@ public class DrawChessBoard {
         out.print(SET_TEXT_COLOR_BLACK);
         out.print(SET_BG_COLOR_LIGHT_GREY);
 
-        int HEADER_WIDTH = 10;
-        for (int i = 0; i < HEADER_WIDTH; i++) {
+        int headerWidth = 10;
+        for (int i = 0; i < headerWidth; i++) {
             out.print(letters.get(i));
         }
     }
@@ -153,12 +153,12 @@ public class DrawChessBoard {
     }
 
     private void updateLetterAndNumberOrder(String color) {
-        String EMPTY = "   ";
+        String empty = "   ";
         if (color.equals("BLACK")) {
-            letters = List.of(EMPTY, " h ", " g ", " f ", " e ", " d ", " c ", " b ", " a ", EMPTY);
+            letters = List.of(empty, " h ", " g ", " f ", " e ", " d ", " c ", " b ", " a ", empty);
             numbers = List.of(" 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 ");
         } else {
-            letters = List.of(EMPTY, " a ", " b ", " c ", " d ", " e ", " f ", " g ", " h ", EMPTY);
+            letters = List.of(empty, " a ", " b ", " c ", " d ", " e ", " f ", " g ", " h ", empty);
             numbers = List.of(" 8 ", " 7 ", " 6 ", " 5 ", " 4 ", " 3 ", " 2 ", " 1 ");
         }
     }

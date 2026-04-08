@@ -13,7 +13,7 @@ import java.util.Scanner;
 
 public class GameplayREPL implements NotificationHandler {
     private static Scanner scanner = null;
-    private static Serializer SERIALIZER = null;
+    private static Serializer serializer = null;
     private final String authToken;
     private final int gameID;
     private ChessGame.TeamColor color = ChessGame.TeamColor.WHITE;
@@ -28,7 +28,7 @@ public class GameplayREPL implements NotificationHandler {
         this.server = server;
         this.role = role;
         GameplayREPL.scanner = scanner;
-        SERIALIZER = serializer;
+        GameplayREPL.serializer = serializer;
     }
 
     public static String menu() {
@@ -83,7 +83,7 @@ public class GameplayREPL implements NotificationHandler {
             try {
                 result = eval(line, scanner);
             } catch (Throwable e) {
-                var msg = SERIALIZER.decrypt(e);
+                var msg = serializer.decrypt(e);
                 System.out.println(msg.message());
                 System.out.println(menu());
             }
@@ -156,7 +156,8 @@ public class GameplayREPL implements NotificationHandler {
         if (role.equals("observer")) {
             return "Error: can't make a move as an observer.";
         }
-        System.out.print("Enter the starting piece position - column (a-h) and row(1-8): ");
+        System.out.print(
+                "Enter the starting piece position - column (a-h) and row(1-8): ");
         String tokens = scanner.nextLine().toLowerCase();
         try {
             start = convertToPosition(tokens.substring(0, 1), tokens.substring(1));
