@@ -6,6 +6,7 @@ import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.GameDAO;
 import io.javalin.http.BadRequestResponse;
+import io.javalin.http.ForbiddenResponse;
 import model.GameData;
 
 import java.sql.*;
@@ -58,7 +59,7 @@ public class MySqlGameDataAccess implements GameDAO {
             throw new DataAccessException("Error: failed to retrieve generated game ID");
 
         } catch (Exception e) {
-            throw new RuntimeException("Error creating game: " + e.getMessage());
+            throw new ForbiddenResponse("Error creating game: " + e.getMessage());
         }
     }
 
