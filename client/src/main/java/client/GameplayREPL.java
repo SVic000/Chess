@@ -21,7 +21,8 @@ public class GameplayREPL implements NotificationHandler {
     private ChessGame game;
     private String role = "observer";
 
-    public GameplayREPL(Serializer serializer, Scanner scanner, String role, String authToken, int gameID, ChessGame.TeamColor color, WebSocketFacade server) {
+    public GameplayREPL(Serializer serializer, Scanner scanner, String role, String authToken, int gameID,
+                        ChessGame.TeamColor color, WebSocketFacade server) {
         this.authToken = authToken;
         this.gameID = gameID;
         this.color = color;
