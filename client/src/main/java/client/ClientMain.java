@@ -26,47 +26,62 @@ public class ClientMain {
         System.out.print(menu());
 
         Scanner scanner = new Scanner(System.in);
-        var result = "";
+        String result = "";
+
         while (!result.equals("4")) {
-            String line = scanner.nextLine();
+            String line = scanner.nextLine().trim();
 
             try {
                 result = eval(line, scanner);
+
                 if (line.equals("-10")) {
                     SERVER.clear();
                     System.out.println("hidden clear worked");
                 }
+
                 if (!result.equals("4")) {
                     System.out.println(result);
                     System.out.println();
                 }
+
                 if (isLoggedIn) {
                     signedInREPL(scanner);
                     result = "";
                     System.out.print(menu());
+                    continue;
                 }
+
+                if ("1234".contains(line)) {
+                    System.out.print(menu());
+                }
+
             } catch (Throwable e) {
                 var msg = SERIALIZER.decrypt(e);
                 System.out.println(msg.message());
-                System.out.println(menu());
+                System.out.print(help());
             }
         }
+
         System.out.println("Goodbye!");
     }
 
     public static void signedInREPL(Scanner scanner) {
         System.out.print(menu());
 
-        var result = "";
+        String result = "";
+
         while (!result.equals("5")) {
-            String line = scanner.nextLine();
+            String line = scanner.nextLine().trim();
+
             try {
                 result = eval(line, scanner);
             } catch (Throwable e) {
                 var msg = SERIALIZER.decrypt(e);
                 System.out.println(msg.message());
-                System.out.println(menu());
+                System.out.print(help()); // show help once
+                continue;
             }
+
             System.out.println(result);
             System.out.println();
 
@@ -74,30 +89,27 @@ public class ClientMain {
                 System.out.println();
                 for (int keys : ORDER.keySet()) {
                     GameData game = ORDER.get(keys);
-                    if (game == null) {
-                        break;
-                    }
-                    System.out.print(keys);
-                    System.out.print(". ");
-                    System.out.print("Name: ");
-                    System.out.print(game.gameName());
-                    System.out.print(", White player: ");
-                    System.out.print(game.whiteUsername());
-                    System.out.print(", Black player: ");
-                    System.out.print(game.blackUsername());
+                    if (game == null) break;
+
+                    System.out.print(keys + ". ");
+                    System.out.print("Name: " + game.gameName());
+                    System.out.print(", White player: " + game.whiteUsername());
+                    System.out.print(", Black player: " + game.blackUsername());
                     System.out.println();
                 }
                 System.out.println();
-            }
-            if (!line.equals("6")) {
-                System.out.print(menu());
             }
 
             if (line.equals("-10")) {
                 SERVER.clear();
                 System.out.println("Secret clear worked");
             }
+
+            if ("12345".contains(line)) {
+                System.out.print(menu());
+            }
         }
+
         System.out.println("Successfully logged out.");
         System.out.println();
     }
@@ -197,20 +209,20 @@ public class ClientMain {
             repl.run();
             return "";
         } catch (NumberFormatException ex) {
-            return "Error: Game index is not valid, try again.s";
+            return "Error: Game index is not valid, try again.";
         }
     }
 
     private static String joinGame(Scanner scanner) {
         assertSignedIn();
-        // will be joining another REPL here in phase 6
+        listGames();
         System.out.print("Enter the number of the game you'd like to join: ");
         String input = scanner.nextLine().trim();
         int gameID;
         try {
             gameID = Integer.parseInt(input);
         } catch (NumberFormatException e) {
-            return "That's not a valid game ID, try again.";
+            return "That's not a valid game number, try again.";
         }
         System.out.print("Enter the color you'd like to join as (WHITE/BLACK): ");
         String color = scanner.nextLine().trim().toUpperCase();
@@ -232,7 +244,7 @@ public class ClientMain {
         GameData game = ORDER.get(gameID);
 
         if (game == null) {
-            throw new RuntimeException("Game does not exist");
+            throw new RuntimeException("Error: Game does not exist");
         }
         GameplayREPL repl = new GameplayREPL(
                 SERIALIZER,

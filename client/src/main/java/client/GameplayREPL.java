@@ -78,40 +78,37 @@ public class GameplayREPL implements NotificationHandler {
     public void run() {
         System.out.print(menu());
 
-        var result = "";
+        String result = "";
         while (!result.equals("5")) {
             String line = scanner.nextLine();
             try {
-                result = eval(line, scanner);
+                result = eval(line);
+                System.out.println(result);
+
+                if (line.matches("[1-4]")) {
+                    System.out.print(menu());
+                }
+
             } catch (Throwable e) {
                 var msg = serializer.decrypt(e);
                 System.out.println(msg.message());
-                System.out.println(menu());
-            }
-
-            if (!result.equals("5")) {
-                System.out.println(result);
-                System.out.println();
-                System.out.print(menu());
+                System.out.print(help());
             }
         }
     }
 
-    private String eval(String line, Scanner scanner) throws Exception {
-        try {
-            String[] token = line.toLowerCase().split(" ");
-            String cmd = (token.length > 0) ? token[0] : "3";
-            return switch (cmd) {
-                case "1" -> redrawBoard();
-                case "2" -> legalMoves();
-                case "3" -> makeMove();
-                case "4" -> resign();
-                case "5" -> leave();
-                default -> help();
-            };
-        } catch (Exception ex) {
-            throw new Exception(ex.getMessage());
-        }
+    private String eval(String line) throws Exception {
+        String cmd = line.trim();
+
+        return switch (cmd) {
+            case "1" -> redrawBoard();
+            case "2" -> legalMoves();
+            case "3" -> makeMove();
+            case "4" -> resign();
+            case "5" -> leave();
+            case "6" -> help();
+            default -> help();
+        };
     }
 
     private String redrawBoard() {

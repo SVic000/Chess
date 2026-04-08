@@ -29,13 +29,47 @@ public class ChessPosition {
      * @return which column this position is in
      * 1 codes for the left row
      */
+
+    String changeToLetter() {
+        switch(col) {
+            case 1 -> {
+                return "a";
+            }
+            case 2 -> {
+                return "b";
+            }
+            case 3 -> {
+                return "c";
+            }
+            case 4 -> {
+                return "d";
+            }
+            case 5 -> {
+                return "e";
+            }
+
+            case 6 -> {
+                return "f";
+            }
+            case 7 -> {
+                return "g";
+            }
+            case 8 -> {
+                return "h";
+            }
+            default -> {
+                return String.valueOf(col);
+            }
+        }
+    }
+
     public int getColumn() {
         return this.col;
     }
 
     @Override
     public String toString() {
-        return String.format("[%d,%d]", row, col);
+        return String.format("%s%d", changeToLetter(), row);
     }
 
     @Override

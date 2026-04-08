@@ -79,25 +79,23 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return;
         }
         if (!game.game().isGameActive()) {
-            System.out.println("Here6");
-            message = "Error: game is over. Can't make moves.";
+            message = "Error: Game is over. Can't make moves.";
             notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, null, message);
             connections.sendToSession(session, notification);
             return;
         }
         ChessGame.TeamColor color = user.username().equals(game.whiteUsername()) ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
-        ChessGame.TeamColor enemy = color.equals(ChessGame.TeamColor.WHITE) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+        ChessGame.TeamColor enemyColor = color.equals(ChessGame.TeamColor.WHITE) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
         try {
             if (!game.game().getTeamTurn().equals(color)) {
-                System.out.println("Here5");
-                message = "Error: not your turn, you can't make a move.";
+                message = "Error: Not your turn, you can't make a move.";
                 notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, null, message);
                 connections.sendToSession(session, notification);
                 return;
             }
             game.game().makeMove(command.getChessMove());
-            if (game.game().isInCheckmate(enemy)
-                    || game.game().isInStalemate(enemy)) {
+            if (game.game().isInCheckmate(enemyColor)
+                    || game.game().isInStalemate(enemyColor)) {
                 game.game().endGame();
             }
             updated = gameDAO.updateGame(command.getGameID(), game.game());
@@ -122,16 +120,17 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message, null);
         connections.broadcast(session, command.getGameID(), notification);
 
-        if (current.isInCheckmate(enemy)) {
-            message = String.format("%s is in checkmate. Game over.", enemy);
+        String enemyUsername = ChessGame.TeamColor.WHITE.equals(enemyColor) ? game.whiteUsername() : game.blackUsername();
+        if (current.isInCheckmate(enemyColor)) {
+            message = String.format("%s is in checkmate. %s wins. Game over.",enemyUsername, user.username());
             notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message, null);
             connections.broadcast(null, command.getGameID(), notification);
-        } else if (current.isInStalemate(enemy)) {
-            message = String.format("%s is in stalemate. Game over.", enemy);
+        } else if (current.isInStalemate(enemyColor)) {
+            message = String.format("%s is in stalemate. %s wins. Game over.", enemyUsername, user.username());
             notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message, null);
             connections.broadcast(null, command.getGameID(), notification);
-        } else if (current.isInCheck(enemy)) {
-            message = String.format("%s is in check.", enemy);
+        } else if (current.isInCheck(enemyColor)) {
+            message = String.format("%s is in check.", enemyUsername);
             notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message, null);
             connections.broadcast(null, command.getGameID(), notification);
         }
@@ -145,11 +144,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             GameData game = gameDAO.getGame(command.getGameID());
 
             if (user.username().equals(game.whiteUsername())) {
-                message = String.format("%s resigns, Black Wins.", user.username());
+                message = String.format("%s resigns, %s wins.", user.username(), game.blackUsername());
             } else if (user.username().equals(game.blackUsername())) {
-                message = String.format("%s resigns, White Wins.", user.username());
+                message = String.format("%s resigns, %s wins.", user.username(),game.whiteUsername());
             } else {
-                message = "Error: can't resign as an observer.";
+                message = "Error: Can't resign as an observer.";
                 notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, null, message);
                 try {
                     connections.sendToSession(session, notification);
@@ -164,7 +163,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             }
             ChessGame board = game.game();
             if (!board.isGameActive()) {
-                message = "Error: can't resign from a game that's over.";
+                message = "Error: Can't resign from a game that's over.";
                 notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, null, message);
                 connections.sendToSession(session, notification);
                 return;
@@ -175,7 +174,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message, null);
             connections.broadcast(null, command.getGameID(), notification);
         } catch (DataAccessException | IOException e) {
-            System.out.println("here2");
             message = e.getMessage();
             notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, null, message);
             connections.sendToSession(session, notification);
@@ -197,7 +195,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message, null);
             connections.broadcast(session, game.gameID(), notification);
         } catch (Exception e) {
-            System.out.println("here3");
             message = "Error: Unable to join the game. Try again.";
             notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, null, message);
             connections.sendToSession(session, notification);
@@ -233,7 +230,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message, null);
             connections.broadcast(session, game.gameID(), notification);
         } catch (Exception e) {
-            System.out.println("here4");
             message = "Error: Unable to leave game.";
             notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, null, message);
             connections.sendToSession(session, notification);
