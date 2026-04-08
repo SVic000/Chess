@@ -157,7 +157,8 @@ public class GameplayREPL implements NotificationHandler {
             return "Error: can't make a move as an observer.";
         }
         System.out.print(
-                "Enter the starting piece position - column (a-h) and row(1-8): ");
+                "Enter the starting piece position" +
+                        " - column (a-h) and row(1-8): ");
         String tokens = scanner.nextLine().toLowerCase();
         try {
             start = convertToPosition(tokens.substring(0, 1), tokens.substring(1));
