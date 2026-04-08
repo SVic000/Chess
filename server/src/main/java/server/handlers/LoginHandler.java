@@ -1,11 +1,11 @@
 package server.handlers;
 
 import com.google.gson.Gson;
+import httpobjs.LoginRequest;
+import httpobjs.LoginResult;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import org.jetbrains.annotations.NotNull;
-import httpobjs.LoginRequest;
-import httpobjs.LoginResult;
 import service.UserService;
 
 public class LoginHandler implements Handler {

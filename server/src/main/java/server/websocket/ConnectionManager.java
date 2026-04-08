@@ -1,9 +1,7 @@
 package server.websocket;
 
-import chess.ChessGame;
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
-import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -17,16 +15,16 @@ public class ConnectionManager {
 
     public void add(int gameID, Session session) {
         Set<Session> current = connections.get(gameID);
-        if(current == null) {
+        if (current == null) {
             current = new HashSet<>();
         }
         current.add(session);
-        connections.put(gameID,current);
+        connections.put(gameID, current);
     }
 
     public void remove(int gameID, Session session) {
         Set<Session> current = connections.get(gameID);
-        if(current == null) {
+        if (current == null) {
             return;
         }
         current.remove(session);
@@ -36,12 +34,12 @@ public class ConnectionManager {
     public void broadcast(Session excludeSession, int gameID, ServerMessage notification) throws IOException {
         String msg = new Gson().toJson(notification);
         Set<Session> current = connections.get(gameID);
-        if(current == null) {
+        if (current == null) {
             return;
         }
         for (Session c : current) {
-            if(c.isOpen()) {
-                if(!c.equals(excludeSession)) {
+            if (c.isOpen()) {
+                if (!c.equals(excludeSession)) {
                     c.getRemote().sendString(msg);
                 }
             }
@@ -50,7 +48,7 @@ public class ConnectionManager {
 
     public void sendToSession(Session session, ServerMessage notification) throws IOException {
         String msg = new Gson().toJson(notification);
-        if(session.isOpen()) {
+        if (session.isOpen()) {
             session.getRemote().sendString(msg);
         }
     }

@@ -40,7 +40,7 @@ public class Server {
         ClearService clearService = new ClearService(userStorage, authStorage, gameStorage);
         GameService gameService = new GameService(authStorage, gameStorage);
 
-        webSocketHandler = new WebSocketHandler(authStorage,gameStorage);
+        webSocketHandler = new WebSocketHandler(authStorage, gameStorage);
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .post("/user", new RegisterHandler(userService))

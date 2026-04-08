@@ -4,7 +4,6 @@ import chess.*;
 import client.error.ResponseException;
 import client.websocket.NotificationHandler;
 import client.websocket.WebSocketFacade;
-import org.eclipse.jetty.server.Response;
 import ui.DrawChessBoard;
 import websocket.messages.ServerMessage;
 
@@ -13,12 +12,12 @@ import java.util.Collection;
 import java.util.Scanner;
 
 public class GameplayREPL implements NotificationHandler {
+    private static Scanner scanner = null;
+    private static Serializer SERIALIZER = null;
     private final String authToken;
     private final int gameID;
     private ChessGame.TeamColor color = ChessGame.TeamColor.WHITE;
     private WebSocketFacade server;
-    private static Scanner scanner = null;
-    private static Serializer SERIALIZER = null;
     private ChessGame game;
     private String role = "observer";
 
@@ -32,13 +31,39 @@ public class GameplayREPL implements NotificationHandler {
         SERIALIZER = serializer;
     }
 
+    public static String menu() {
+        return """
+                1. Redraw Chessboard
+                2. Show Legal Moves
+                3. Make move
+                4. Resign
+                5. Leave
+                6. Help
+                
+                """;
+    }
+
+    public static String help() {
+        return """
+                Make sure to only input the number of the command you're looking for!
+                
+                1. Redraw Chessboard - Redraws current game chessboard
+                2. Show Legal Moves - Highlights legal moves of a piece on the board
+                3. Make move - Makes a move on the board
+                4. Resign - Forfeits the win
+                5. Leave - Leave the game
+                6. Help - Show this menu again
+                
+                """;
+    }
+
     public void setServer(WebSocketFacade server) {
         this.server = server;
     }
 
     @Override
     public void notify(ServerMessage message) {
-        switch(message.getServerMessageType()) {
+        switch (message.getServerMessageType()) {
             case LOAD_GAME -> {
                 game = message.getGame();
                 System.out.println();
@@ -57,45 +82,18 @@ public class GameplayREPL implements NotificationHandler {
             String line = scanner.nextLine();
             try {
                 result = eval(line, scanner);
-            }   catch (Throwable e) {
+            } catch (Throwable e) {
                 var msg = SERIALIZER.decrypt(e);
                 System.out.println(msg.message());
                 System.out.println(menu());
             }
 
-            if(!result.equals("5")) {
+            if (!result.equals("5")) {
                 System.out.println(result);
                 System.out.println();
                 System.out.print(menu());
             }
         }
-    }
-
-
-    public static String menu() {
-        return """
-                    1. Redraw Chessboard
-                    2. Show Legal Moves
-                    3. Make move
-                    4. Resign
-                    5. Leave
-                    6. Help
-                    
-                    """;
-    }
-
-    public static String help() {
-        return """
-                    Make sure to only input the number of the command you're looking for!
-                    
-                    1. Redraw Chessboard - Redraws current game chessboard
-                    2. Show Legal Moves - Highlights legal moves of a piece on the board
-                    3. Make move - Makes a move on the board
-                    4. Resign - Forfeits the win
-                    5. Leave - Leave the game
-                    6. Help - Show this menu again
-                    
-                    """;
     }
 
     private String eval(String line, Scanner scanner) throws Exception {
@@ -110,13 +108,13 @@ public class GameplayREPL implements NotificationHandler {
                 case "5" -> leave();
                 default -> help();
             };
-            } catch (Exception ex) {
+        } catch (Exception ex) {
             throw new Exception(ex.getMessage());
         }
     }
 
     private String redrawBoard() {
-        new DrawChessBoard(game,color.toString());
+        new DrawChessBoard(game, color.toString());
         return "";
     }
 
@@ -125,25 +123,25 @@ public class GameplayREPL implements NotificationHandler {
         System.out.print("Enter the position of the piece you'd like to highlight - col(a-h) and row(1-8): ");
         String tokens = scanner.nextLine().toLowerCase();
         try {
-            location = convertToPosition(tokens.substring(0,1), tokens.substring(1));
+            location = convertToPosition(tokens.substring(0, 1), tokens.substring(1));
         } catch (RuntimeException e) {
             return e.getMessage();
         }
         ChessPiece boardPiece = game.getBoard().getPiece(location);
-        if(boardPiece == null) {
+        if (boardPiece == null) {
             return "Error: Unable to highlight moves of an empty position.";
         }
 
         Collection<ChessPosition> highlightSquares = new ArrayList<>(convertToEndPosition(game.validMoves(location)));
 
-        new DrawChessBoard(game,color.toString(),location, highlightSquares);
+        new DrawChessBoard(game, color.toString(), location, highlightSquares);
         return "";
     }
 
     Collection<ChessPosition> convertToEndPosition(Collection<ChessMove> validMoves) {
         Collection<ChessPosition> result = new ArrayList<>();
 
-        for(ChessMove move : validMoves) {
+        for (ChessMove move : validMoves) {
             result.add(move.getEndPosition());
         }
         return result;
@@ -155,40 +153,40 @@ public class GameplayREPL implements NotificationHandler {
         ChessPosition end;
         ChessPiece.PieceType promotion = null;
 
-        if(role.equals("observer")) {
+        if (role.equals("observer")) {
             return "Error: can't make a move as an observer.";
         }
         System.out.print("Enter the starting piece position - column (a-h) and row(1-8): ");
         String tokens = scanner.nextLine().toLowerCase();
         try {
-            start = convertToPosition(tokens.substring(0,1), tokens.substring(1));
+            start = convertToPosition(tokens.substring(0, 1), tokens.substring(1));
         } catch (RuntimeException e) {
             return e.getMessage();
         }
         ChessPiece boardPiece = game.getBoard().getPiece(start);
-        if(boardPiece == null) {
+        if (boardPiece == null) {
             return "Error: no piece on that spot, try again.";
         }
 
-        if(!color.equals(boardPiece.getTeamColor())) {
+        if (!color.equals(boardPiece.getTeamColor())) {
             return "Error: Unable to move a piece that's not on your team.";
         }
         System.out.print("Enter the ending position -  column (a-h) and row(1-8): ");
         tokens = scanner.nextLine().toLowerCase();
         try {
-            end = convertToPosition(tokens.substring(0,1), tokens.substring(1));
+            end = convertToPosition(tokens.substring(0, 1), tokens.substring(1));
         } catch (Exception e) {
             return e.getMessage();
         }
         String piece = "";
-        if(ChessPiece.PieceType.PAWN.equals(boardPiece.getPieceType())) {
-            if(boardPiece.getTeamColor().equals(ChessGame.TeamColor.WHITE)) {
-                if(end.getRow() == 8) {
+        if (ChessPiece.PieceType.PAWN.equals(boardPiece.getPieceType())) {
+            if (boardPiece.getTeamColor().equals(ChessGame.TeamColor.WHITE)) {
+                if (end.getRow() == 8) {
                     System.out.println("What would you like to promote to?: ");
                     piece = scanner.nextLine().trim().toLowerCase();
                 }
             } else {
-                if(end.getRow() == 1) {
+                if (end.getRow() == 1) {
                     System.out.println("What would you like to promote to?: ");
                     piece = scanner.nextLine().trim().toLowerCase();
                 }
@@ -199,14 +197,14 @@ public class GameplayREPL implements NotificationHandler {
                 return e.getMessage();
             }
         }
-        ChessMove move = new ChessMove(start,end,promotion);
+        ChessMove move = new ChessMove(start, end, promotion);
         ChessBoard old = (ChessBoard) game.getBoard().clone();
-        server.sendMakeMove(authToken,gameID,move);
+        server.sendMakeMove(authToken, gameID, move);
         if (old.equals(game.getBoard())) {
             return "";
         }
 
-        return String.format("Moved %s to %s.", start,end);
+        return String.format("Moved %s to %s.", start, end);
     }
 
     private ChessPosition convertToPosition(String col, String row) {
@@ -217,10 +215,10 @@ public class GameplayREPL implements NotificationHandler {
             throw new ResponseException(403, "Error: Enter a valid row (1-8)");
         }
         int cols;
-        if(rows > 8 | rows < 0) {
+        if (rows > 8 | rows < 0) {
             throw new ResponseException(400, "Error: enter a valid row (1-8).");
         }
-        switch(col) {
+        switch (col) {
             case "a" -> cols = 1;
             case "b" -> cols = 2;
             case "c" -> cols = 3;
@@ -233,11 +231,11 @@ public class GameplayREPL implements NotificationHandler {
                 throw new ResponseException(400, "Error: enter a valid column (a-h).");
             }
         }
-        return new ChessPosition(rows,cols);
+        return new ChessPosition(rows, cols);
     }
 
     private ChessPiece.PieceType convertToPieceType(String piece) {
-        switch(piece) {
+        switch (piece) {
             case "queen" -> {
                 return ChessPiece.PieceType.QUEEN;
             }
@@ -260,12 +258,12 @@ public class GameplayREPL implements NotificationHandler {
     }
 
     private String resign() {
-        if(role.equals("observer")) {
+        if (role.equals("observer")) {
             return "Error: Can't resign as an observer";
         }
         System.out.println("Are you sure you want to Resign? (yes/no): ");
         String response = scanner.nextLine().trim().toLowerCase();
-        if(response.equals("yes")) {
+        if (response.equals("yes")) {
             server.sendResign(authToken, gameID);
             return "";
         }
@@ -273,7 +271,7 @@ public class GameplayREPL implements NotificationHandler {
     }
 
     private String leave() {
-        server.sendLeave(authToken,gameID);
+        server.sendLeave(authToken, gameID);
         return "5";
     }
 }

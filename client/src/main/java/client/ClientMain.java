@@ -10,9 +10,9 @@ import java.util.*;
 
 public class ClientMain {
     private static final ServerFacade SERVER = new ServerFacade("http://localhost:8080");
-    private static boolean isLoggedIn = false;
     private static final Serializer SERIALIZER = new Serializer();
     private static final HashMap<Integer, GameData> ORDER = new HashMap<>();
+    private static boolean isLoggedIn = false;
     private static List<GameData> lastListCall = new ArrayList<>();
     private static String authToken = "";
     private WebSocketFacade ws;
@@ -62,7 +62,7 @@ public class ClientMain {
             String line = scanner.nextLine();
             try {
                 result = eval(line, scanner);
-            }   catch (Throwable e) {
+            } catch (Throwable e) {
                 var msg = SERIALIZER.decrypt(e);
                 System.out.println(msg.message());
                 System.out.println(menu());
@@ -74,7 +74,7 @@ public class ClientMain {
                 System.out.println();
                 for (int keys : ORDER.keySet()) {
                     GameData game = ORDER.get(keys);
-                    if(game == null) {
+                    if (game == null) {
                         break;
                     }
                     System.out.print(keys);
@@ -188,11 +188,11 @@ public class ClientMain {
                     null
             );
 
-            WebSocketFacade ws = new WebSocketFacade("http://localhost:8080",repl);
+            WebSocketFacade ws = new WebSocketFacade("http://localhost:8080", repl);
 
             repl.setServer(ws);
 
-            ws.sendJoin(authToken,gameID);
+            ws.sendJoin(authToken, gameID);
 
             repl.run();
             return "";
@@ -214,7 +214,7 @@ public class ClientMain {
         }
         System.out.print("Enter the color you'd like to join as (WHITE/BLACK): ");
         String color = scanner.nextLine().trim().toUpperCase();
-        if(!color.equals("WHITE") && !color.equals("BLACK")) {
+        if (!color.equals("WHITE") && !color.equals("BLACK")) {
             return "Not a valid color. Try again.";
         }
         System.out.println();
@@ -231,7 +231,7 @@ public class ClientMain {
 
         GameData game = ORDER.get(gameID);
 
-        if(game == null) {
+        if (game == null) {
             throw new RuntimeException("Game does not exist");
         }
         GameplayREPL repl = new GameplayREPL(
@@ -248,7 +248,7 @@ public class ClientMain {
 
         repl.setServer(ws);
 
-        ws.sendJoin(authToken,gameID);
+        ws.sendJoin(authToken, gameID);
 
         repl.run();
 
@@ -261,8 +261,8 @@ public class ClientMain {
         ListGameResult res = SERVER.listGames(authToken);
         lastListCall = (List<GameData>) res.games();
         ORDER.clear();
-        for(int i = 0; i < lastListCall.size(); i++) {
-            ORDER.put(i+1, lastListCall.get(i));
+        for (int i = 0; i < lastListCall.size(); i++) {
+            ORDER.put(i + 1, lastListCall.get(i));
         }
         return "Here is the list of current games: ";
     }

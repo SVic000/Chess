@@ -7,6 +7,7 @@ import jakarta.websocket.*;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -52,27 +53,27 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void sendResign(String authToken, int gameID){
+    public void sendResign(String authToken, int gameID) {
         try {
-            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken,gameID);
+            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException e) {
             throw new ResponseException(500, e.getMessage());
         }
     }
 
-    public void sendLeave(String authToken, int gameID){
+    public void sendLeave(String authToken, int gameID) {
         try {
-            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken,gameID);
+            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException e) {
             throw new ResponseException(500, e.getMessage());
         }
     }
 
-    public void sendMakeMove(String authToken, int gameID, ChessMove move){
+    public void sendMakeMove(String authToken, int gameID, ChessMove move) {
         try {
-            MakeMoveCommand command = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken,gameID,move);
+            MakeMoveCommand command = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, move);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException e) {
             throw new ResponseException(500, e.getMessage());

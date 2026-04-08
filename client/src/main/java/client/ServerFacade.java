@@ -13,31 +13,36 @@ public class ServerFacade {
     public RegisterResult register(RegisterRequest request) {
         var buildReq = communicator.buildRequest("POST", "/user", request, "");
         var response = communicator.sendRequest(buildReq);
-        return communicator.handleResponse(response, new TypeToken<RegisterResult>(){});
+        return communicator.handleResponse(response, new TypeToken<RegisterResult>() {
+        });
     }
 
     public LoginResult login(LoginRequest request) {
         var buildReq = communicator.buildRequest("POST", "/session", request, "");
         var response = communicator.sendRequest(buildReq);
-        return communicator.handleResponse(response, new TypeToken<LoginResult>(){});
+        return communicator.handleResponse(response, new TypeToken<LoginResult>() {
+        });
     }
 
     public CreateGameResult createGame(CreateGameRequest request, String authToken) {
         var buildReq = communicator.buildRequest("POST", "/game", request, authToken);
         var response = communicator.sendRequest(buildReq);
-        return communicator.handleResponse(response, new TypeToken<CreateGameResult>(){});
+        return communicator.handleResponse(response, new TypeToken<CreateGameResult>() {
+        });
     }
 
     public JoinGameResult joinGame(JoinGameRequest request, String authToken) {
         var buildReq = communicator.buildRequest("PUT", "/game", request, authToken);
         var response = communicator.sendRequest(buildReq);
-        return communicator.handleResponse(response, new TypeToken<JoinGameResult>(){});
+        return communicator.handleResponse(response, new TypeToken<JoinGameResult>() {
+        });
     }
 
     public ListGameResult listGames(String authToken) {
         var buildReq = communicator.buildRequest("GET", "/game", null, authToken);
         var response = communicator.sendRequest(buildReq);
-        return communicator.handleResponse(response, new TypeToken<ListGameResult>(){});
+        return communicator.handleResponse(response, new TypeToken<ListGameResult>() {
+        });
     }
 
     public void logout(String authToken) {

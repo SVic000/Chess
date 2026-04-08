@@ -1,11 +1,11 @@
 package server.handlers;
 
 import com.google.gson.Gson;
+import httpobjs.CreateGameRequest;
+import httpobjs.CreateGameResult;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import org.jetbrains.annotations.NotNull;
-import httpobjs.CreateGameRequest;
-import httpobjs.CreateGameResult;
 import service.GameService;
 
 public class CreateGameHandler implements Handler {
